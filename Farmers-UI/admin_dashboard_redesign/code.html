@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Green Market Admin | The Digital Hearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Plus+Jakarta+Sans:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#623f1e",
+                    "primary-container": "#2d4f1e",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-container": "#f1eee5",
+                    "on-secondary-fixed": "#3d0700",
+                    "inverse-on-surface": "#f4f1e8",
+                    "primary-fixed": "#c5efad",
+                    "surface-dim": "#dddad1",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f6f3ea",
+                    "secondary-fixed-dim": "#ffb4a3",
+                    "on-primary-container": "#98c083",
+                    "tertiary-container": "#623f1e",
+                    "surface-container-high": "#ebe8df",
+                    "on-primary-fixed": "#062100",
+                    "tertiary": "#48290a",
+                    "surface-bright": "#fcf9f0",
+                    "surface": "#fcf9f0",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#fe876a",
+                    "on-secondary-container": "#741f0b",
+                    "on-primary-fixed-variant": "#2d4f1e",
+                    "error-container": "#ffdad6",
+                    "on-surface-variant": "#43493e",
+                    "primary-fixed-dim": "#a9d293",
+                    "outline-variant": "#c3c8bb",
+                    "on-background": "#1c1c17",
+                    "on-secondary-fixed-variant": "#812914",
+                    "outline": "#73796d",
+                    "tertiary-fixed-dim": "#f0bc92",
+                    "surface-tint": "#446733",
+                    "secondary": "#a03f29",
+                    "on-tertiary-fixed": "#2e1500",
+                    "on-surface": "#1c1c17",
+                    "surface-variant": "#e5e2da",
+                    "secondary-fixed": "#ffdad2",
+                    "tertiary-fixed": "#ffdcc1",
+                    "inverse-surface": "#31312b",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#ddab82",
+                    "inverse-primary": "#a9d293",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e5e2da",
+                    "primary": "#173809",
+                    "background": "#fcf9f0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "1rem",
+                    "xl": "1.25rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-newsreader { font-family: 'Newsreader', serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .grainy-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen relative overflow-x-hidden">
+<!-- Texture Overlay -->
+<div class="fixed inset-0 grainy-overlay z-[9999]"></div>
+<div class="flex">
+<!-- SideNavBar Component -->
+<aside class="hidden md:flex flex-col h-screen w-64 rounded-r-2xl bg-[#f6f3ea] shadow-[20px_0_40px_rgba(28,28,23,0.05)] sticky top-0 font-['Plus_Jakarta_Sans'] font-medium py-6 shrink-0 z-40">
+<div class="px-6 mb-10">
+<h1 class="text-lg font-bold text-[#48290a]">Green Market Admin</h1>
+<p class="text-xs text-on-surface-variant/70 italic">Managing the Hearth</p>
+</div>
+<nav class="flex flex-col gap-1">
+<!-- Overview Active -->
+<a class="bg-[#e5e2da] text-[#2D4F1E] rounded-lg mx-2 px-4 py-3 flex items-center gap-3 transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="text-sm">Overview</span>
+</a>
+<a class="text-stone-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-[#f1eee5] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">inventory_2</span>
+<span class="text-sm">Inventory</span>
+</a>
+<a class="text-stone-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-[#f1eee5] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">receipt_long</span>
+<span class="text-sm">Orders</span>
+</a>
+<a class="text-stone-600 mx-2 px-4 py-3 flex items-center gap-3 hover:bg-[#f1eee5] transition-all" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 py-4 flex items-center gap-3 border-t border-outline-variant/15">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">
+                    E
+                </div>
+<div>
+<p class="text-sm font-bold text-tertiary">Elias Thorne</p>
+<p class="text-xs text-on-surface-variant">Farm Owner</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 px-8 py-10 max-w-7xl">
+<!-- Header Section -->
+<header class="flex justify-between items-end mb-12">
+<div>
+<h2 class="text-4xl font-newsreader italic text-tertiary leading-tight">Good morning, Elias.</h2>
+<p class="text-on-surface-variant font-body mt-2">The harvest is ready and orders are blooming.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-low px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">calendar_today</span>
+<span class="text-sm font-medium">May 12, 2024</span>
+</div>
+</div>
+</header>
+<!-- Top Row Stats: Bento Grid Style -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- Revenue Card -->
+<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+<p class="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">Total Revenue</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-4xl font-newsreader italic text-primary">$12,482</h3>
+<span class="text-xs text-primary bg-primary-fixed px-2 py-1 rounded-full font-bold">+12%</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-4">Growth compared to last harvest cycle</p>
+</div>
+<!-- Active Orders Card -->
+<div class="bg-surface-container-highest p-8 rounded-xl">
+<p class="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">Harvest Orders</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-4xl font-newsreader italic text-tertiary">42</h3>
+<span class="text-xs text-secondary font-medium">Pending Fulfillment</span>
+</div>
+<div class="mt-6 flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-stone-300"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-stone-400"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-stone-500"></div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-surface-container flex items-center justify-center text-[10px] font-bold">+39</div>
+</div>
+</div>
+<!-- Inventory Alerts Card -->
+<div class="bg-surface-container-low p-8 rounded-xl border border-secondary/10">
+<p class="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">Stock Alerts</p>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium">Organic Kale</span>
+<span class="bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">Low Stock</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium">Heirloom Honey</span>
+<span class="bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">Low Stock</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mt-4">
+<div class="bg-secondary h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant/70 italic text-right">85% of capacity reached</p>
+</div>
+</div>
+</div>
+<!-- Middle Section: Chart & Quick Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+<div class="lg:col-span-3 bg-surface-container-low p-8 rounded-xl h-80 flex flex-col">
+<div class="flex justify-between items-center mb-8">
+<h4 class="font-newsreader italic text-xl text-tertiary">Sales Performance</h4>
+<div class="flex gap-2">
+<button class="text-xs px-3 py-1 bg-surface-container rounded-full text-on-surface-variant">Daily</button>
+<button class="text-xs px-3 py-1 bg-primary text-on-primary rounded-full">Weekly</button>
+</div>
+</div>
+<!-- Mock Chart Visualization -->
+<div class="flex-1 flex items-end gap-4 px-4 pb-4">
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/20 h-[40%]" title="Mon"></div>
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/20 h-[65%]" title="Tue"></div>
+<div class="flex-1 bg-primary/30 rounded-t-lg transition-all hover:bg-primary/40 h-[50%]" title="Wed"></div>
+<div class="flex-1 bg-primary/20 rounded-t-lg transition-all hover:bg-primary/30 h-[85%]" title="Thu"></div>
+<div class="flex-1 bg-primary h-[100%] rounded-t-lg shadow-lg relative" title="Fri">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] py-1 px-2 rounded whitespace-nowrap">$2,140</div>
+</div>
+<div class="flex-1 bg-primary/40 rounded-t-lg transition-all hover:bg-primary/50 h-[75%]" title="Sat"></div>
+<div class="flex-1 bg-primary/15 rounded-t-lg transition-all hover:bg-primary/25 h-[45%]" title="Sun"></div>
+</div>
+</div>
+<!-- Harvest Card Signature Component -->
+<div class="bg-surface-container p-8 rounded-xl relative overflow-hidden flex flex-col justify-between">
+<img class="absolute -top-4 -right-4 w-32 h-32 object-cover rounded-lg rotate-12 opacity-80 group-hover:rotate-6 transition-transform" data-alt="close-up of vibrant fresh organic vegetables in a wooden harvest basket with warm morning light and earth tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUPLv42vJdDprFHB0Pv1XL0RA69yOfL9APUOi_NotgyLYhLOD_Fy6gZOjb8TXlyv8X6--2e7psKnXtmRIHbl3lpSyQ2lweW9rBf-X8-tT-7mWAVo9SM18IXo-hBGckrjZiXnJ4qi1bRF6eYLdv2lTGcO4Fh1yCMUQ5rc_unD7UUjlhU9jy1bftJheLk1QzzaN99IfdNS4YOsStc4_FpriFp962QAfu1M8yHWIKeinBZcps3objw4WYXLltaEDmMReM6NsTlkuwPfcd"/>
+<div class="relative z-10">
+<h4 class="font-newsreader italic text-xl text-tertiary">Quick Harvest</h4>
+<p class="text-sm text-on-surface-variant mt-2 leading-relaxed">Prepare batch for morning local market deliveries.</p>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-md text-sm font-bold flex items-center justify-center gap-2 mt-6 active:scale-95 transition-transform">
+                        Generate Manifest
+                    </button>
+</div>
+</div>
+<!-- Active Harvest Orders Table -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden mb-12">
+<div class="px-8 py-6 flex justify-between items-center border-b border-outline-variant/15">
+<h4 class="font-newsreader italic text-2xl text-tertiary">Active Harvest Orders</h4>
+<button class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+                        View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container/50">
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Customer</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Harvest Items</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Status</th>
+<th class="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-tertiary">JB</div>
+<div>
+<p class="text-sm font-bold">Julianne Black</p>
+<p class="text-xs text-on-surface-variant">Local Pick-up</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-on-surface-variant">
+                                    Organic Carrots (2lb), Goat Cheese, Rye Bread
+                                </td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter bg-primary/10 text-primary">In Preparation</span>
+</td>
+<td class="px-8 py-6 text-right font-bold text-tertiary">$42.50</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-tertiary">MT</div>
+<div>
+<p class="text-sm font-bold">Marcus Thorne</p>
+<p class="text-xs text-on-surface-variant">Farm Delivery</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-on-surface-variant">
+                                    Seasonal Box (Large), Raw Honey, Wildflowers
+                                </td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter bg-secondary-container/20 text-on-secondary-container">Awaiting Pick-up</span>
+</td>
+<td class="px-8 py-6 text-right font-bold text-tertiary">$115.00</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-tertiary">SV</div>
+<div>
+<p class="text-sm font-bold">Sarah Vane</p>
+<p class="text-xs text-on-surface-variant">Local Pick-up</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6 text-sm text-on-surface-variant">
+                                    Heritage Eggs (2 doz), Sourdough Starter
+                                </td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter bg-primary/10 text-primary">In Preparation</span>
+</td>
+<td class="px-8 py-6 text-right font-bold text-tertiary">$28.90</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer Component -->
+<footer class="w-full bg-[#f1eee5] border-t border-[#c3c8bb]/15 mt-auto">
+<div class="w-full px-8 py-12 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto">
+<div class="mb-6 md:mb-0">
+<span class="font-['Newsreader'] text-xl italic text-[#48290a]">The Green Market Farm</span>
+<p class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-stone-500 mt-2">© 2024 The Green Market Farm. Grown with intention.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-stone-500 hover:text-[#a03f29] transition-colors" href="#">Sustainability</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-stone-500 hover:text-[#a03f29] transition-colors" href="#">Wholesale</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-stone-500 hover:text-[#a03f29] transition-colors" href="#">Contact</a>
+<a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-stone-500 hover:text-[#a03f29] transition-colors" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+</body></html>

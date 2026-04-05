@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Green Market Admin | The Digital Hearth</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-tertiary-fixed": "#2e1500",
+                "error-container": "#ffdad6",
+                "on-background": "#1c1c17",
+                "surface-variant": "#e5e2da",
+                "on-surface-variant": "#43493e",
+                "on-primary-fixed": "#062100",
+                "secondary": "#a03f29",
+                "on-primary-fixed-variant": "#2d4f1e",
+                "tertiary-container": "#623f1e",
+                "background": "#fcf9f0",
+                "primary": "#173809",
+                "error": "#ba1a1a",
+                "primary-container": "#2d4f1e",
+                "on-primary": "#ffffff",
+                "primary-fixed-dim": "#a9d293",
+                "surface-container-low": "#f6f3ea",
+                "on-tertiary-container": "#ddab82",
+                "on-secondary-fixed-variant": "#812914",
+                "outline-variant": "#c3c8bb",
+                "primary-fixed": "#c5efad",
+                "surface-tint": "#446733",
+                "on-error": "#ffffff",
+                "secondary-container": "#fe876a",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary": "#ffffff",
+                "on-tertiary": "#ffffff",
+                "surface-container": "#f1eee5",
+                "secondary-fixed-dim": "#ffb4a3",
+                "on-primary-container": "#98c083",
+                "surface-container-high": "#ebe8df",
+                "outline": "#73796d",
+                "surface-dim": "#dddad1",
+                "inverse-surface": "#31312b",
+                "on-surface": "#1c1c17",
+                "inverse-on-surface": "#f4f1e8",
+                "on-tertiary-fixed-variant": "#623f1e",
+                "secondary-fixed": "#ffdad2",
+                "on-secondary-container": "#741f0b",
+                "surface-container-highest": "#e5e2da",
+                "tertiary-fixed-dim": "#f0bc92",
+                "tertiary": "#48290a",
+                "surface-bright": "#fcf9f0",
+                "surface": "#fcf9f0",
+                "inverse-primary": "#a9d293",
+                "tertiary-fixed": "#ffdcc1",
+                "on-secondary-fixed": "#3d0700",
+                "on-error-container": "#93000a"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "1rem",
+                "xl": "1.25rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Newsreader", "serif"],
+                "body": ["Plus Jakarta Sans", "sans-serif"],
+                "label": ["Plus Jakarta Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>body {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBDpoNoSSFnaruPqX1Jx54Dj7uCqlck9Ab0Ptep5GVdFzCdjlBT6FRVdu2r_BhLTuC6t_3I1DEBslF3dq3JAjwtwmgwsVHiaiRijNvvHPsXw9-vWBY3-WuFiTBzulW8eSGwy0vSUHfjzuFAsZOsm8szfH9PGGWrqdDAvwtQkz47USevhp5ypeiJNTN3GWsUUEsTyEf2WRj0q54Unh8DtAuOGGnU5EmRE5o_D1leLCdMLEeyICua8p47WuGCtTUeG1L5tmACJGpcJxE8);
+    background-repeat: repeat
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.editorial-shadow {
+    box-shadow: 0 20px 40px -20px rgba(28, 28, 23, 0.05)
+    }</style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col fixed left-0 top-0 h-screen w-64 bg-[#f6f3ea] dark:bg-[#1c1c17] border-r border-[#c3c8bb]/15 p-4 gap-2 z-50">
+<div class="flex items-center gap-3 px-2 mb-8 mt-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">potted_plant</span>
+</div>
+<div>
+<h1 class="font-headline text-xl text-[#48290a] font-bold leading-tight">Green Market Admin</h1>
+<p class="text-xs text-[#48290a]/60 uppercase tracking-wider">Manage your harvest</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Overview Active -->
+<a class="flex items-center gap-3 px-4 py-3 bg-[#e5e2da] text-[#173809] rounded-lg font-bold transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-sans font-medium text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 hover:bg-[#e5e2da]/50 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">potted_plant</span>
+<span class="font-sans font-medium text-sm">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 hover:bg-[#e5e2da]/50 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">shopping_basket</span>
+<span class="font-sans font-medium text-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 hover:bg-[#e5e2da]/50 rounded-lg transition-transform hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-sans font-medium text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-4">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-lg font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+                    New Listing
+                </button>
+<div class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 hover:bg-[#e5e2da]/50 rounded-lg transition-transform hover:translate-x-1 cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<span class="font-sans font-medium text-sm">Support</span>
+</div>
+<div class="flex items-center gap-3 p-2 border-t border-[#c3c8bb]/15 pt-4">
+<img class="w-10 h-10 rounded-full object-cover grayscale brightness-90" data-alt="portrait of an elderly farmer with a warm smile and weather-worn skin in a rustic sunlit kitchen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmsZdSMpSBsxaOGxzyuy91zqckOTjqBNl5P9OV6JLF28TNrPQLLK3jAf77PO7og154csEbfmuyF8q2g_UrbbugdHQ5RfGU94EoYWucZyjJJw0aiFWtNL9ZHfhIzkDuo-LfsH0P1O6ZjHoQQl6g-R9lWj-ufJ8guxcs3YbQGhABz_j-CC8-nHxadKvWbJYxjC6XFuar4r5enbCC-AWnZTsMfGtwbS3vWW1h0nhuXC_9yIJ5Vw3aX5ttWKVCx05WWG0WAkSYG6aC6YAt"/>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">Arthur Miller</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Farm Owner</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-6 md:p-12">
+<!-- Header Section -->
+<header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="text-secondary font-semibold text-sm uppercase tracking-[0.2em] block mb-2">Morning, Arthur</span>
+<h2 class="font-headline text-5xl font-bold text-tertiary leading-none">Dashboard Overview</h2>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low p-2 rounded-full border border-outline-variant/10">
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-primary font-medium text-sm transition-colors hover:bg-surface-variant">Last 7 Days</button>
+<button class="px-6 py-2 rounded-full text-on-surface-variant font-medium text-sm transition-colors hover:bg-surface-variant">Custom Range</button>
+</div>
+</header>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<!-- New Orders Today -->
+<div class="bg-surface-container-low rounded-xl p-8 editorial-shadow relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-110 transition-transform duration-700"></div>
+<span class="material-symbols-outlined text-secondary mb-4 block" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+<p class="text-on-surface-variant text-sm font-medium uppercase tracking-widest mb-1">New Orders Today</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-4xl font-headline font-bold text-tertiary">24</h3>
+<span class="text-primary text-xs font-bold">+12% vs yesterday</span>
+</div>
+</div>
+<!-- Total Revenue -->
+<div class="bg-surface-container-highest rounded-xl p-8 editorial-shadow relative overflow-hidden group border border-primary/5">
+<span class="material-symbols-outlined text-primary mb-4 block" style="font-variation-settings: 'FILL' 1;">payments</span>
+<p class="text-on-surface-variant text-sm font-medium uppercase tracking-widest mb-1">Total Revenue</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-4xl font-headline font-bold text-tertiary">$3,842.00</h3>
+<span class="text-secondary text-xs font-bold">Stable</span>
+</div>
+</div>
+<!-- Stock Alerts -->
+<div class="bg-secondary-fixed rounded-xl p-8 editorial-shadow relative overflow-hidden group">
+<span class="material-symbols-outlined text-on-secondary-container mb-4 block" style="font-variation-settings: 'FILL' 1;">warning</span>
+<p class="text-on-secondary-container text-sm font-medium uppercase tracking-widest mb-1">Stock Alerts</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-4xl font-headline font-bold text-on-secondary-container">08</h3>
+<span class="text-on-secondary-container text-xs font-medium">Items need restock</span>
+</div>
+</div>
+</div>
+<!-- Asymmetric Content Section -->
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Recent Sales Trends (Chart Area) -->
+<div class="lg:w-2/3 bg-surface-container-low rounded-xl p-8 editorial-shadow">
+<div class="flex items-center justify-between mb-8">
+<h4 class="font-headline text-2xl font-bold text-tertiary italic">Recent Sales Trends</h4>
+<div class="flex gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+</div>
+</div>
+<!-- Simplified Visual Representation of a Chart -->
+<div class="h-64 flex items-end justify-between gap-4 px-4 border-b border-outline-variant/30">
+<div class="w-full bg-primary/10 rounded-t-lg h-[40%] hover:bg-primary/20 transition-colors relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Mon</div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[65%] hover:bg-primary/30 transition-colors relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Tue</div>
+</div>
+<div class="w-full bg-primary/40 rounded-t-lg h-[45%] hover:bg-primary/50 transition-colors relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Wed</div>
+</div>
+<div class="w-full bg-primary/60 rounded-t-lg h-[85%] hover:bg-primary/70 transition-colors relative group border-t-4 border-secondary/40">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity text-nowrap">Peak Day (Thu)</div>
+</div>
+<div class="w-full bg-primary/40 rounded-t-lg h-[60%] hover:bg-primary/50 transition-colors relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Fri</div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[50%] hover:bg-primary/30 transition-colors relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Sat</div>
+</div>
+<div class="w-full bg-primary/80 rounded-t-lg h-[95%] hover:bg-primary transition-colors relative group border-t-4 border-secondary">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Today</div>
+</div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] text-on-surface-variant/60 font-medium uppercase tracking-widest px-4">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+<!-- Harvest Card (Signature Component) -->
+<div class="lg:w-1/3 flex flex-col gap-6">
+<div class="bg-surface-container rounded-xl p-6 relative editorial-shadow flex-1">
+<img class="w-full h-48 object-cover rounded-lg -mt-12 shadow-xl mb-6 transform rotate-1 group-hover:rotate-0 transition-transform duration-500" data-alt="high-angle shot of a rustic wooden crate filled with colorful heirloom tomatoes, vibrant basil leaves, and artisanal sourdough loaves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7jQnsvtfbtm8wBtIlWMMPz95lNWbsWCvd0Cjz_xvermJeV5iAXb5fbV92NimN2EtG9lq8XyklexcRfdaQ8V3QpQVtH0qSMu5zxNDA7P9eA6mgvfl2_23U4O_46W9GAbM7-wfeVUMkWMmwIRlhglgzH3DxpA299bJymsKzyN08JGxdGWr13sRRcF6ms0f2c2Ht9BMiJzfSCvXuzJW4SYUdgEk4nYEF0HZUFG2hU8AIy0jkJsCfsRKe-8_Ss-xZc_uSh00ukzkjmM-l"/>
+<h5 class="font-headline text-xl font-bold text-tertiary mb-2 italic">Product of the Week</h5>
+<p class="text-sm text-on-surface-variant leading-relaxed mb-4">Your Heirloom Tomato Bounty boxes have seen a 30% increase in demand this cycle.</p>
+<a class="inline-flex items-center gap-2 text-secondary font-bold text-sm hover:underline" href="#">
+                            View Inventory Details
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Recent Orders Section -->
+<section class="mt-12">
+<div class="flex items-center justify-between mb-8">
+<h4 class="font-headline text-2xl font-bold text-tertiary">Active Harvest Orders</h4>
+<button class="text-primary font-bold text-sm flex items-center gap-2">
+                        View All
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<div class="bg-surface-container-low rounded-xl overflow-hidden editorial-shadow">
+<div class="grid grid-cols-4 px-8 py-4 bg-surface-container-high/50 text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant">
+<span>Customer</span>
+<span>Item</span>
+<span>Status</span>
+<span class="text-right">Total</span>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<!-- Order 1 -->
+<div class="grid grid-cols-4 px-8 py-6 items-center hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed font-bold text-[10px]">EM</div>
+<span class="text-sm font-semibold">Eleanor May</span>
+</div>
+<span class="text-sm text-on-surface-variant italic font-headline">Heirloom Crate</span>
+<div>
+<span class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Harvesting</span>
+</div>
+<span class="text-sm font-bold text-right text-tertiary">$45.00</span>
+</div>
+<!-- Order 2 -->
+<div class="grid grid-cols-4 px-8 py-6 items-center hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold text-[10px]">JB</div>
+<span class="text-sm font-semibold">Julian Black</span>
+</div>
+<span class="text-sm text-on-surface-variant italic font-headline">Artisan Sourdough (2x)</span>
+<div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Pending</span>
+</div>
+<span class="text-sm font-bold text-right text-tertiary">$22.00</span>
+</div>
+<!-- Order 3 -->
+<div class="grid grid-cols-4 px-8 py-6 items-center hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed-dim flex items-center justify-center text-on-primary-fixed-variant font-bold text-[10px]">SH</div>
+<span class="text-sm font-semibold">Sarah Hughes</span>
+</div>
+<span class="text-sm text-on-surface-variant italic font-headline">Winter Root Mix</span>
+<div>
+<span class="bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Ready for Pickup</span>
+</div>
+<span class="text-sm font-bold text-right text-tertiary">$31.50</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 mt-20 bg-[#f1eee5] dark:bg-[#1c1c17] flex flex-col md:flex-row justify-between items-center border-t border-[#c3c8bb]/10">
+<div class="mb-6 md:mb-0">
+<p class="font-sans text-xs uppercase tracking-widest text-[#48290a]">© 2024 THE GREEN MARKET FARM. GROWN WITH SOUL.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50 hover:text-[#2D4F1E] underline decoration-[#a03f29] transition-colors" href="#">Privacy Policy</a>
+<a class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50 hover:text-[#2D4F1E] underline decoration-[#a03f29] transition-colors" href="#">Shipping Info</a>
+<a class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50 hover:text-[#2D4F1E] underline decoration-[#a03f29] transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+</body></html>

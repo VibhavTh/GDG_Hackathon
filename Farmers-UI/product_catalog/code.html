@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Catalog | The Green Market Farm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#2e1500",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1c1c17",
+                        "surface-variant": "#e5e2da",
+                        "on-surface-variant": "#43493e",
+                        "on-primary-fixed": "#062100",
+                        "secondary": "#a03f29",
+                        "on-primary-fixed-variant": "#2d4f1e",
+                        "tertiary-container": "#623f1e",
+                        "background": "#fcf9f0",
+                        "primary": "#173809",
+                        "error": "#ba1a1a",
+                        "primary-container": "#2d4f1e",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#a9d293",
+                        "surface-container-low": "#f6f3ea",
+                        "on-tertiary-container": "#ddab82",
+                        "on-secondary-fixed-variant": "#812914",
+                        "outline-variant": "#c3c8bb",
+                        "primary-fixed": "#c5efad",
+                        "surface-tint": "#446733",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#fe876a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#f1eee5",
+                        "secondary-fixed-dim": "#ffb4a3",
+                        "on-primary-container": "#98c083",
+                        "surface-container-high": "#ebe8df",
+                        "outline": "#73796d",
+                        "surface-dim": "#dddad1",
+                        "inverse-surface": "#31312b",
+                        "on-surface": "#1c1c17",
+                        "inverse-on-surface": "#f4f1e8",
+                        "on-tertiary-fixed-variant": "#623f1e",
+                        "secondary-fixed": "#ffdad2",
+                        "on-secondary-container": "#741f0b",
+                        "surface-container-highest": "#e5e2da",
+                        "tertiary-fixed-dim": "#f0bc92",
+                        "tertiary": "#48290a",
+                        "surface-bright": "#fcf9f0",
+                        "surface": "#fcf9f0",
+                        "inverse-primary": "#a9d293",
+                        "tertiary-fixed": "#ffdcc1",
+                        "on-secondary-fixed": "#3d0700",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"],
+                        "label": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #fcf9f0;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCnmQS7Nog_DuJWCkECOpbPsVb223aAHcw3Na3Uws7AgLCkXUWGCIV6Q-o6EVMboeKLaYpWprgzEdzliEyFn1604KKwkd5eea0xj98gERV7U9Q2JGcQ-xCOfU6vfDm6XN7Dp90wTWOv92lLMfijSTyhY-jUkpfPj8aw2HyFsLRpKIzBhT0h-HzZSjJKchvhR0QEFxq5K_R3o4LKVj0Ofa0dfi4z6Cs3wu0k1QAuV1_FGRbKlq0vwCDTZIJRIVrmv-h9XFO_fwi2SX6W);
+    background-blend-mode: overlay
+    }
+.font-serif {
+    font-family: "Newsreader", serif
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    display: inline-block;
+    vertical-align: middle
+    }
+.harvest-card-img {
+    clip-path: inset(0 0 0 0 round 0.5rem);
+    transition: transform 0.5s ease
+    }
+.harvest-card:hover .harvest-card-img {
+    transform: scale(1.03) translatey(-8px)
+    }</style>
+</head>
+<body class="text-on-surface selection:bg-secondary-fixed">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-[#fcf9f0]/80 dark:bg-[#1c1c17]/80 backdrop-blur-xl transition-colors duration-300">
+<div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+<div class="text-2xl font-serif font-bold text-[#48290a] dark:text-[#fcf9f0]">
+                The Green Market Farm
+            </div>
+<div class="hidden md:flex items-center gap-8 font-serif italic text-lg tracking-tight text-[#2D4F1E] dark:text-[#c3c8bb]">
+<a class="text-[#48290a]/70 hover:text-[#2D4F1E] hover:bg-[#f6f3ea] dark:hover:bg-[#2d4f1e]/20 transition-colors duration-300" href="#">Home</a>
+<a class="text-[#2D4F1E] border-b-2 border-[#a03f29] pb-1 hover:bg-[#f6f3ea] dark:hover:bg-[#2d4f1e]/20 transition-colors duration-300" href="#">Products</a>
+<a class="text-[#48290a]/70 hover:text-[#2D4F1E] hover:bg-[#f6f3ea] dark:hover:bg-[#2d4f1e]/20 transition-colors duration-300" href="#">About</a>
+<a class="text-[#48290a]/70 hover:text-[#2D4F1E] hover:bg-[#f6f3ea] dark:hover:bg-[#2d4f1e]/20 transition-colors duration-300" href="#">Dashboard</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-[#2D4F1E] hover:bg-[#f6f3ea] rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 text-[#2D4F1E] hover:bg-[#f6f3ea] rounded-full relative transition-colors active:scale-95">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-secondary text-on-secondary text-[10px] w-4 h-4 flex items-center justify-center rounded-full">3</span>
+</button>
+<button class="px-5 py-2 text-sm font-medium border border-outline-variant/30 text-tertiary rounded-md hover:bg-surface-container-low transition-colors">Login</button>
+</div>
+</div>
+</nav>
+<!-- Hero Content -->
+<header class="pt-32 pb-16 px-6">
+<div class="max-w-7xl mx-auto text-center">
+<h1 class="text-5xl md:text-7xl font-serif text-tertiary mb-6 tracking-tight">The Season’s Bounty</h1>
+<p class="max-w-2xl mx-auto text-lg text-on-surface-variant font-body">Hand-picked, organically grown, and delivered from our soil to your table. Experience the tactile beauty of slow-grown produce.</p>
+</div>
+</header>
+<!-- Main Catalog Grid -->
+<main class="max-w-7xl mx-auto px-6 pb-24">
+<!-- Filter Tabs -->
+<div class="flex flex-wrap gap-3 mb-12 justify-center">
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary text-sm font-medium">All Produce</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-primary text-sm font-medium hover:bg-surface-container-high transition-colors">Vegetables</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-primary text-sm font-medium hover:bg-surface-container-high transition-colors">Dairy &amp; Eggs</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-primary text-sm font-medium hover:bg-surface-container-high transition-colors">Honey &amp; Preserves</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-highest text-primary text-sm font-medium hover:bg-surface-container-high transition-colors">Wildflowers</button>
+</div>
+<!-- Product Grid (Bento/Asymmetric Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Harvest Card: Wildflower Honey -->
+<div class="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500">
+<div class="relative -mt-12 mb-6 h-64 overflow-hidden rounded-lg shadow-sm">
+<img alt="Artisan Honey" class="harvest-card-img w-full h-full object-cover" data-alt="Golden jars of artisanal honey on a rustic wooden table with wildflowers and soft morning sunlight background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqq1m2tksG_zoaa09ZBoRrRxJZEExWsxyw4Xh8Rkkm-ZPaXgMulU1VhLktMnvh4wHcoxkwO_UsrkIx0Nrv73U8IQJtjXZ0L6Sd1X2hUMcDzdL_IkMlnyhxDMFXCe1NPtTY7UPIWMyqXh8HcTevmNTudIfAyWxwk8P6W1QHeDVUc-7Tx9UxuPyPsnF0iCxKihRr1_ZMuQKsa8Us61o5YyrMS44L5iV0S1SS5EbyBrpn53JhF55GhCXt2k1e2G94438XcXELFnWBNBnD"/>
+<span class="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">In Season</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-serif text-tertiary">Wildflower Honey</h3>
+<span class="text-xl font-serif text-primary">$18.00</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Pure, unpasteurized honey harvested from our meadow hives. Notes of clover and thyme.</p>
+<div class="mt-auto">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-lg">shopping_basket</span>
+                        Add to Cart
+                    </button>
+</div>
+</div>
+<!-- Harvest Card: Heirloom Tomatoes -->
+<div class="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500">
+<div class="relative -mt-12 mb-6 h-64 overflow-hidden rounded-lg shadow-sm">
+<img alt="Heirloom Tomatoes" class="harvest-card-img w-full h-full object-cover" data-alt="A variety of colorful heirloom tomatoes in a woven basket on a weathered stone ledge in a garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBTJRm6ABoX4U5hm0NVNPBWdI_fgpFliyg1UkZbq_ESj8xv-kgPinVp3cYZiabpbn6n3qpnYvLzcROyRnEcE8EOtK04qd9y0Kc1oAya0UYkMdjjTxREM-Rga7NsZ2YVzLG4CXnVdNwubOVN9gQoZJwo3ubjBUguEM5gLbd-Czlmf-8nIlKxsWc-BPoALShTfqPD5Ccev5U6XJifv2hHqDVCtI07RYJEbgfChSE8EVYht2DB8deqImyBYV3Ezgjm50TR1dOwEEwppUu"/>
+<span class="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">Limited</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-serif text-tertiary">Heirloom Variety</h3>
+<span class="text-xl font-serif text-primary">$9.50</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Mix of Cherokee Purple, Brandywine, and Green Zebra. Sun-ripened and bursting with flavor.</p>
+<div class="mt-auto">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-lg">shopping_basket</span>
+                        Add to Cart
+                    </button>
+</div>
+</div>
+<!-- Harvest Card: Pasture Raised Eggs -->
+<div class="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500">
+<div class="relative -mt-12 mb-6 h-64 overflow-hidden rounded-lg shadow-sm">
+<img alt="Farm Eggs" class="harvest-card-img w-full h-full object-cover" data-alt="A ceramic bowl filled with brown and blue speckled pasture-raised eggs sitting on a bed of hay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCy6hlqM-LzEIkheEPyNHv1MqFg5hnxjfZS7VXMCwO1XylgILhrl-1pSb9WR7D8_Yw2jzP5k4Gw4bK77zWi1PFEmz_4tq1hj0Hgsco3bDyKlKX1n52-X1yBvJS_MN9FjypZQwKK_2aLtsd3KKkiXFWYYnU3txIdeMS199QL55Tpgj6Eg-bGuojOwDWRxPWAgEBs0A-QQ-TSRg0Oqmeo7LnkrjWoLwhcqWsoKlrZ3diURWOMJiB26ldj3G7_yZfC9M9jLRLy4NWqQFE"/>
+<span class="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">Daily Fresh</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-serif text-tertiary">Meadow Eggs</h3>
+<span class="text-xl font-serif text-primary">$12.00</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">One dozen eggs from our heritage hens. Deep orange yolks and exceptional richness.</p>
+<div class="mt-auto">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-lg">shopping_basket</span>
+                        Add to Cart
+                    </button>
+</div>
+</div>
+<!-- Harvest Card: Garden Greens -->
+<div class="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500 mt-8">
+<div class="relative -mt-12 mb-6 h-64 overflow-hidden rounded-lg shadow-sm">
+<img alt="Garden Greens" class="harvest-card-img w-full h-full object-cover" data-alt="Freshly harvested bright green kale and swiss chard with water droplets on a wooden surface with soft backlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvEP-ruzyyClkTF7-SzVPQd8qDJ1brVeu5Gi2nO9-39r2Gxm4PzNCM3wXZdZSUdbnBgtImjRN7LrQIGRKnVyWWxGzVaiIrhjeOooQp96Ltp6ipdbngNA3szfvGaRD9_8Cx6LzQM7zkvU8y0AfWrfhY6czeIQ5Tqd7fX40VFwGn0ByJKlULu_NGDiYoMF21tyP1JboqyTTSeQ4bayl6hymMhOSGaj3oUJNmdfkhYBoIMwI5DRz-Yt7TVgPVr_1vzsbPRvXKMl-UUFzy"/>
+<span class="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">In Season</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-serif text-tertiary">Morning Greens</h3>
+<span class="text-xl font-serif text-primary">$6.00</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Bespoke mix of kale, chard, and spinach. Harvested at dawn for peak crispness.</p>
+<div class="mt-auto">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-lg">shopping_basket</span>
+                        Add to Cart
+                    </button>
+</div>
+</div>
+<!-- Harvest Card: Raw Goat Cheese -->
+<div class="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500 mt-8">
+<div class="relative -mt-12 mb-6 h-64 overflow-hidden rounded-lg shadow-sm">
+<img alt="Goat Cheese" class="harvest-card-img w-full h-full object-cover" data-alt="A round of soft white goat cheese on a dark board with sprigs of rosemary and cracked pepper" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP2_YdHlyTX-yy7_EnPuzWHbp_THBK8cCVi_-E61ukp12JOh8uQpEmxAKM_jQuzrPZP4kJlzd1S37XUIVrVcvN55VdZTO4nTjAEeFLCn_r2TRmnmtyXcky5IOV7DAL0nylfbVhzfvz4W4WY50po5Lc0vZ5dVBRqpskDhxBRREW8qRbkWpdadJ9hnVZwEFjQI0psNtwpDuc2qAkVZmLMwAMgSBqXU881gEJs9TBq3LVmuB-9Dfx1W5tQWtjYgomyn47PY-uOW5q9qB_"/>
+<span class="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">Small Batch</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-serif text-tertiary">Herbed Chèvre</h3>
+<span class="text-xl font-serif text-primary">$14.00</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Creamy goat cheese infused with garden-fresh rosemary and pink peppercorn.</p>
+<div class="mt-auto">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-lg">shopping_basket</span>
+                        Add to Cart
+                    </button>
+</div>
+</div>
+<!-- Harvest Card: Root Vegetables -->
+<div class="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500 mt-8">
+<div class="relative -mt-12 mb-6 h-64 overflow-hidden rounded-lg shadow-sm">
+<img alt="Root Veg" class="harvest-card-img w-full h-full object-cover" data-alt="Bunch of vibrant orange carrots with leafy tops and purple radishes on a rustic burlap background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArjVFYggUnmXQX10MMLfYq3rBBSoQVyLC32t-uQqZpDxH02iDv_0-Nh4aa4Adu5dTSpEPfYRfxP3adG4Q05SA1eTeYZX-hwURwnMY491bpF8YkBVKuNmBGhhZ4SpMWvtJV2EKVg5_4Q5ZKz5zIAJ90yxOcsMdedu4ZF-yggML4TlFzxDCjohcAKsWHNH9XwkjjVe1KhyfylJgOf_Mrw_NAjI8q7ATo4TkbhFWttqQNlOrINlPORWF-U6AAz7op6xBqznlbuvoeZ_Kj"/>
+<span class="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">In Season</span>
+</div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-serif text-tertiary">Earth Roots</h3>
+<span class="text-xl font-serif text-primary">$7.50</span>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Duo of heirloom carrots and garden radishes. Sweet, peppery, and earthy.</p>
+<div class="mt-auto">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined text-lg">shopping_basket</span>
+                        Add to Cart
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Subscription Section -->
+<section class="max-w-7xl mx-auto px-6 mb-24">
+<div class="bg-surface-container rounded-2xl p-12 flex flex-col md:flex-row items-center gap-12 border border-outline-variant/10">
+<div class="flex-1 space-y-4">
+<h2 class="text-4xl font-serif text-tertiary tracking-tight">Join the Harvest Circle</h2>
+<p class="text-on-surface-variant">Receive weekly updates on what’s blooming and blooming soon. Exclusive first access to our small-batch releases.</p>
+</div>
+<div class="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+<input class="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary px-4 py-3 min-w-[300px] text-sm font-body" placeholder="Your farm-friendly email" type="email"/>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-md font-medium text-sm transition-transform active:scale-95">Subscribe</button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 mt-20 bg-[#f1eee5] dark:bg-[#1c1c17] flex flex-col md:flex-row justify-between items-center border-t border-[#c3c8bb]/10">
+<div class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50">
+            © 2024 The Green Market Farm. Grown with soul.
+        </div>
+<div class="flex gap-8 mt-6 md:mt-0">
+<a class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50 hover:text-[#2D4F1E] underline decoration-[#a03f29] transition-colors" href="#">Privacy Policy</a>
+<a class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50 hover:text-[#2D4F1E] underline decoration-[#a03f29] transition-colors" href="#">Shipping Info</a>
+<a class="font-sans text-xs uppercase tracking-widest text-[#48290a]/50 hover:text-[#2D4F1E] underline decoration-[#a03f29] transition-colors" href="#">Contact Us</a>
+</div>
+</footer>
+</body></html>
