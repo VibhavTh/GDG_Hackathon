@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git -C /Users/haradeeppuneti/GDG_Hackathon status --short)",
-      "Bash(npx skills:*)"
+      "Bash(npx skills:*)",
+      "Bash(ls:*)"
     ]
   }
 }
