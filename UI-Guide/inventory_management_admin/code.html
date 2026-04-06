@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inventory Management | The Green Market Farm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Plus+Jakarta+Sans:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#ddab82",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#812914",
+                    "tertiary-fixed-dim": "#f0bc92",
+                    "secondary-fixed-dim": "#ffb4a3",
+                    "on-tertiary-fixed": "#2e1500",
+                    "tertiary-container": "#623f1e",
+                    "secondary": "#a03f29",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#2d4f1e",
+                    "on-primary-fixed": "#062100",
+                    "on-surface": "#1c1c17",
+                    "on-secondary-fixed": "#3d0700",
+                    "surface-tint": "#446733",
+                    "surface-container-low": "#f6f3ea",
+                    "tertiary": "#48290a",
+                    "surface-variant": "#e5e2da",
+                    "primary-container": "#2d4f1e",
+                    "on-secondary-container": "#741f0b",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#c5efad",
+                    "tertiary-fixed": "#ffdcc1",
+                    "surface": "#fcf9f0",
+                    "on-surface-variant": "#43493e",
+                    "surface-container-highest": "#e5e2da",
+                    "secondary-fixed": "#ffdad2",
+                    "primary-fixed-dim": "#a9d293",
+                    "inverse-primary": "#a9d293",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#623f1e",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf9f0",
+                    "outline-variant": "#c3c8bb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dddad1",
+                    "inverse-surface": "#31312b",
+                    "outline": "#73796d",
+                    "on-primary-container": "#98c083",
+                    "background": "#fcf9f0",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#ebe8df",
+                    "secondary-container": "#fe876a",
+                    "on-background": "#1c1c17",
+                    "inverse-on-surface": "#f4f1e8",
+                    "primary": "#173809",
+                    "surface-container": "#f1eee5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.grain-overlay {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBYseY3dxBw8ny2J-DwIl-FZfVPj7wDc7Bdz_nbdU9r9GuWnUZYuqBUrnnTfCC_0BV882l59KUSfEXBnIoug8jT97OWS1LyTpxRDen5Kwz77RgMSzDoEtvIPt7m-OPO9GkJNq9y2HeVhlQIFXBzf8hb7QC5f-BLZ4ODJJWCYthVOiDMWTw_g4WPKspdQpg52upIrfXkHKjJ4zvEBzIOirqyfXh2clv1SddbFplrcvzLCX_mLlCQXafCYNDNmmNCJ6Dhyzsh6KJQp7pn);
+    opacity: 0.03;
+    pointer-events: none
+    }</style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<div class="fixed inset-0 grain-overlay z-[100]"></div>
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-[#f6f3ea] dark:bg-[#1c1c17] flex-col p-6 gap-4 shadow-[20px_0_40px_rgba(28,28,23,0.05)] z-40">
+<div class="mb-8">
+<h1 class="text-lg font-bold text-[#173809] font-headline">Farmer Dashboard</h1>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Green Market Admin</p>
+</div>
+<nav class="space-y-2 flex-grow">
+<a class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 dark:text-[#fcf9f0]/60 hover:bg-[#e5e2da]/50 dark:hover:bg-[#2d4f1e]/30 transition-all duration-200 ease-in-out rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-[#e5e2da] dark:bg-[#2d4f1e] text-[#173809] dark:text-[#ffffff] rounded-lg shadow-sm group" href="#">
+<span class="material-symbols-outlined">potted_plant</span>
+<span class="font-medium text-sm">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 dark:text-[#fcf9f0]/60 hover:bg-[#e5e2da]/50 dark:hover:bg-[#2d4f1e]/30 transition-all duration-200 ease-in-out rounded-lg group" href="#">
+<span class="material-symbols-outlined">inbox</span>
+<span class="font-medium text-sm">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#48290a]/60 dark:text-[#fcf9f0]/60 hover:bg-[#e5e2da]/50 dark:hover:bg-[#2d4f1e]/30 transition-all duration-200 ease-in-out rounded-lg group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/20 flex items-center gap-3">
+<img alt="Farmer Profile Image" class="w-10 h-10 rounded-full object-cover grayscale-[0.2]" data-alt="portrait of a friendly middle-aged farmer wearing a denim shirt and straw hat with sun-drenched fields in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrC4nQ52RTqOKRpLlZQ8kZ5mf5K9rJUVyXCT_Rq8kaTBfKn8WYXA-P9Ot7Vkd7Cn8nTtjYQYaYkfcfXitDKN9Gkm0faT_-ug_DdYch9_sTFTnU5kLgGS19SHLHWt3rAI2T6Y84QwH2F2rNQcs2gw2OBLCZcTIaYWGS7XBFtQiaGXNGk5pM5kvID7IUfccz8Sl3EDDhc5ol93zLaSbPFNDuf3TD9_G8JpzVsSE02qIIVKYLMiu83-xrQajZBq9veaHObNhq0YzXr6LE"/>
+<div>
+<p class="text-xs font-bold text-primary">Silas Vane</p>
+<p class="text-[10px] text-on-surface-variant">Maplewood Acres</p>
+</div>
+</div>
+</aside>
+<main class="md:ml-64 min-h-screen pb-24 md:pb-0">
+<header class="bg-[#fcf9f0]/80 backdrop-blur-md sticky top-0 z-30">
+<div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+<h2 class="text-2xl font-headline font-semibold tracking-tight italic text-[#48290a]">Inventory Management</h2>
+<div class="flex items-center gap-4">
+<button class="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:scale-[0.98] transition-transform active:opacity-80 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                        Add New Product
+                    </button>
+<div class="hidden md:flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">search</span>
+<input class="bg-surface-container-highest/50 border-none focus:ring-0 text-sm rounded-md w-48 placeholder:text-on-surface-variant/50" placeholder="Search inventory..." type="text"/>
+</div>
+</div>
+</div>
+</header>
+<section class="max-w-7xl mx-auto px-6 py-8">
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h3 class="text-3xl font-headline text-tertiary">Current Stock</h3>
+<p class="text-on-surface-variant text-sm mt-1 font-medium">Manage 12 active listings across 4 categories.</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-4 py-1.5 rounded-full bg-primary text-on-primary text-xs font-medium cursor-pointer">All Products</span>
+<span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-primary text-xs font-medium hover:bg-surface-container-high transition-colors cursor-pointer">Root Vegetables</span>
+<span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-primary text-xs font-medium hover:bg-surface-container-high transition-colors cursor-pointer">Artisan Dairy</span>
+<span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-primary text-xs font-medium hover:bg-surface-container-high transition-colors cursor-pointer">Orchard Fruit</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-surface-container-low rounded-xl p-6 transition-all hover:bg-surface-container-high group relative">
+<div class="absolute top-4 right-4 flex gap-1">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="flex gap-4 mb-6">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-variant">
+<img alt="Heirloom Carrots" class="w-full h-full object-cover" data-alt="close-up of vibrant purple and orange heirloom carrots with fresh green tops on a rustic wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpjiq1k0_y9oQj2aVu0pl8wXSuEChc8HV1yDZvDSR2vvAKmKcraAYNcFZx3ioaMDHYGDMJRHQ4Nflpq4_2iWTiSV7euyn1bFhdVvT3pCbSGoyu6-DeNYydFx2JCKvIlXZ6c6_2G7_DBHEQopFxTtvs7JMlR9FXljuA7dEHmubmfkDvVKaNcDZCUgF_cXlnltKeoBmLrTVE8C-0i4UPWjB9c_chbxmCyr6FaYWAQFjj8fP0sKJM4RHhazmE6ZE8FolGy0Lz5OWJojzk"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-tighter text-secondary font-bold mb-1">Root Vegetables</span>
+<h4 class="text-lg font-headline font-bold text-tertiary">Rainbow Carrots</h4>
+<p class="text-xs text-on-surface-variant">Tax Category: Fresh Produce (0%)</p>
+</div>
+</div>
+<div class="flex justify-between items-center bg-surface-container-lowest p-4 rounded-lg">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Price</p>
+<p class="text-lg font-headline text-primary">$4.50 <span class="text-xs font-body italic text-on-surface-variant">/ bunch</span></p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Stock</p>
+<div class="flex items-center gap-2 mt-1">
+<button class="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">-</button>
+<span class="font-bold text-sm">42</span>
+<button class="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-6 transition-all hover:bg-surface-container-high group relative">
+<div class="absolute top-4 right-4 flex gap-1">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="flex gap-4 mb-6">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-variant">
+<img alt="Raw Milk" class="w-full h-full object-cover" data-alt="glass bottle of fresh raw milk sitting on a rustic stone ledge with blurred farm background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC03i7KMqMfjnfyPvkSEjDtjyBi2v40WzEqhq-WwHPVQ3SNhrigyyjVNMpY9ibEhICYT18UOVeCaWl6ZqeweO-y6mX8xM90_Dbex2oSU8e-njE4tyPRr2ry7P6rXaraVTq6CB0YrRuR6-ke4zdO8DIeMEwlx8AaGCdAV3CH-jjQUIkC_MctKi3RPqUIeAh4zkhgr-7xvhpVXQLWu2UqbFD71U3WM-J0u-MzNR6dsg-g8cGaPf2aUqeZJIKrOrvrOATE4ls3RuJCIiJI"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-tighter text-secondary font-bold mb-1">Artisan Dairy</span>
+<h4 class="text-lg font-headline font-bold text-tertiary">A2 Raw Milk</h4>
+<p class="text-xs text-on-surface-variant">Tax Category: Dairy (Exempt)</p>
+</div>
+</div>
+<div class="flex justify-between items-center bg-surface-container-lowest p-4 rounded-lg">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Price</p>
+<p class="text-lg font-headline text-primary">$8.00 <span class="text-xs font-body italic text-on-surface-variant">/ quart</span></p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Stock</p>
+<div class="flex items-center gap-2 mt-1">
+<button class="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">-</button>
+<span class="font-bold text-sm">18</span>
+<button class="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-6 transition-all hover:bg-surface-container-high group relative opacity-60 grayscale-[0.4]">
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest shadow-md">Low Stock</span>
+</div>
+<div class="absolute top-4 right-4 flex gap-1">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<div class="flex gap-4 mb-6">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-variant">
+<img alt="Honey" class="w-full h-full object-cover" data-alt="close-up of a small glass jar of golden wildflower honey with a wooden dipper resting beside it" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUZPqVAqqq0eBXmyN5RPhdsU3Gg_hGh4QBtYZ4gjhDTo8-E8mUTxlJcv6dm-3PH1zDFvmR2O47wVEjuo0da0hCeyeE5UlXgCJfDgVWjKbVGO7mQMVw07vV7PF7WBD3E0GuamIWfmAdiFWcqvjL-CxzVteWH5X2f5zJzB9J5GfcTlhK7fepJPE7YEuygurWnGvuytMBGG6pBKIzBqLSLk5Np54LbmSvYEW6hWf8aSiVV7MA2JMEqsmQBWnhek_zLUUSawcPZus_scBg"/>
+</div>
+<div class="flex flex-col justify-center">
+<span class="text-[10px] uppercase tracking-tighter text-secondary font-bold mb-1">Pantry</span>
+<h4 class="text-lg font-headline font-bold text-tertiary">Wildflower Honey</h4>
+<p class="text-xs text-on-surface-variant">Tax Category: Value-Add (5.5%)</p>
+</div>
+</div>
+<div class="flex justify-between items-center bg-surface-container-lowest p-4 rounded-lg">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Price</p>
+<p class="text-lg font-headline text-primary">$12.50 <span class="text-xs font-body italic text-on-surface-variant">/ 8oz jar</span></p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Stock</p>
+<div class="flex items-center gap-2 mt-1">
+<button class="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">-</button>
+<span class="font-bold text-sm text-error">3</span>
+<button class="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center p-8 text-center hover:border-primary transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-on-primary">add</span>
+</div>
+<p class="font-headline text-lg font-bold text-tertiary">Add New Item</p>
+<p class="text-xs text-on-surface-variant mt-1">Expand your seasonal offerings</p>
+</div>
+</div>
+<div class="mt-16 bg-surface-container-low rounded-2xl overflow-hidden shadow-sm">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h4 class="font-headline text-xl text-tertiary">Recently Removed Items</h4>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Soft Deletes (30 days remaining)</p>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<div class="p-4 flex items-center justify-between hover:bg-surface-container-highest/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-md bg-surface-variant grayscale opacity-50 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="stack of vintage-looking red radishes with long green roots" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAU3SBH4T9wqzQ1D8LSn3wQ3nwacgYhx_6FDurvIATTW-gkoZRkFxAdguW0L7onhj9I1-qTnboNsPmwbUfi6OxuPiNg7XrjUTKYbHNcf0rrewcHAqSYv7VJwNYcnYEbBkerTPyrNv8dh5LP0QPKJTPkfbVuXDXxR0N1OLLR2lIMZaSPvKmbUBN6iTQsyvh1awWpm0Rk6JCLok4mE7H9_iXFPMnVW25RWj7o87xvK8Ca4yeecAHqTXpV21j_c_oUEBrMXcZ05yCvcNI3"/>
+</div>
+<div>
+<p class="text-sm font-bold text-tertiary">French Breakfast Radishes</p>
+<p class="text-[10px] text-on-surface-variant">Deleted: Oct 24, 2024</p>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-full border border-outline text-[10px] font-bold uppercase tracking-widest hover:bg-surface text-on-surface transition-all">Restore Listing</button>
+</div>
+<div class="p-4 flex items-center justify-between hover:bg-surface-container-highest/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-md bg-surface-variant grayscale opacity-50 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="rustic basket filled with crisp green snap peas" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfWZc0UTptF1H8JGWhnUZ62L_KyqF_H41vvFFbv46Lg-81Tx4MTfj8t6B0-t7wadcG7-U7mIksTDNMlr4kqolbSEgEdek5XaTzxcFd_myZGmsa6cXUx3n7V1kKbQTRZvjngm2tW2dGZg94lMgrde0JN6KmfgIGXuhRz80RAK_vo1kYsYBhpoLX5lfgfCuN__A9nrA8sDGW3BQxoPKmJ_-oZCUx85oJ4IIX7gapD01NK_LHjm-wuiRzmBi9umbYNxIJtlb8N9hz_7-r"/>
+</div>
+<div>
+<p class="text-sm font-bold text-tertiary">Sugar Snap Peas</p>
+<p class="text-[10px] text-on-surface-variant">Deleted: Oct 20, 2024</p>
+</div>
+</div>
+<button class="px-4 py-1.5 rounded-full border border-outline text-[10px] font-bold uppercase tracking-widest hover:bg-surface text-on-surface transition-all">Restore Listing</button>
+</div>
+</div>
+</div>
+</section>
+<footer class="w-full py-12 px-8 mt-20 flex flex-col items-center justify-center text-center space-y-6 bg-[#f1eee5] dark:bg-[#12120f]">
+<p class="text-md font-headline text-[#48290a]">The Green Market Farm</p>
+<div class="flex flex-wrap justify-center gap-x-8 gap-y-2">
+<a class="text-[#48290a]/50 hover:text-[#173809] underline underline-offset-4 font-body text-xs uppercase tracking-widest" href="#">Sustainability Report</a>
+<a class="text-[#48290a]/50 hover:text-[#173809] underline underline-offset-4 font-body text-xs uppercase tracking-widest" href="#">Privacy</a>
+<a class="text-[#48290a]/50 hover:text-[#173809] underline underline-offset-4 font-body text-xs uppercase tracking-widest" href="#">Terms of Service</a>
+<a class="text-[#48290a]/50 hover:text-[#173809] underline underline-offset-4 font-body text-xs uppercase tracking-widest" href="#">Contact Us</a>
+</div>
+<p class="text-on-surface-variant font-body text-xs uppercase tracking-widest">© 2024 The Green Market Farm. Cultivated with care.</p>
+</footer>
+</main>
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-lg border-t border-outline-variant/10 px-4 py-3 flex justify-between items-center z-50">
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] mt-1 font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">potted_plant</span>
+<span class="text-[10px] mt-1 font-bold">Stock</span>
+</a>
+<button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center shadow-lg -translate-y-6 border-4 border-background">
+<span class="material-symbols-outlined">add</span>
+</button>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">inbox</span>
+<span class="text-[10px] mt-1 font-bold">Orders</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] mt-1 font-bold">Profile</span>
+</a>
+</nav>
+</body></html>

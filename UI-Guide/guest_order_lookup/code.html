@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Lookup | The Green Market Farm</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#ddab82",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#812914",
+                    "tertiary-fixed-dim": "#f0bc92",
+                    "secondary-fixed-dim": "#ffb4a3",
+                    "on-tertiary-fixed": "#2e1500",
+                    "tertiary-container": "#623f1e",
+                    "secondary": "#a03f29",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed-variant": "#2d4f1e",
+                    "on-primary-fixed": "#062100",
+                    "on-surface": "#1c1c17",
+                    "on-secondary-fixed": "#3d0700",
+                    "surface-tint": "#446733",
+                    "surface-container-low": "#f6f3ea",
+                    "tertiary": "#48290a",
+                    "surface-variant": "#e5e2da",
+                    "primary-container": "#2d4f1e",
+                    "on-secondary-container": "#741f0b",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#c5efad",
+                    "tertiary-fixed": "#ffdcc1",
+                    "surface": "#fcf9f0",
+                    "on-surface-variant": "#43493e",
+                    "surface-container-highest": "#e5e2da",
+                    "secondary-fixed": "#ffdad2",
+                    "primary-fixed-dim": "#a9d293",
+                    "inverse-primary": "#a9d293",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#623f1e",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf9f0",
+                    "outline-variant": "#c3c8bb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dddad1",
+                    "inverse-surface": "#31312b",
+                    "outline": "#73796d",
+                    "on-primary-container": "#98c083",
+                    "background": "#fcf9f0",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#ebe8df",
+                    "secondary-container": "#fe876a",
+                    "on-background": "#1c1c17",
+                    "inverse-on-surface": "#f4f1e8",
+                    "primary": "#173809",
+                    "surface-container": "#f1eee5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Newsreader"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.grain-overlay {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCpYdJK4R13OZ1Tzuq4FRgpdqITlqjtDVXIT_gMMKEhQXygo1-K4y8T1d878eOyEP3AwpIX_UkIQuWgzwAgoreuHzgW_gKygIH-umlI7axqEPINqo7w1-UkiYWVlYvXnMboWQ_GweyixVQq7Zwdwr-gB8b9OKlEJcinUaywaNvhiv1atoeUFrxOqRFry--pNAuqsJW_dC4O_T53Bn_YCaIsvzwUh1nfAmUzNVI7xTSyT4Fd53E0PZxhfUMwGG4QcTatZs0pzz9-enJP);
+    opacity: 0.03;
+    pointer-events: none
+    }</style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen flex flex-col relative">
+<div class="fixed inset-0 grain-overlay z-[60]"></div>
+<!-- Navigation Shell -->
+<header class="bg-[#fcf9f0]/80 dark:bg-[#1c1c17]/80 backdrop-blur-md sticky top-0 z-50 bg-[#f6f3ea] transition-colors duration-300">
+<div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+<div class="flex items-center gap-8">
+<a class="text-2xl font-['Newsreader'] italic text-[#48290a] dark:text-[#fcf9f0]" href="#">The Green Market Farm</a>
+<nav class="hidden md:flex gap-6 font-['Newsreader'] font-semibold tracking-tight">
+<a class="text-[#48290a]/70 hover:text-[#173809] hover:text-[#a03f29] transition-all duration-300" href="#">Home</a>
+<a class="text-[#48290a]/70 hover:text-[#173809] hover:text-[#a03f29] transition-all duration-300" href="#">Catalog</a>
+<a class="text-[#173809] border-b-2 border-[#a03f29] pb-1 hover:text-[#a03f29] transition-all duration-300" href="#">Order Lookup</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:block px-5 py-2 text-sm font-medium text-primary hover:text-secondary transition-all duration-300">Admin Dashboard</button>
+<div class="flex gap-2">
+<button class="p-2 text-[#48290a]/70 hover:text-[#a03f29] transition-transform scale-95 active:opacity-80">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+</button>
+<button class="p-2 text-[#48290a]/70 hover:text-[#a03f29] transition-transform scale-95 active:opacity-80">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
+<!-- Atmospheric Background Elements -->
+<div class="absolute top-0 left-0 w-64 h-64 bg-primary-fixed/20 blur-[100px] -z-10 translate-x-[-50%] translate-y-[-50%]"></div>
+<div class="absolute bottom-0 right-0 w-96 h-96 bg-secondary-fixed/20 blur-[100px] -z-10 translate-x-[50%] translate-y-[50%]"></div>
+<div class="max-w-2xl w-full text-center mb-12">
+<h1 class="text-5xl md:text-6xl font-headline text-tertiary mb-6 tracking-tight">Track Your Harvest</h1>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed">
+                Whether it's heirloom tomatoes or hand-turned butter, we're carefully preparing your local goodies for their journey from our fields to your table.
+            </p>
+</div>
+<!-- Asymmetric Lookup Card -->
+<div class="relative w-full max-w-4xl grid md:grid-cols-12 gap-8 items-stretch">
+<!-- Harvest Image (Overlapping Editorial Element) -->
+<div class="md:col-span-5 relative h-64 md:h-auto min-h-[400px]">
+<div class="absolute inset-0 bg-surface-container-low rounded-xl overflow-hidden -rotate-2 transform transition-transform hover:rotate-0 duration-500 shadow-sm">
+<img alt="Rustic wooden crate filled with vibrant organic vegetables" class="w-full h-full object-cover opacity-90" data-alt="Close-up of a rustic wooden crate overflowing with colorful heirloom carrots, radishes, and leafy greens in warm morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBke-gdqjfW8Yk5iiExuyKd8nK-P_0tIu4E6m7Zvl6U20SjC9G9OaLXrS8fSbv9DD9Yx20BcEO71XbGx5F3PyTsQGh6cao-A8fTjMnW4yuOn2OBHAIJYFLp9-moviI3DcOUt9nAGbxClWenWDsirr5Ah562KWbAZLSVzPSVX6f0IKKwjUFWKL7IUUBew5B11jLwS5pvApHQYAGr09yIB1wJarr7X3CqtmtiJWqsb_-uiPl_VwoLyBBq90U_aHdzACuzoJfdZUBvKZHW"/>
+</div>
+<div class="absolute -bottom-6 -right-6 p-6 bg-secondary-fixed rounded-full flex items-center justify-center text-on-secondary-fixed shadow-lg transform rotate-12 z-10">
+<span class="material-symbols-outlined text-4xl" data-icon="potted_plant">potted_plant</span>
+</div>
+</div>
+<!-- Form Container -->
+<div class="md:col-span-7 bg-surface-container-lowest p-8 md:p-12 rounded-xl shadow-[20px_0_40px_rgba(28,28,23,0.05)] border-t border-l border-white/40">
+<div class="mb-10">
+<h2 class="text-2xl font-headline text-tertiary italic mb-2">Check Order Status</h2>
+<p class="text-sm text-on-surface-variant">Please enter the details from your confirmation receipt.</p>
+</div>
+<form class="space-y-8">
+<div class="relative">
+<label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2" for="order-id">Order ID</label>
+<input class="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 text-lg font-body placeholder:text-outline/50 rounded-t-lg" id="order-id" placeholder="e.g. #GRN-8842" type="text"/>
+</div>
+<div class="relative">
+<label class="block text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2" for="email">Email Address</label>
+<input class="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 text-lg font-body placeholder:text-outline/50 rounded-t-lg" id="email" placeholder="hello@example.com" type="email"/>
+</div>
+<div class="pt-4 flex items-center gap-6">
+<button class="flex-grow md:flex-none px-8 py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-medium rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2" type="submit">
+                            Locate My Order
+                            <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<a class="text-sm font-label text-secondary hover:underline underline-offset-4 transition-all" href="#">Need help?</a>
+</div>
+</form>
+<!-- Status Feedback (Hidden by default, shown for demo purpose as a placeholder layout) -->
+<div class="mt-12 p-6 bg-surface-container-low rounded-lg border-l-4 border-primary-container opacity-50">
+<div class="flex items-start gap-4">
+<div class="bg-primary-fixed p-2 rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<h4 class="font-headline text-lg text-primary">Current Status</h4>
+<p class="text-sm text-on-surface-variant">Enter your details above to see your harvest journey.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Featured Quote / Benefit Section -->
+<section class="mt-24 w-full max-w-4xl grid md:grid-cols-2 gap-12 items-center">
+<div class="order-2 md:order-1">
+<span class="inline-block px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold uppercase tracking-tighter rounded-full mb-4">The Hearth Way</span>
+<h3 class="text-3xl font-headline text-tertiary mb-4 leading-snug italic">"Every basket we pack is a promise of quality, sustainability, and community."</h3>
+<p class="text-on-surface-variant text-sm font-body leading-relaxed">
+                    Our farmers start harvesting at dawn to ensure that when your order is 'Ready for Pickup', it's as fresh as the morning dew.
+                </p>
+</div>
+<div class="order-1 md:order-2">
+<div class="aspect-square bg-surface-container rounded-full flex items-center justify-center p-8 border-8 border-surface-container-low">
+<img alt="Smiling farmer holding a fresh loaf of artisan bread" class="w-full h-full object-cover rounded-full" data-alt="Portrait of a friendly middle-aged organic farmer in denim overalls holding a woven basket of sourdough bread against a soft focus field background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKGUWMhnipmlTiPT5EMbMIwzpwsw0fVRr1eaPhawbMB0emhDApJMCndKQ77wF7uEdJ4tMeiZ5QGzsxT3tq7T4lsPUFpmIvyQUB0CB7S3SPBrUF_k2XcRxbS6QloiDxGDZZUAzlGVXg9n-jPdKdPT3xXZZJ4KpYD-21W88jzA5-rWF21qE0nS8UbRsldBAL7E7RdTtH4m0T9v4VQ1nbWxniutqVY3jVibZaAiW08Vf0tu9P1ueFDDvgkYfnRRlLX8u2kWAHd2q81BZm"/>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#f1eee5] dark:bg-[#12120f] w-full py-12 px-8 mt-20 transition-all duration-200">
+<div class="max-w-7xl mx-auto flex flex-col items-center justify-center text-center space-y-6">
+<div class="text-md font-['Newsreader'] text-[#48290a]">The Green Market Farm</div>
+<div class="flex flex-wrap justify-center gap-8 font-['Plus_Jakarta_Sans'] text-xs uppercase tracking-widest">
+<a class="text-[#48290a]/50 hover:text-[#173809] hover:opacity-80 underline underline-offset-4" href="#">Sustainability Report</a>
+<a class="text-[#48290a]/50 hover:text-[#173809] hover:opacity-80 underline underline-offset-4" href="#">Privacy</a>
+<a class="text-[#48290a]/50 hover:text-[#173809] hover:opacity-80 underline underline-offset-4" href="#">Terms of Service</a>
+<a class="text-[#48290a]/50 hover:text-[#173809] hover:opacity-80 underline underline-offset-4" href="#">Contact Us</a>
+</div>
+<p class="text-[#48290a]/50 font-['Plus_Jakarta_Sans'] text-[10px] tracking-widest uppercase">
+                © 2024 The Green Market Farm. Cultivated with care.
+            </p>
+</div>
+</footer>
+</body></html>
