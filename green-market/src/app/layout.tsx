@@ -18,7 +18,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "The Green Market Farm",
   description:
-    "Farm-to-table marketplace — hand-sown, heart-grown produce delivered from our soil to your table.",
+    "A local farm marketplace — discover fresh, seasonal produce from growers in your community.",
 };
 
 export default function RootLayout({
@@ -39,7 +39,7 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* Load Material Symbols asynchronously — non-blocking */}
+        {/* Material Symbols — preload hint + stylesheet */}
         <link
           rel="preload"
           as="style"
@@ -48,16 +48,7 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
-          media="print"
-          // @ts-expect-error — onLoad is valid on link for async font loading
-          onLoad="this.media='all'"
         />
-        <noscript>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-            rel="stylesheet"
-          />
-        </noscript>
       </head>
       <body>
         <div className="grain-overlay" aria-hidden="true" />

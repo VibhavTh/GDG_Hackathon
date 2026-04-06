@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git -C /Users/haradeeppuneti/GDG_Hackathon status --short)",
       "Bash(npx skills:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

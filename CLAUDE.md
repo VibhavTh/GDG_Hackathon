@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## IMPORTANT THINGS TO REMEMBER
+NEVER USE EM DASHES
+
 ## Project Description
 
 The Green Market Farm greatly struggles to advertise their products and manage orders due to limited technical knowledge. They rely on word-of-mouth or other outdated methods, causing them to lose potential customers and revenue.

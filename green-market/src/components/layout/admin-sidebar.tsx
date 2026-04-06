@@ -56,7 +56,7 @@ export function AdminSidebar() {
       <div className="mt-auto px-4 space-y-4">
         <Link
           href="/inventory"
-          className="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-lg font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform text-sm"
+          className="w-full bg-primary text-on-primary py-3 rounded-lg font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all hover:bg-primary-container text-sm"
         >
           <Icon name="add" size="sm" />
           New Listing

@@ -73,7 +73,7 @@ export default function OrdersPage() {
       {/* Header */}
       <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <nav className="text-xs uppercase tracking-[0.2em] text-on-surface-variant mb-3 flex items-center gap-2">
+          <nav aria-label="Breadcrumb" className="text-xs uppercase tracking-[0.2em] text-on-surface-variant mb-3 flex items-center gap-2">
             <span>Admin</span>
             <Icon name="chevron_right" size="sm" />
             <span className="text-primary font-bold">Order Inbox</span>
@@ -93,12 +93,16 @@ export default function OrdersPage() {
               className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
             />
             <input
-              className="bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary/20 text-sm w-64 transition-all"
+              className="bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary/20 text-sm w-full max-w-xs transition-all"
               placeholder="Search orders..."
-              type="text"
+              type="search"
+              aria-label="Search orders"
             />
           </div>
-          <button className="p-2 bg-surface-container-low text-primary rounded-full hover:bg-surface-container-highest transition-colors">
+          <button
+            className="p-2 bg-surface-container-low text-primary rounded-full hover:bg-surface-container-highest transition-colors"
+            aria-label="Filter orders"
+          >
             <Icon name="filter_list" />
           </button>
         </div>
@@ -117,8 +121,13 @@ export default function OrdersPage() {
             return (
               <div
                 key={order.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isSelected}
+                aria-label={`Order ${order.id} from ${order.customer}`}
                 onClick={() => selectOrder(order)}
-                className={`p-6 rounded-xl transition-all cursor-pointer ${
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && selectOrder(order)}
+                className={`p-6 rounded-xl transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${
                   isSelected
                     ? "bg-surface-container-lowest shadow-ambient"
                     : "bg-surface-container-low hover:bg-surface-container-highest/50"
@@ -272,7 +281,7 @@ export default function OrdersPage() {
                       </span>
                       <button
                         onClick={() => {
-                          // TODO: fire cancel mutation
+                          // TODO(Phase 1): fire cancel order mutation via Supabase + trigger Stripe refund
                           setCancelState("idle");
                         }}
                         className="text-error text-xs font-bold uppercase tracking-wider underline underline-offset-4"

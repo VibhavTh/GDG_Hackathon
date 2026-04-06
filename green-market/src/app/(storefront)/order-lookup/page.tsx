@@ -107,8 +107,8 @@ export default function OrderLookupPage() {
             sustainability, and community.&rdquo;
           </h3>
           <p className="text-on-surface-variant text-sm font-body leading-relaxed">
-            Our farmers start harvesting at dawn to ensure that when your order
-            is &lsquo;Ready for Pickup&rsquo;, it&rsquo;s as fresh as the
+            Our local growers start harvesting at dawn to ensure that when your
+            order is &lsquo;Ready for Pickup&rsquo;, it&rsquo;s as fresh as the
             morning dew.
           </p>
         </div>

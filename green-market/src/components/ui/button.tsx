@@ -1,6 +1,6 @@
 import { type ButtonHTMLAttributes } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+type ButtonVariant = "primary" | "solid" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,8 +9,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
+  // Gradient — reserve for the single hero CTA per page
   primary:
     "bg-gradient-to-r from-primary to-primary-container text-on-primary shadow-ambient hover:opacity-90",
+  // Solid — for important but secondary actions
+  solid:
+    "bg-primary text-on-primary hover:bg-primary-container transition-colors",
   secondary:
     "bg-surface-container-highest text-primary hover:bg-surface-variant",
   ghost: "text-secondary hover:text-primary bg-transparent",

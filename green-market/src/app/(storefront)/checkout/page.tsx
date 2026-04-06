@@ -97,10 +97,11 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mt-8 space-y-1">
-                <label className="text-sm font-label uppercase tracking-widest text-on-surface-variant">
+                <label htmlFor="special-instructions" className="text-sm font-label uppercase tracking-widest text-on-surface-variant">
                   Notes for the Farmer
                 </label>
                 <textarea
+                  id="special-instructions"
                   className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-colors py-3 text-on-surface resize-none"
                   placeholder="Leave the crate under the porch oak tree..."
                   rows={3}
@@ -125,7 +126,7 @@ export default function CheckoutPage() {
               <div className="space-y-6">
                 {/* Card Number */}
                 <div className="space-y-1.5">
-                  <label className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                  <label htmlFor="card-number" className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                     Card Number
                   </label>
                   <div
@@ -137,9 +138,12 @@ export default function CheckoutPage() {
                   >
                     <Icon name="credit_card" size="sm" className="text-outline shrink-0" />
                     <input
+                      id="card-number"
                       className="flex-1 bg-transparent focus:outline-none font-body text-on-surface placeholder:text-outline text-sm"
                       placeholder="1234 5678 9012 3456"
                       maxLength={19}
+                      autoComplete="cc-number"
+                      inputMode="numeric"
                       onFocus={() => setCardFocused("number")}
                       onBlur={() => setCardFocused(null)}
                     />
@@ -149,10 +153,11 @@ export default function CheckoutPage() {
                 {/* Expiry + CVC */}
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1.5">
-                    <label className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                    <label htmlFor="card-expiry" className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                       Expiry Date
                     </label>
                     <input
+                      id="card-expiry"
                       className={`w-full bg-surface-container-highest border-0 border-b-2 transition-colors duration-300 py-3 font-body text-on-surface placeholder:text-outline text-sm focus:outline-none ${
                         cardFocused === "expiry"
                           ? "border-primary"
@@ -160,15 +165,18 @@ export default function CheckoutPage() {
                       }`}
                       placeholder="MM / YY"
                       maxLength={7}
+                      autoComplete="cc-exp"
+                      inputMode="numeric"
                       onFocus={() => setCardFocused("expiry")}
                       onBlur={() => setCardFocused(null)}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                    <label htmlFor="card-cvc" className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                       CVC
                     </label>
                     <input
+                      id="card-cvc"
                       className={`w-full bg-surface-container-highest border-0 border-b-2 transition-colors duration-300 py-3 font-body text-on-surface placeholder:text-outline text-sm focus:outline-none ${
                         cardFocused === "cvc"
                           ? "border-primary"
@@ -176,6 +184,8 @@ export default function CheckoutPage() {
                       }`}
                       placeholder="•••"
                       maxLength={4}
+                      autoComplete="cc-csc"
+                      inputMode="numeric"
                       onFocus={() => setCardFocused("cvc")}
                       onBlur={() => setCardFocused(null)}
                     />

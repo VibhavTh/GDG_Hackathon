@@ -72,10 +72,10 @@ export default function DashboardPage() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
         <div>
           <h2 className="text-4xl font-headline italic text-tertiary leading-tight">
-            Good morning, Elias.
+            Good morning, Farmer.
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
-            The harvest is ready and orders are blooming.
+            Your listings are live and orders are coming in.
           </p>
         </div>
         <div className="bg-surface-container-low px-4 py-2 rounded-lg flex items-center gap-2">
@@ -116,13 +116,17 @@ export default function DashboardPage() {
             </span>
           </div>
           <div className="mt-6 flex -space-x-2">
-            {["bg-stone-300", "bg-stone-400", "bg-stone-500"].map((bg, i) => (
+            {[
+              "bg-surface-container-high",
+              "bg-surface-container-highest",
+              "bg-surface-variant",
+            ].map((bg, i) => (
               <div
                 key={i}
                 className={`w-8 h-8 rounded-full border-2 border-surface-container-highest ${bg}`}
               />
             ))}
-            <div className="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-surface-container flex items-center justify-center text-[10px] font-bold">
+            <div className="w-8 h-8 rounded-full border-2 border-surface-container-highest bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
               +39
             </div>
           </div>
@@ -185,7 +189,7 @@ export default function DashboardPage() {
                 title={bar.day}
               >
                 {bar.value && (
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-tertiary text-white text-[10px] py-1 px-2 rounded whitespace-nowrap">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-tertiary text-on-tertiary text-[10px] py-1 px-2 rounded whitespace-nowrap">
                     {bar.value}
                   </div>
                 )}
@@ -213,15 +217,15 @@ export default function DashboardPage() {
               Prepare batch for morning local market deliveries.
             </p>
           </div>
-          <button className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-md text-sm font-bold flex items-center justify-center gap-2 mt-6 active:scale-95 transition-transform">
+          <button className="bg-primary text-on-primary px-6 py-3 rounded-md text-sm font-bold flex items-center justify-center gap-2 mt-6 active:scale-95 transition-all hover:bg-primary-container">
             Generate Manifest
           </button>
         </div>
       </div>
 
-      {/* Active Orders Table */}
+      {/* Active Orders — table on md+, stacked cards on mobile */}
       <div className="bg-surface-container-low rounded-xl overflow-hidden mb-12">
-        <div className="px-8 py-6 flex justify-between items-center">
+        <div className="px-6 md:px-8 py-6 flex justify-between items-center">
           <h4 className="font-headline italic text-2xl text-tertiary">
             Active Harvest Orders
           </h4>
@@ -233,20 +237,45 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile: stacked cards */}
+        <div className="md:hidden divide-y divide-surface-container">
+          {orders.map((order, i) => (
+            <div key={i} className="px-6 py-5 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-tertiary text-sm">
+                    {order.initials}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold leading-tight">{order.name}</p>
+                    <p className="text-xs text-on-surface-variant">{order.method}</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${order.statusStyle}`}>
+                  {order.status}
+                </span>
+              </div>
+              <p className="text-xs text-on-surface-variant line-clamp-1">{order.items}</p>
+              <p className="text-right font-bold text-tertiary text-sm">{order.total}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: full table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-surface-container/50">
-                <th className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                <th scope="col" className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-left">
                   Customer
                 </th>
-                <th className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                <th scope="col" className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-left">
                   Harvest Items
                 </th>
-                <th className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                <th scope="col" className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-left">
                   Status
                 </th>
-                <th className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-right">
+                <th scope="col" className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-right">
                   Total
                 </th>
               </tr>
@@ -272,8 +301,8 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-6 text-sm text-on-surface-variant">
-                    {order.items}
+                  <td className="px-8 py-6 text-sm text-on-surface-variant max-w-[240px]">
+                    <span className="line-clamp-2">{order.items}</span>
                   </td>
                   <td className="px-8 py-6">
                     <span

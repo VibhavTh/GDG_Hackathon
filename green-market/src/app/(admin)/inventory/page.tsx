@@ -88,16 +88,17 @@ export default function InventoryPage() {
             Inventory Management
           </h2>
           <div className="flex items-center gap-4">
-            <button className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-lg text-sm font-medium active:scale-95 transition-transform flex items-center gap-2">
+            <button className="bg-primary text-on-primary px-6 py-2.5 rounded-lg text-sm font-medium active:scale-95 transition-all hover:bg-primary-container flex items-center gap-2">
               <Icon name="add" size="sm" />
               Add New Product
             </button>
             <div className="hidden md:flex items-center gap-2">
-              <Icon name="search" className="text-on-surface-variant" />
+              <Icon name="search" className="text-on-surface-variant" aria-hidden="true" />
               <input
-                className="bg-surface-container-highest/50 border-none focus:ring-0 text-sm rounded-md w-48 placeholder:text-on-surface-variant/50"
+                className="bg-surface-container-highest/50 border-none focus:ring-0 focus:outline-none focus:bg-surface-container-highest text-sm rounded-md w-48 placeholder:text-on-surface-variant/50 transition-colors"
                 placeholder="Search inventory..."
-                type="text"
+                type="search"
+                aria-label="Search inventory"
               />
             </div>
           </div>
@@ -145,10 +146,16 @@ export default function InventoryPage() {
               )}
 
               <div className="absolute top-4 right-4 flex gap-1">
-                <button className="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+                <button
+                  className="p-2 text-on-surface-variant hover:text-secondary transition-colors focus-visible:outline-2 focus-visible:outline-primary rounded"
+                  aria-label={`Edit ${product.name}`}
+                >
                   <Icon name="edit" />
                 </button>
-                <button className="p-2 text-on-surface-variant hover:text-error transition-colors">
+                <button
+                  className="p-2 text-on-surface-variant hover:text-error transition-colors focus-visible:outline-2 focus-visible:outline-error rounded"
+                  aria-label={`Delete ${product.name}`}
+                >
                   <Icon name="delete" />
                 </button>
               </div>
@@ -160,6 +167,7 @@ export default function InventoryPage() {
                     alt={product.name}
                     width={80}
                     height={80}
+                    sizes="80px"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -195,12 +203,15 @@ export default function InventoryPage() {
                   <div className="flex items-center gap-2 mt-1">
                     <button
                       onClick={() => updateStock(product.id, -1)}
-                      className="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all"
+                      aria-label={`Decrease stock for ${product.name}`}
+                      className="w-11 h-11 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all focus-visible:outline-2 focus-visible:outline-primary"
                     >
                       -
                     </button>
                     <span
-                      className={`font-bold text-sm ${
+                      aria-live="polite"
+                      aria-label={`${stocks[product.id]} in stock`}
+                      className={`font-bold text-sm min-w-[2ch] text-center ${
                         (stocks[product.id] || 0) <= 5 ? "text-error" : ""
                       }`}
                     >
@@ -208,7 +219,8 @@ export default function InventoryPage() {
                     </span>
                     <button
                       onClick={() => updateStock(product.id, 1)}
-                      className="w-6 h-6 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all"
+                      aria-label={`Increase stock for ${product.name}`}
+                      className="w-11 h-11 rounded-full bg-surface-container-highest text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all focus-visible:outline-2 focus-visible:outline-primary"
                     >
                       +
                     </button>

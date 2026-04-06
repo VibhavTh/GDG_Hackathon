@@ -113,6 +113,16 @@ h1, h2, h3, .font-headline {
   color: var(--color-on-secondary-fixed);
 }
 
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ---- Content visibility for below-fold sections ---- */
 /* Skips rendering work for sections not yet in viewport; browser still */
 /* lays out the reserved contain-intrinsic-size so no layout shift.     */

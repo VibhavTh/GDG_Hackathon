@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "The Green Market Farm",
   description:
-    "Farm-to-table marketplace — hand-sown, heart-grown produce delivered from our soil to your table.",
+    "A local farm marketplace — discover fresh, seasonal produce from growers in your community.",
   storefrontNav: [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },

@@ -68,29 +68,36 @@ export function StorefrontNav() {
 
           <Link
             href="/farmer/login"
-            className="px-6 py-2 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-md hover:opacity-90 transition-all active:scale-95 font-label font-medium"
+            className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low transition-all active:scale-95 font-label font-medium text-sm"
           >
-            Login
+            Farmer Login
           </Link>
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 text-tertiary"
+            className="md:hidden p-2 text-tertiary focus-visible:outline-2 focus-visible:outline-primary rounded"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <Icon name={mobileMenuOpen ? "close" : "menu"} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu — CSS-toggled so it animates and avoids layout thrash */}
+      {/* Mobile Menu — grid-template-rows transition: composited, no layout recalc */}
       <div
-        className={`md:hidden bg-surface/95 backdrop-blur-xl px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-          mobileMenuOpen ? "max-h-96 pb-6 opacity-100" : "max-h-0 pb-0 opacity-0"
-        }`}
+        id="mobile-menu"
+        aria-hidden={!mobileMenuOpen}
+        className="md:hidden bg-surface/95 backdrop-blur-xl px-6 grid transition-[grid-template-rows,opacity] duration-300 ease-in-out"
+        style={{
+          gridTemplateRows: mobileMenuOpen ? "1fr" : "0fr",
+          opacity: mobileMenuOpen ? 1 : 0,
+        }}
       >
-        <div className="space-y-4 pt-2">
+        <div className="overflow-hidden">
+        <div className="space-y-4 pt-2 pb-6">
           {siteConfig.storefrontNav.map((link) => (
             <Link
               key={link.href}
@@ -101,6 +108,7 @@ export function StorefrontNav() {
               {link.label}
             </Link>
           ))}
+        </div>
         </div>
       </div>
     </nav>

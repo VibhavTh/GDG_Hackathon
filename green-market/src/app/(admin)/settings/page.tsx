@@ -20,7 +20,7 @@ export default function SettingsPage() {
           <h2 className="font-headline text-2xl text-tertiary mb-4">
             Farm Profile
           </h2>
-          <Input label="Farm Name" placeholder="The Green Market Farm" />
+          <Input label="Farm Name" placeholder="e.g. Sunrise Valley Farm" />
           <Input label="Email" type="email" placeholder="farmer@greenmarket.farm" />
           <Input label="Phone" type="tel" placeholder="(555) 012-3456" />
           <div className="space-y-1.5">

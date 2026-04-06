@@ -55,7 +55,7 @@ export default function FarmerLoginPage() {
               Welcome Back
             </h2>
             <p className="text-on-surface-variant font-body">
-              Please enter your credentials to access the hearth.
+              Please enter your credentials to access your dashboard.
             </p>
           </div>
 

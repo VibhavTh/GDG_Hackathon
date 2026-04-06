@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[870px] flex items-center px-6 md:px-12 overflow-hidden">
+      <section className="relative min-h-[600px] md:min-h-[870px] flex items-center px-6 md:px-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHfgOxwKYkHJuM69CO1KboNBFHv_XlIy9bFlLeMbvCmUhMHSpOW089IuqcsKzBLEgmoR9NJ9lpX4fG9tcRw8faRdIrIegsfgcQveZvSMR5LusPsWbhq9uVNb817C04rlv9e6UQQK4gHROMEwdp8gpu7hIL6O0JK7aMkxWYaRpz6SGJv3NNmK-59Dis8OuQ0OHrkVgrrpPEoa6REY3f7lv_0bJ0sefcdlhLU_mSN-7xY4K9sPgkuZ9Ph_7u06i2VzLSsmV60NvR_Y6x"
@@ -32,8 +32,7 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="text-on-surface-variant text-lg md:text-xl font-body max-w-lg mb-10 leading-relaxed">
-            Bringing the warmth of our soil to your family table. Explore a
-            curated harvest of heirloom vegetables and small-batch honey.
+            A marketplace for local growers — discover seasonal produce, small-batch goods, and farm-fresh staples from farmers in your community.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="/products">
@@ -68,44 +67,44 @@ export default function HomePage() {
 
           <div className="md:col-span-7">
             <h2 className="text-5xl font-headline italic text-tertiary mb-6">
-              The Verdant Hearth
+              Rooted in Community
             </h2>
             <div className="space-y-6 text-on-surface-variant text-lg leading-relaxed">
               <p>
-                We believe that a farm is more than a place where food
-                grows&mdash;it is a sanctuary of intention. At The Green Market
-                Farm, our &ldquo;Verdant Hearth&rdquo; philosophy guides every
-                seed we plant and every jar we seal.
+                Green Market is a gathering place for local growers and the
+                neighbors who love their food. We connect small farms, family
+                orchards, and artisan producers with customers who care where
+                their food comes from.
               </p>
               <p>
-                It is a commitment to the slow process. To the richness of
-                chemical-free soil, to the health of our local pollinators, and
-                to the restorative power of a meal shared around a wooden table.
+                Every listing on this marketplace represents a real farm with a
+                real story&mdash;people tending soil, raising animals, and
+                nurturing harvests with patience and pride.
               </p>
             </div>
             <div className="mt-10 flex gap-12">
               <div>
                 <span className="block text-3xl font-headline text-secondary italic">
+                  20+
+                </span>
+                <span className="text-xs font-label uppercase tracking-widest opacity-60">
+                  Local Farms
+                </span>
+              </div>
+              <div>
+                <span className="block text-3xl font-headline text-secondary italic">
+                  100+
+                </span>
+                <span className="text-xs font-label uppercase tracking-widest opacity-60">
+                  Seasonal Products
+                </span>
+              </div>
+              <div>
+                <span className="block text-3xl font-headline text-secondary italic">
                   100%
                 </span>
                 <span className="text-xs font-label uppercase tracking-widest opacity-60">
-                  Chemical Free
-                </span>
-              </div>
-              <div>
-                <span className="block text-3xl font-headline text-secondary italic">
-                  12
-                </span>
-                <span className="text-xs font-label uppercase tracking-widest opacity-60">
-                  Heirloom Varieties
-                </span>
-              </div>
-              <div>
-                <span className="block text-3xl font-headline text-secondary italic">
-                  5th
-                </span>
-                <span className="text-xs font-label uppercase tracking-widest opacity-60">
-                  Gen Farmer
+                  Locally Sourced
                 </span>
               </div>
             </div>
@@ -118,7 +117,7 @@ export default function HomePage() {
         <div className="flex justify-between items-end mb-16">
           <div>
             <span className="text-secondary font-label text-xs uppercase tracking-widest mb-2 block">
-              Our Harvest
+              Local Harvest
             </span>
             <h2 className="text-5xl font-headline text-tertiary">
               Featured Provisions
@@ -146,12 +145,12 @@ export default function HomePage() {
               <span className="bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase font-bold px-3 py-1 rounded-full w-fit mb-3">
                 Limited Batch
               </span>
-              <h3 className="text-3xl font-headline text-white italic mb-2">
+              <h3 className="text-3xl font-headline text-on-tertiary italic mb-2">
                 Wildflower Blossom Honey
               </h3>
-              <p className="text-white/80 font-body mb-6">
-                Raw, unfiltered, and deeply floral nectar from our
-                farm&rsquo;s meadow.
+              <p className="text-on-tertiary-container font-body mb-6">
+                Raw, unfiltered, and deeply floral nectar from a local
+                meadow apiary.
               </p>
               <AddToCartButton
                 item={{
@@ -240,10 +239,10 @@ export default function HomePage() {
                 The Kitchen Hearth Box
               </h4>
               <p className="text-on-surface-variant mb-6 text-sm">
-                A weekly curated selection of what&rsquo;s peaking in our fields
-                right now. Perfect for a family of four.
+                A weekly curated selection of what&rsquo;s peaking across our local
+                farms this week. Perfect for a family of four.
               </p>
-              <button className="px-6 py-3 bg-primary text-white rounded-md font-bold text-sm transition-transform active:scale-95">
+              <button className="px-6 py-3 bg-primary text-on-primary rounded-md font-bold text-sm transition-transform active:scale-95">
                 Subscribe - $45/week
               </button>
             </div>
@@ -265,20 +264,25 @@ export default function HomePage() {
       <section className="mt-20 bg-primary-container py-24 relative overflow-hidden content-lazy">
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <Icon name="potted_plant" fill className="text-secondary text-5xl mb-6" />
-          <h2 className="text-4xl md:text-6xl font-headline text-white italic mb-6">
+          <h2 className="text-4xl md:text-6xl font-headline text-on-primary-container italic mb-6">
             Join Our Table
           </h2>
-          <p className="text-on-primary-container text-lg mb-10 max-w-xl mx-auto">
+          <p className="text-on-primary-container/80 text-lg mb-10 max-w-xl mx-auto">
             Sign up for the Field Notes newsletter to receive seasonal recipes,
-            farm updates, and first access to our small-batch releases.
+            harvest updates from local growers, and first access to small-batch releases.
           </p>
           <form className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
+            <label htmlFor="newsletter-email-home" className="sr-only">
+              Email address
+            </label>
             <input
-              className="flex-1 bg-white/10 border-0 border-b-2 border-outline-variant/30 focus:border-white text-white placeholder-white/50 px-4 py-3 rounded-t-md font-body"
+              id="newsletter-email-home"
+              className="flex-1 bg-primary-container/60 border-0 border-b-2 border-on-primary-container/30 focus:border-on-primary-container text-on-primary-container placeholder:text-on-primary-container/50 px-4 py-3 rounded-t-md font-body focus:outline-none transition-colors"
               placeholder="Your email address"
               type="email"
+              autoComplete="email"
             />
-            <button className="bg-secondary text-white px-8 py-3 rounded-md font-bold uppercase tracking-widest text-xs hover:bg-secondary/90 transition-all">
+            <button className="bg-secondary text-on-secondary px-8 py-3 rounded-md font-bold uppercase tracking-widest text-xs hover:bg-secondary/90 transition-all active:scale-95 whitespace-nowrap">
               Subscribe
             </button>
           </form>
