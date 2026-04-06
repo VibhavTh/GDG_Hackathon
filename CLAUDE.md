@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Description
+
+The Green Market Farm greatly struggles to advertise their products and manage orders due to limited technical knowledge. They rely on word-of-mouth or other outdated methods, causing them to lose potential customers and revenue.
+Build a simple, accessible system/website that allows farm owners to easily showcase their products, manage incoming orders, and track inventory without requiring advanced technical skills. The system should include a clean, visually appealing interface for customers to browse available goods, place orders, and view farm information. On the backend, it should allow farmers to quickly add or update products (name, category, price, availability, and maintain basic record. After the order is put through it could be saved in a database or a spreadsheet for the owner.
+
 ## Project Overview
 
 **Green Market** — a farm-to-table marketplace where farmers list products and customers pay.
