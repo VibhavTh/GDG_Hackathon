@@ -60,7 +60,8 @@ export default function HomePage() {
                 height={400}
                 sizes="(max-width: 768px) 100vw, 42vw"
                 loading="lazy"
-                className="-ml-8 -mt-8 rounded-lg w-full h-[400px] object-cover rotate-[-2deg]"
+                className="-ml-8 -mt-8 rounded-lg w-full object-cover rotate-[-2deg]"
+                style={{ height: "400px" }}
               />
             </div>
           </div>

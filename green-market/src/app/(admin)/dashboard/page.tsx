@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 const stats = [
   {
@@ -65,14 +66,49 @@ const chartData = [
   { day: "Sun", height: "45%" },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const service = createServiceClient();
+  const { data: farm } = user
+    ? await service
+        .from("farms")
+        .select("name, description, location")
+        .eq("owner_id", user.id)
+        .single()
+    : { data: null as { name: string; description: string | null; location: string | null } | null };
+
+  const profileIncomplete = farm && (!farm.description || !farm.location);
+
   return (
     <main className="flex-1 px-8 py-10 max-w-7xl">
+      {/* Incomplete profile banner */}
+      {profileIncomplete && (
+        <div className="mb-8 bg-secondary-fixed/30 border border-secondary/20 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Icon name="edit_note" className="text-secondary shrink-0" />
+            <p className="text-sm font-body text-on-surface">
+              <span className="font-semibold">Your farm profile is incomplete.</span>{" "}
+              Add a description and location so customers can find you.
+            </p>
+          </div>
+          <Link
+            href="/farmer/onboarding"
+            className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-primary hover:underline"
+          >
+            Complete Profile
+          </Link>
+        </div>
+      )}
+
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
         <div>
           <h2 className="text-4xl font-headline italic text-tertiary leading-tight">
-            Good morning, Farmer.
+            {farm?.name ? `Welcome, ${farm.name}.` : "Good morning, Farmer."}
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
             Your listings are live and orders are coming in.

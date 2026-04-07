@@ -30,6 +30,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${newsreader.variable} ${plusJakarta.variable}`}
+      suppressHydrationWarning
     >
       <head>
         {/* Preconnect to Google Fonts origins to reduce DNS/TLS overhead */}
@@ -39,15 +40,10 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* Material Symbols — preload hint + stylesheet */}
+        {/* Material Symbols — loaded after body fonts to avoid render-blocking */}
         <link
-          rel="preload"
-          as="style"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
         />
       </head>
       <body>
