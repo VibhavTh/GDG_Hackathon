@@ -4,8 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
 import { siteConfig } from "@/config/site";
+import { logout } from "@/app/farmer/logout/actions";
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  farmName: string;
+  userInitial: string;
+}
+
+export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -18,10 +24,10 @@ export function AdminSidebar() {
           </div>
           <div>
             <h1 className="font-headline text-lg text-tertiary font-bold leading-tight">
-              Green Market Admin
+              Green Market
             </h1>
             <p className="text-xs text-on-surface-variant/60 italic">
-              Managing the Hearth
+              Farm Dashboard
             </p>
           </div>
         </div>
@@ -62,14 +68,24 @@ export function AdminSidebar() {
           New Listing
         </Link>
 
+        {/* User card + sign out */}
         <div className="flex items-center gap-3 p-2 pt-4">
-          <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">
-            E
+          <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-sm shrink-0">
+            {userInitial}
           </div>
-          <div>
-            <p className="text-sm font-bold text-tertiary">Farm Owner</p>
-            <p className="text-xs text-on-surface-variant">Green Market</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-tertiary truncate">{farmName}</p>
+            <p className="text-xs text-on-surface-variant">Farm Owner</p>
           </div>
+          <form action={logout}>
+            <button
+              type="submit"
+              title="Sign out"
+              className="p-1.5 rounded-md text-on-surface-variant/50 hover:text-primary hover:bg-surface-container-highest transition-colors"
+            >
+              <Icon name="logout" size="sm" />
+            </button>
+          </form>
         </div>
       </div>
     </aside>
