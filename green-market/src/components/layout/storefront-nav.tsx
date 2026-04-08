@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
+import { SignOutButton } from "@/components/ui/sign-out-button";
 import { siteConfig } from "@/config/site";
 import { useCartStore } from "@/stores/cart-store";
 
@@ -66,21 +67,27 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
 
           {/* Auth-aware right button */}
           {userRole === "farmer" ? (
-            <Link
-              href="/dashboard"
-              className="px-5 py-2 bg-primary text-on-primary rounded-md font-label font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-1.5"
-            >
-              <Icon name="dashboard" size="sm" />
-              Dashboard
-            </Link>
+            <>
+              <Link
+                href="/dashboard"
+                className="px-5 py-2 bg-primary text-on-primary rounded-md font-label font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all flex items-center gap-1.5"
+              >
+                <Icon name="dashboard" size="sm" />
+                Dashboard
+              </Link>
+              <SignOutButton role="farmer" />
+            </>
           ) : userRole === "customer" ? (
-            <Link
-              href="/account/orders"
-              className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low transition-all active:scale-95 font-label font-medium text-sm flex items-center gap-1.5"
-            >
-              <Icon name="person" size="sm" />
-              My Orders
-            </Link>
+            <>
+              <Link
+                href="/account/orders"
+                className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low transition-all active:scale-95 font-label font-medium text-sm flex items-center gap-1.5"
+              >
+                <Icon name="person" size="sm" />
+                My Orders
+              </Link>
+              <SignOutButton role="customer" />
+            </>
           ) : (
             <Link
               href="/customer/login"
@@ -128,21 +135,27 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
             ))}
             {/* Mobile auth link */}
             {userRole === "farmer" ? (
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 font-headline italic text-lg text-primary transition-colors"
-              >
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 font-headline italic text-lg text-primary transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <SignOutButton role="farmer" className="w-full justify-start px-0 py-3" />
+              </>
             ) : userRole === "customer" ? (
-              <Link
-                href="/account/orders"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-primary-container transition-colors"
-              >
-                My Orders
-              </Link>
+              <>
+                <Link
+                  href="/account/orders"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-primary-container transition-colors"
+                >
+                  My Orders
+                </Link>
+                <SignOutButton role="customer" className="w-full justify-start px-0 py-3" />
+              </>
             ) : (
               <Link
                 href="/customer/login"
