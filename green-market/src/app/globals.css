@@ -128,6 +128,12 @@ h1, h2, h3, .font-headline {
    Wrapped in prefers-reduced-motion so the reduce block above
    still takes full effect.
    ============================================================ */
+/* Marquee — runs outside the reduced-motion block intentionally slow/subtle */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
 
   /* Slide up + fade in — page-level entrances */
