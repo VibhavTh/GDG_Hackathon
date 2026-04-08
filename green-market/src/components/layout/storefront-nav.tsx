@@ -67,10 +67,17 @@ export function StorefrontNav() {
           </Link>
 
           <Link
+            href="/customer/login"
+            className="px-5 py-2 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container-low transition-all active:scale-95 font-label font-medium text-sm hidden sm:inline-flex items-center gap-1.5"
+          >
+            <Icon name="person" size="sm" />
+            Sign In
+          </Link>
+          <Link
             href="/farmer/login"
             className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low transition-all active:scale-95 font-label font-medium text-sm"
           >
-            Farmer Login
+            Farmers
           </Link>
 
           {/* Mobile hamburger */}

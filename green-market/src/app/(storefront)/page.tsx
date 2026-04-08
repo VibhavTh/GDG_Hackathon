@@ -3,8 +3,23 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
+import { createServiceClient } from "@/lib/supabase/server";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const service = createServiceClient();
+
+  // Fetch latest 4 active products with farm info for the bento grid
+  const { data: featuredProducts } = await service
+    .from("products")
+    .select("id, name, price, description, image_url, unit, farm_id, farms(id, name)")
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .gt("stock", 0)
+    .order("created_at", { ascending: false })
+    .limit(4);
+
+  const featured = featuredProducts ?? [];
+
   return (
     <>
       {/* Hero Section */}
@@ -132,133 +147,199 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Large Feature: Honey */}
-          <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container-highest">
-            <Image
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxoINOaTTuQTRvBS8DkhirM6kWTSR4_KcbCBnyrr-HPpb2MVUIZ2zuE6l_4vVqOsx_5oG-iZc6J10a8AGcCmurxMeEgfYrJNQLvCD9-GG1gvoVKCwB9EVnUJlZxNaR2QF6aT3zCZaV1HpGBfXnT_HDfggAAq1DzzeOKOa9Ml_OgAf0SEb8z8iih42HQn3bjDU4jKCbheLfEk1hPVk6E65j9x4XVyYvpj2EE6xksUEEhxtyhjC9YQ9Svgb8cxqGmHTBKHAqTaiX6sp_"
-              alt="Golden artisanal honey jar with a handwritten paper label"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-tertiary/80 via-transparent to-transparent p-8 flex flex-col justify-end">
-              <span className="bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase font-bold px-3 py-1 rounded-full w-fit mb-3">
-                Limited Batch
-              </span>
-              <h3 className="text-3xl font-headline text-on-tertiary italic mb-2">
-                Wildflower Blossom Honey
-              </h3>
-              <p className="text-on-tertiary-container font-body mb-6">
-                Raw, unfiltered, and deeply floral nectar from a local
-                meadow apiary.
-              </p>
-              <AddToCartButton
-                item={{
-                  productId: "featured-honey",
-                  name: "Wildflower Blossom Honey",
-                  price: 24,
-                  image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDxoINOaTTuQTRvBS8DkhirM6kWTSR4_KcbCBnyrr-HPpb2MVUIZ2zuE6l_4vVqOsx_5oG-iZc6J10a8AGcCmurxMeEgfYrJNQLvCD9-GG1gvoVKCwB9EVnUJlZxNaR2QF6aT3zCZaV1HpGBfXnT_HDfggAAq1DzzeOKOa9Ml_OgAf0SEb8z8iih42HQn3bjDU4jKCbheLfEk1hPVk6E65j9x4XVyYvpj2EE6xksUEEhxtyhjC9YQ9Svgb8cxqGmHTBKHAqTaiX6sp_",
-                  unit: "jar",
-                }}
-                className="w-fit px-6"
-              />
-            </div>
-          </div>
-
-          {/* Product 2 */}
-          <div className="bg-surface-container-low p-6 rounded-xl group">
-            <div className="overflow-hidden rounded-lg aspect-square mb-6">
-              <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtJLG0XmmwmY5QooEx4izYbE5OqTbwB0iHvp0dwnwSVQ4BxhiLKKlNKnRRGALqs7PjIuVJXYxvAyD4UjBcatrUfCTeKsfca4hs1krrLiLNvcFV4zIHpdxVBOvaGipW9L297UWO8yOJM-0qoNGCku9C_tf04Enr0deGkTdIMSD6UOFlObOO4caJBGbWNuX-5RP6KADJWQbhSgBcE0ndRZEBV0v6hAUCQ5Faux158L-6Y263JKaTppqanXgzmxLQFentNQ0r6p-qIbfx"
-                alt="Vibrant purple heirloom carrots"
-                width={400}
-                height={400}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-            </div>
-            <div className="flex justify-between items-start mb-2">
-              <h4 className="font-headline text-xl text-tertiary italic">
-                Purple Heirloom Carrots
-              </h4>
-              <span className="text-primary font-bold">$6.50</span>
-            </div>
-            <p className="text-sm text-on-surface-variant font-body mb-4">
-              Earthy and crisp with a stunning royal hue.
+        {featured.length === 0 ? (
+          /* Empty state — no products in DB yet */
+          <div className="py-24 text-center bg-surface-container-low rounded-2xl">
+            <Icon name="eco" className="text-5xl text-on-surface-variant/40 mb-4" />
+            <p className="font-headline italic text-2xl text-tertiary mb-2">
+              First harvest coming soon.
             </p>
-            <AddToCartButton
-              variant="underline"
-              item={{
-                productId: "featured-carrots",
-                name: "Purple Heirloom Carrots",
-                price: 6.5,
-                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCtJLG0XmmwmY5QooEx4izYbE5OqTbwB0iHvp0dwnwSVQ4BxhiLKKlNKnRRGALqs7PjIuVJXYxvAyD4UjBcatrUfCTeKsfca4hs1krrLiLNvcFV4zIHpdxVBOvaGipW9L297UWO8yOJM-0qoNGCku9C_tf04Enr0deGkTdIMSD6UOFlObOO4caJBGbWNuX-5RP6KADJWQbhSgBcE0ndRZEBV0v6hAUCQ5Faux158L-6Y263JKaTppqanXgzmxLQFentNQ0r6p-qIbfx",
-                unit: "bunch",
-              }}
-            />
-          </div>
-
-          {/* Product 3 */}
-          <div className="bg-surface-container-low p-6 rounded-xl group">
-            <div className="overflow-hidden rounded-lg aspect-square mb-6">
-              <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuArNJHgAnEJg1xCsICaESXJwrnM5ol02yIbZA4CZ1syy-ZI6t1RegVbqeSMj6bLIaafZL6gzRp8ZnDdfJX93HUnsSPeXWmhsEVb8zi6o0ag3nSk-TFmPpaLzu5vpmWJ420P8IhQgGpiUTG1Xay33VpkfRJG_TNK4P-9-BNDoLWY9ifOoC0tiFhNQsPSm1mqH4wSwNJI5RJ00_RXaF6MDYunzsBoXVBhyetDy7uLJKbPYnbyZP7lkSafQsg37lFrJ4SZyJs-0i-29lYC"
-                alt="Rustic basket of organic garden kale"
-                width={400}
-                height={400}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-            </div>
-            <div className="flex justify-between items-start mb-2">
-              <h4 className="font-headline text-xl text-tertiary italic">
-                Lacinato Kale Bunch
-              </h4>
-              <span className="text-primary font-bold">$4.00</span>
-            </div>
-            <p className="text-sm text-on-surface-variant font-body mb-4">
-              Harvested morning-of for maximum nutrient density.
+            <p className="text-on-surface-variant font-body mb-6">
+              Local farmers are adding listings — check back shortly.
             </p>
-            <AddToCartButton
-              variant="underline"
-              item={{
-                productId: "featured-kale",
-                name: "Lacinato Kale Bunch",
-                price: 4.0,
-                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuArNJHgAnEJg1xCsICaESXJwrnM5ol02yIbZA4CZ1syy-ZI6t1RegVbqeSMj6bLIaafZL6gzRp8ZnDdfJX93HUnsSPeXWmhsEVb8zi6o0ag3nSk-TFmPpaLzu5vpmWJ420P8IhQgGpiUTG1Xay33VpkfRJG_TNK4P-9-BNDoLWY9ifOoC0tiFhNQsPSm1mqH4wSwNJI5RJ00_RXaF6MDYunzsBoXVBhyetDy7uLJKbPYnbyZP7lkSafQsg37lFrJ4SZyJs-0i-29lYC",
-                unit: "bunch",
-              }}
-            />
+            <Link href="/products" className="text-primary font-bold text-sm hover:underline">
+              Browse the catalog
+            </Link>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Hero card — first product, large */}
+            {(() => {
+              const p = featured[0];
+              const farm = p.farms as unknown as { id: string; name: string } | null;
+              return (
+                <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container-highest">
+                  {p.image_url ? (
+                    <Image
+                      src={p.image_url}
+                      alt={p.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/10" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-tertiary/80 via-transparent to-transparent p-8 flex flex-col justify-end">
+                    {farm && (
+                      <span className="bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase font-bold px-3 py-1 rounded-full w-fit mb-3">
+                        {farm.name}
+                      </span>
+                    )}
+                    <h3 className="text-3xl font-headline text-on-tertiary italic mb-2">
+                      {p.name}
+                    </h3>
+                    {p.description && (
+                      <p className="text-on-tertiary-container font-body mb-4 line-clamp-2">
+                        {p.description}
+                      </p>
+                    )}
+                    <p className="text-on-tertiary font-headline text-xl mb-6">
+                      ${(p.price / 100).toFixed(2)}
+                      {p.unit && <span className="text-sm font-body opacity-75 ml-1">/ {p.unit}</span>}
+                    </p>
+                    {farm && (
+                      <AddToCartButton
+                        farmId={farm.id}
+                        item={{
+                          productId: p.id,
+                          name: p.name,
+                          price: p.price / 100,
+                          image: p.image_url ?? "",
+                          unit: p.unit ?? "each",
+                        }}
+                        className="w-fit px-6"
+                      />
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
-          {/* Horizontal Banner Product */}
-          <div className="md:col-span-2 bg-surface-container p-8 rounded-xl flex flex-col md:flex-row items-center gap-8 group">
-            <div className="flex-1">
-              <span className="text-secondary font-label text-[10px] uppercase tracking-widest font-bold block mb-2">
-                Seasonal Special
-              </span>
-              <h4 className="text-3xl font-headline text-tertiary mb-3 italic">
-                The Kitchen Hearth Box
-              </h4>
-              <p className="text-on-surface-variant mb-6 text-sm">
-                A weekly curated selection of what&rsquo;s peaking across our local
-                farms this week. Perfect for a family of four.
-              </p>
-              <button className="px-6 py-3 bg-primary text-on-primary rounded-md font-bold text-sm transition-transform active:scale-95">
-                Subscribe - $45/week
-              </button>
-            </div>
-            <div className="w-full md:w-1/2 aspect-[4/3] rounded-lg overflow-hidden">
-              <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF4A6idYdLAiAOn2lGufidL7mH58z9Dl9U6DCQSIk8TWfSYtTxtlkiQQDMiGD0dQMNcN0K4f9TnML0dFaZKcrSasdY6DlgbD_GLYTKo0YVrUAAmy3p6ER2ghw34ejWevGFb6MIw3SxaZUMrh_RD82ah7f4ju3vB7Ty-XXPT3nuyjVy62nH-RW6V8Vw791yAHqXa1kLzReLRmNO1WvFXFb0-YiKOZVDQvL_8XyW_51rTOCafHePoX2YdXiwDuXCZ4hX5FkHSc_d-S3p"
-                alt="Wooden crate filled with colorful farm fresh produce"
-                width={600}
-                height={450}
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
+            {/* Cards 2 + 3 */}
+            {featured.slice(1, 3).map((p) => {
+              const farm = p.farms as unknown as { id: string; name: string } | null;
+              return (
+                <div key={p.id} className="bg-surface-container-low p-6 rounded-xl group">
+                  <div className="overflow-hidden rounded-lg aspect-square mb-6 bg-surface-container-highest relative">
+                    {p.image_url ? (
+                      <Image
+                        src={p.image_url}
+                        alt={p.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-outline-variant">
+                        <Icon name="image" className="text-4xl" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-start mb-2">
+                    <Link href={`/products/${p.id}`} className="hover:underline">
+                      <h4 className="font-headline text-xl text-tertiary italic">
+                        {p.name}
+                      </h4>
+                    </Link>
+                    <span className="text-primary font-bold shrink-0 ml-2">
+                      ${(p.price / 100).toFixed(2)}
+                    </span>
+                  </div>
+                  {p.description && (
+                    <p className="text-sm text-on-surface-variant font-body mb-4 line-clamp-2">
+                      {p.description}
+                    </p>
+                  )}
+                  {farm && (
+                    <AddToCartButton
+                      variant="underline"
+                      farmId={farm.id}
+                      item={{
+                        productId: p.id,
+                        name: p.name,
+                        price: p.price / 100,
+                        image: p.image_url ?? "",
+                        unit: p.unit ?? "each",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Bottom banner — 4th product or CTA */}
+            {featured[3] ? (() => {
+              const p = featured[3];
+              const farm = p.farms as unknown as { id: string; name: string } | null;
+              return (
+                <div className="md:col-span-2 bg-surface-container p-8 rounded-xl flex flex-col md:flex-row items-center gap-8 group">
+                  <div className="flex-1">
+                    {farm && (
+                      <span className="text-secondary font-label text-[10px] uppercase tracking-widest font-bold block mb-2">
+                        {farm.name}
+                      </span>
+                    )}
+                    <Link href={`/products/${p.id}`} className="hover:underline">
+                      <h4 className="text-3xl font-headline text-tertiary mb-3 italic">
+                        {p.name}
+                      </h4>
+                    </Link>
+                    {p.description && (
+                      <p className="text-on-surface-variant mb-4 text-sm line-clamp-2">
+                        {p.description}
+                      </p>
+                    )}
+                    <p className="text-primary font-headline text-xl mb-6">
+                      ${(p.price / 100).toFixed(2)}
+                      {p.unit && <span className="text-sm font-body text-on-surface-variant ml-1">/ {p.unit}</span>}
+                    </p>
+                    {farm && (
+                      <AddToCartButton
+                        farmId={farm.id}
+                        item={{
+                          productId: p.id,
+                          name: p.name,
+                          price: p.price / 100,
+                          image: p.image_url ?? "",
+                          unit: p.unit ?? "each",
+                        }}
+                        className="w-fit"
+                      />
+                    )}
+                  </div>
+                  {p.image_url && (
+                    <div className="w-full md:w-1/2 aspect-[4/3] rounded-lg overflow-hidden">
+                      <Image
+                        src={p.image_url}
+                        alt={p.name}
+                        width={600}
+                        height={450}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })() : (
+              /* CTA when fewer than 4 products */
+              <div className="md:col-span-2 bg-surface-container p-8 rounded-xl flex items-center justify-center">
+                <div className="text-center">
+                  <p className="font-headline italic text-2xl text-tertiary mb-4">
+                    More coming soon.
+                  </p>
+                  <Link
+                    href="/products"
+                    className="px-6 py-3 bg-primary text-on-primary rounded-md font-bold text-sm transition-transform active:scale-95 inline-block"
+                  >
+                    Browse All Products
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </section>
 
       {/* Newsletter Section */}
