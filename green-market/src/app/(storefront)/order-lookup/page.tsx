@@ -1,9 +1,99 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import type { OrderStatus } from "@/types/order";
+
+const STATUS_STEPS: OrderStatus[] = ["confirmed", "preparing", "ready", "fulfilled"];
+
+const STATUS_CONFIG: Record<string, { label: string; icon: string; description: string }> = {
+  pending_payment: { label: "Awaiting Payment", icon: "pending", description: "Payment is being processed." },
+  placed: { label: "Order Received", icon: "check_circle", description: "Your order has been received." },
+  confirmed: { label: "Confirmed", icon: "check_circle", description: "Payment confirmed. Your order is queued." },
+  preparing: { label: "Being Prepared", icon: "restaurant", description: "The farm is preparing your items." },
+  ready: { label: "Ready for Pickup", icon: "storefront", description: "Your order is ready! Head to the South Gate stall." },
+  fulfilled: { label: "Completed", icon: "done_all", description: "Your order has been fulfilled. Enjoy!" },
+  cancelled: { label: "Cancelled", icon: "cancel", description: "This order was cancelled." },
+  failed: { label: "Payment Failed", icon: "error", description: "Payment could not be processed. Please try ordering again." },
+  abandoned: { label: "Expired", icon: "schedule", description: "This order expired before payment was completed." },
+};
+
+const TERMINAL_STATUSES: OrderStatus[] = ["fulfilled", "cancelled", "failed", "abandoned"];
+
+interface OrderItem {
+  id: string;
+  quantity: number;
+  unit_price: number;
+  products: { id: string; name: string; image_url: string | null } | null;
+}
+
+interface OrderResult {
+  id: string;
+  order_number: string | null;
+  status: OrderStatus;
+  total_amount: number;
+  special_instructions: string | null;
+  created_at: string;
+  order_items: OrderItem[];
+}
 
 export default function OrderLookupPage() {
+  const searchParams = useSearchParams();
+
+  const [orderNumber, setOrderNumber] = useState(searchParams.get("orderNumber") ?? "");
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [order, setOrder] = useState<OrderResult | null>(null);
+
+  const handleLookup = useCallback(async (num: string, em: string) => {
+    if (!num.trim() || !em.trim()) return;
+    setIsLoading(true);
+    setError(null);
+    setOrder(null);
+
+    try {
+      const res = await fetch(
+        `/api/orders/lookup?orderNumber=${encodeURIComponent(num.trim().toUpperCase())}&email=${encodeURIComponent(em.trim())}`
+      );
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Order not found.");
+        return;
+      }
+      setOrder(data.order);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Auto-submit if arriving from confirmation page with params
+  useEffect(() => {
+    const num = searchParams.get("orderNumber");
+    const em = searchParams.get("email");
+    if (num && em) {
+      handleLookup(num, em);
+    }
+  }, [searchParams, handleLookup]);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    handleLookup(orderNumber, email);
+  }
+
+  const activeStepIndex = order
+    ? STATUS_STEPS.indexOf(order.status as OrderStatus)
+    : -1;
+  const isTerminal = order ? TERMINAL_STATUSES.includes(order.status) : false;
+  const statusConfig = order ? (STATUS_CONFIG[order.status] ?? STATUS_CONFIG.confirmed) : null;
+
   return (
     <main className="flex-grow flex flex-col items-center justify-center px-4 py-16">
       {/* Header */}
@@ -20,7 +110,7 @@ export default function OrderLookupPage() {
         </div>
       </div>
 
-      {/* Asymmetric Lookup Card */}
+      {/* Lookup Card */}
       <div className="relative w-full max-w-4xl grid md:grid-cols-12 gap-8 items-stretch">
         {/* Harvest Image */}
         <div className="md:col-span-5 relative h-64 md:h-auto min-h-[400px]">
@@ -38,7 +128,7 @@ export default function OrderLookupPage() {
           </div>
         </div>
 
-        {/* Form */}
+        {/* Form + Results */}
         <div className="md:col-span-7 bg-surface-container-lowest p-8 md:p-12 rounded-xl shadow-ambient">
           <div className="mb-10">
             <h2 className="text-2xl font-headline text-tertiary italic mb-2">
@@ -49,24 +139,41 @@ export default function OrderLookupPage() {
             </p>
           </div>
 
-          <form className="space-y-8">
+          <form className="space-y-8" onSubmit={handleSubmit}>
             <Input
-              label="Order ID"
+              label="Order Number"
               type="text"
-              placeholder="e.g. #GRN-8842"
+              placeholder="e.g. GRN-A3F8"
+              value={orderNumber}
+              onChange={(e) => setOrderNumber(e.target.value.toUpperCase())}
               className="text-lg rounded-t-lg"
             />
             <Input
               label="Email Address"
               type="email"
               placeholder="hello@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="text-lg rounded-t-lg"
             />
 
             <div className="pt-4 flex items-center gap-6">
-              <Button className="flex-grow md:flex-none px-8 py-4 rounded-lg flex items-center justify-center gap-2">
-                Locate My Order
-                <Icon name="arrow_forward" size="sm" />
+              <Button
+                type="submit"
+                className="flex-grow md:flex-none px-8 py-4 rounded-lg flex items-center justify-center gap-2"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Icon name="progress_activity" size="sm" className="animate-spin" />
+                    Looking up...
+                  </>
+                ) : (
+                  <>
+                    Locate My Order
+                    <Icon name="arrow_forward" size="sm" />
+                  </>
+                )}
               </Button>
               <a
                 href="#"
@@ -77,22 +184,113 @@ export default function OrderLookupPage() {
             </div>
           </form>
 
-          {/* Status placeholder */}
-          <div className="mt-12 p-6 bg-surface-container-low rounded-lg opacity-50">
-            <div className="flex items-start gap-4">
-              <div className="bg-primary-fixed p-2 rounded-full">
-                <Icon name="local_shipping" className="text-primary" />
+          {/* Error */}
+          {error && (
+            <div className="mt-6 p-4 bg-error/10 rounded-lg flex items-start gap-3">
+              <Icon name="error" className="text-error shrink-0 mt-0.5" size="sm" />
+              <p className="text-sm text-error">{error}</p>
+            </div>
+          )}
+
+          {/* Order Result */}
+          {order && statusConfig && (
+            <div className="mt-8 space-y-6">
+              {/* Status Banner */}
+              <div className={`p-5 rounded-xl flex items-start gap-4 ${
+                isTerminal && order.status !== "fulfilled"
+                  ? "bg-error/10"
+                  : "bg-primary-fixed/40"
+              }`}>
+                <div className={`p-2 rounded-full ${
+                  isTerminal && order.status !== "fulfilled"
+                    ? "bg-error/20"
+                    : "bg-primary-fixed"
+                }`}>
+                  <Icon
+                    name={statusConfig.icon}
+                    className={
+                      isTerminal && order.status !== "fulfilled"
+                        ? "text-error"
+                        : "text-primary"
+                    }
+                  />
+                </div>
+                <div>
+                  <p className="font-headline text-lg text-tertiary">{statusConfig.label}</p>
+                  <p className="text-sm text-on-surface-variant">{statusConfig.description}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-headline text-lg text-primary">
-                  Current Status
-                </h4>
-                <p className="text-sm text-on-surface-variant">
-                  Enter your details above to see your harvest journey.
+
+              {/* Progress Stepper */}
+              {!isTerminal && (
+                <div className="flex items-center gap-1">
+                  {STATUS_STEPS.map((step, idx) => (
+                    <div key={step} className="flex items-center flex-1 last:flex-none">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 transition-colors ${
+                        idx <= activeStepIndex
+                          ? "bg-primary text-on-primary"
+                          : "bg-surface-container-highest text-on-surface-variant"
+                      }`}>
+                        {idx < activeStepIndex ? (
+                          <Icon name="check" size="sm" />
+                        ) : (
+                          idx + 1
+                        )}
+                      </div>
+                      {idx < STATUS_STEPS.length - 1 && (
+                        <div className={`h-0.5 flex-1 mx-1 rounded transition-colors ${
+                          idx < activeStepIndex ? "bg-primary" : "bg-surface-container-highest"
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Items */}
+              <div className="space-y-3">
+                <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                  Items
                 </p>
+                {order.order_items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    {item.products?.image_url ? (
+                      <Image
+                        src={item.products.image_url}
+                        alt={item.products.name ?? "Product"}
+                        width={44}
+                        height={44}
+                        className="w-11 h-11 object-cover rounded-md flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-11 h-11 rounded-md bg-surface-container-highest flex items-center justify-center flex-shrink-0">
+                        <Icon name="eco" size="sm" className="text-on-surface-variant" />
+                      </div>
+                    )}
+                    <div className="flex-grow">
+                      <p className="text-sm font-bold text-on-surface">
+                        {item.products?.name ?? "Product"}
+                      </p>
+                      <p className="text-xs text-on-surface-variant">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="text-sm font-bold text-tertiary">
+                      ${(item.unit_price * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between items-center pt-2">
+                <span className="font-label uppercase tracking-wider text-xs text-on-surface-variant">
+                  Total
+                </span>
+                <span className="font-headline text-2xl text-primary">
+                  ${order.total_amount.toFixed(2)}
+                </span>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -107,8 +305,8 @@ export default function OrderLookupPage() {
             sustainability, and community.&rdquo;
           </h3>
           <p className="text-on-surface-variant text-sm font-body leading-relaxed">
-            Our local growers start harvesting at dawn to ensure that when your
-            order is &lsquo;Ready for Pickup&rsquo;, it&rsquo;s as fresh as the
+            Our farmers start harvesting at dawn to ensure that when your order
+            is &lsquo;Ready for Pickup&rsquo;, it&rsquo;s as fresh as the
             morning dew.
           </p>
         </div>

@@ -1,6 +1,7 @@
 import type { OrderStatus } from "@/types/order";
 
 const statusStyles: Record<OrderStatus, string> = {
+  pending_payment: "bg-surface-container-highest text-on-surface-variant",
   placed: "bg-surface-container-highest text-on-surface-variant",
   confirmed: "bg-primary-fixed text-on-primary-fixed",
   preparing: "bg-secondary-fixed text-on-secondary-fixed",
@@ -12,6 +13,7 @@ const statusStyles: Record<OrderStatus, string> = {
 };
 
 const statusLabels: Record<OrderStatus, string> = {
+  pending_payment: "Awaiting Payment",
   placed: "Placed",
   confirmed: "Confirmed",
   preparing: "Preparing",
