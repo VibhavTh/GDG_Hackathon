@@ -1,8 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createServiceClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function register(formData: FormData) {
   const supabase = await createClient();
@@ -11,7 +10,6 @@ export async function register(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  // 1. Create auth user
   const { data, error: signUpError } = await supabase.auth.signUp({
     email,
     password,
@@ -21,15 +19,13 @@ export async function register(formData: FormData) {
   });
 
   if (signUpError) {
-    const message =
-      signUpError.message.toLowerCase().includes("already registered")
-        ? "An account with that email already exists. Try logging in instead."
-        : "We couldn't create your account. Please try again.";
+    const message = signUpError.message.toLowerCase().includes("already registered")
+      ? "An account with that email already exists. Try logging in instead."
+      : signUpError.message;
     redirect(`/farmer/register?error=${encodeURIComponent(message)}`);
   }
 
-  // Supabase silent duplicate: returns a user with no identities if the email
-  // already exists but is unconfirmed. Treat this as "already registered".
+  // Silent duplicate: Supabase returns a user with no identities for unconfirmed existing emails
   if (!data.user || data.user.identities?.length === 0) {
     redirect(
       `/farmer/register?error=${encodeURIComponent("An account with that email already exists. Try logging in instead.")}`
@@ -38,14 +34,13 @@ export async function register(formData: FormData) {
 
   const userId = data.user.id;
 
-  // 2. Upsert public.users row — trigger may have already created it as 'customer'
+  // Upsert users row with farmer role
   const { error: userError } = await service.from("users").upsert(
     { id: userId, email, role: "farmer" },
     { onConflict: "id" }
   );
 
   if (userError) {
-    // Best-effort cleanup: delete the auth user so they can try again
     await service.auth.admin.deleteUser(userId);
     redirect(
       `/farmer/register?error=${encodeURIComponent("Something went wrong. Please try again.")}`

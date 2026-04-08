@@ -77,8 +77,9 @@ export async function POST(request: NextRequest) {
     if (dbProduct.stock < item.quantity) {
       unavailable.push(`${item.name} (only ${dbProduct.stock} in stock)`);
     }
-    // Check for price mismatch (stale client data) — allow $0.01 tolerance
-    if (Math.abs(dbProduct.price - item.price) > 0.01) {
+    // dbProduct.price is in cents, item.price is in dollars from the cart
+    // Allow 1 cent tolerance for floating point
+    if (Math.abs(dbProduct.price - Math.round(item.price * 100)) > 1) {
       priceMismatch.push(item.name);
     }
   }
@@ -96,10 +97,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Calculate totals from DB prices
+  // Calculate totals from DB prices (dbPrice is already in cents)
   const subtotalCents = items.reduce((sum, item) => {
     const dbPrice = productMap.get(item.productId)!.price;
-    return sum + Math.round(dbPrice * 100) * item.quantity;
+    return sum + dbPrice * item.quantity;
   }, 0);
   const fulfillmentFeeCents = fulfillmentType === "delivery" ? Math.round(FULFILLMENT_FEE * 100) : 0;
   const totalCents = subtotalCents + fulfillmentFeeCents;
@@ -110,8 +111,8 @@ export async function POST(request: NextRequest) {
     .insert({
       customer_id: null,
       guest_email: customerEmail.toLowerCase().trim(),
-      total_amount: totalCents / 100,
-      status: "pending_payment" as const,
+      total_amount: totalCents,
+      status: "placed",
       special_instructions: specialInstructions?.trim() || null,
     })
     .select()
@@ -149,7 +150,7 @@ export async function POST(request: NextRequest) {
           name: `${item.name} (per ${item.unit})`,
           ...(item.image ? { images: [item.image] } : {}),
         },
-        unit_amount: Math.round(productMap.get(item.productId)!.price * 100),
+        unit_amount: productMap.get(item.productId)!.price, // already in cents
       },
       quantity: item.quantity,
     }));

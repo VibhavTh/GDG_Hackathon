@@ -11,7 +11,8 @@ export async function magicLink(formData: FormData) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent(next)}&role=customer`,
+      // Keep redirectTo clean — role and next are appended so callback can read them
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?role=customer&next=${encodeURIComponent(next)}`,
       shouldCreateUser: true,
     },
   });
@@ -31,10 +32,16 @@ export async function googleSignIn(formData: FormData) {
   const supabase = await createClient();
   const next = (formData.get("next") as string) || "/account/orders";
 
+  // Use a clean redirectTo — Supabase preserves it through the OAuth flow.
+  // We append role=customer so the callback knows not to send them to /dashboard.
+  const redirectTo = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?role=customer&next=${encodeURIComponent(next)}`;
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent(next)}&role=customer`,
+      redirectTo,
+      // Request only what we need
+      scopes: "email profile",
     },
   });
 

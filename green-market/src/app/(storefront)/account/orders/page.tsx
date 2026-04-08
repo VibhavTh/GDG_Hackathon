@@ -40,7 +40,7 @@ export default async function OrderHistoryPage() {
     .select(`
       id,
       status,
-      total,
+      total_amount,
       created_at,
       special_instructions,
       order_items (
@@ -136,7 +136,7 @@ export default async function OrderHistoryPage() {
                     </p>
                   </div>
                   <p className="font-headline text-primary text-lg shrink-0">
-                    ${(order.total / 100).toFixed(2)}
+                    ${(order.total_amount / 100).toFixed(2)}
                   </p>
                 </div>
 
