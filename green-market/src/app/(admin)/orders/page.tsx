@@ -16,7 +16,7 @@ export default async function OrdersPage() {
     .select("id")
     .eq("owner_id", user.id)
     .single();
-  if (!farmData) redirect("/farmer/onboarding");
+  if (!farmData) redirect("/farmer/setup");
   const farm = farmData as { id: string };
 
   const { data: summaries } = await service

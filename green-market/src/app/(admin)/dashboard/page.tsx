@@ -1,18 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { OrderStatus } from "@/lib/supabase/types";
 
-const chartData = [
-  { day: "Mon", height: "40%" },
-  { day: "Tue", height: "65%" },
-  { day: "Wed", height: "50%" },
-  { day: "Thu", height: "85%" },
-  { day: "Fri", height: "100%", highlight: true, value: "$2,140" },
-  { day: "Sat", height: "75%" },
-  { day: "Sun", height: "45%" },
-];
 
 const STATUS_STYLE: Partial<Record<OrderStatus, string>> = {
   placed: "bg-surface-container-highest text-on-surface-variant",
@@ -106,9 +96,34 @@ export default async function DashboardPage() {
 
   return (
     <main className="flex-1 px-8 py-10 max-w-7xl">
+      {/* No-farm setup banner */}
+      {!farm && (
+        <div className="mb-8 bg-primary/8 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <Icon name="storefront" className="text-primary" size="sm" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold font-body text-on-surface">
+                You haven&apos;t set up your farm yet.
+              </p>
+              <p className="text-xs text-on-surface-variant font-body mt-0.5">
+                Create your farm profile to start listing products and reaching customers.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/farmer/setup"
+            className="shrink-0 bg-primary text-on-primary font-label font-bold py-2.5 px-6 rounded-lg hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-xs"
+          >
+            Create Your Farm
+          </Link>
+        </div>
+      )}
+
       {/* Incomplete profile banner */}
       {profileIncomplete && (
-        <div className="mb-8 bg-secondary-fixed/30 border border-secondary/20 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
+        <div className="mb-8 bg-secondary-fixed/30 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Icon name="edit_note" className="text-secondary shrink-0" />
             <p className="text-sm font-body text-on-surface">
@@ -117,7 +132,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <Link
-            href="/farmer/onboarding"
+            href="/farmer/setup"
             className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-primary hover:underline"
           >
             Complete Profile
@@ -132,7 +147,7 @@ export default async function DashboardPage() {
             {farm?.name ? `Welcome, ${farm.name}.` : "Good morning, Farmer."}
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
-            Your listings are live and orders are coming in.
+            {farm ? "Your listings are live and orders are coming in." : "Set up your farm to get started."}
           </p>
         </div>
         <div className="bg-surface-container-low px-4 py-2 rounded-lg flex items-center gap-2">
@@ -149,21 +164,18 @@ export default async function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {/* Revenue — still placeholder until checkout is wired */}
+        {/* Revenue — not yet connected to Supabase */}
         <div className="bg-surface-container-low p-8 rounded-xl group">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Total Revenue
           </p>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-4xl font-headline italic text-primary">
-              $12,482
+            <h3 className="text-4xl font-headline italic text-on-surface-variant/40">
+              $0
             </h3>
-            <span className="text-xs text-primary bg-primary-fixed px-2 py-1 rounded-full font-bold">
-              +12%
-            </span>
           </div>
           <p className="text-xs text-on-surface-variant mt-4">
-            Growth compared to last harvest cycle
+            No revenue yet
           </p>
         </div>
 
@@ -221,10 +233,10 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Chart + Quick Action */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+      {/* Chart */}
+      <div className="mb-12">
         {/* Sales Chart */}
-        <div className="lg:col-span-3 bg-surface-container-low p-8 rounded-xl h-80 flex flex-col">
+        <div className="bg-surface-container-low p-8 rounded-xl h-80 flex flex-col">
           <div className="flex justify-between items-center mb-8">
             <h4 className="font-headline italic text-xl text-tertiary">
               Sales Performance
@@ -239,49 +251,15 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="flex-1 flex items-end gap-4 px-4 pb-4">
-            {chartData.map((bar) => (
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
               <div
-                key={bar.day}
-                className={`flex-1 rounded-t-lg transition-all hover:opacity-80 relative ${
-                  bar.highlight
-                    ? "bg-primary"
-                    : "bg-primary/10 hover:bg-primary/20"
-                }`}
-                style={{ height: bar.height }}
-                title={bar.day}
-              >
-                {bar.value && (
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-tertiary text-on-tertiary text-[10px] py-1 px-2 rounded whitespace-nowrap">
-                    {bar.value}
-                  </div>
-                )}
-              </div>
+                key={day}
+                className="flex-1 rounded-t-lg bg-surface-container-highest/50"
+                style={{ height: "12%" }}
+                title={day}
+              />
             ))}
           </div>
-        </div>
-
-        {/* Quick Harvest Card */}
-        <div className="bg-surface-container p-8 rounded-xl relative overflow-hidden flex flex-col justify-between">
-          <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUPLv42vJdDprFHB0Pv1XL0RA69yOfL9APUOi_NotgyLYhLOD_Fy6gZOjb8TXlyv8X6--2e7psKnXtmRIHbl3lpSyQ2lweW9rBf-X8-tT-7mWAVo9SM18IXo-hBGckrjZiXnJ4qi1bRF6eYLdv2lTGcO4Fh1yCMUQ5rc_unD7UUjlhU9jy1bftJheLk1QzzaN99IfdNS4YOsStc4_FpriFp962QAfu1M8yHWIKeinBZcps3objw4WYXLltaEDmMReM6NsTlkuwPfcd"
-            alt="Fresh organic vegetables in a wooden harvest basket"
-            width={128}
-            height={128}
-            sizes="128px"
-            loading="lazy"
-            className="absolute -top-4 -right-4 w-32 h-32 object-cover rounded-lg rotate-12 opacity-80"
-          />
-          <div className="relative z-10">
-            <h4 className="font-headline italic text-xl text-tertiary">
-              Quick Harvest
-            </h4>
-            <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
-              Prepare batch for morning local market deliveries.
-            </p>
-          </div>
-          <button className="bg-primary text-on-primary px-6 py-3 rounded-md text-sm font-bold flex items-center justify-center gap-2 mt-6 active:scale-95 transition-all hover:bg-primary-container">
-            Generate Manifest
-          </button>
         </div>
       </div>
 
