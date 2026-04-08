@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { ProductCategory } from "@/lib/supabase/types";
 
 // ---- helpers ----
@@ -14,7 +14,8 @@ async function getFarm() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/farmer/login");
 
-  const { data: farmData } = await supabase
+  const service = createServiceClient();
+  const { data: farmData } = await service
     .from("farms")
     .select("id")
     .eq("owner_id", user.id)
@@ -22,13 +23,13 @@ async function getFarm() {
 
   if (!farmData) redirect("/farmer/onboarding");
   const farm = farmData as { id: string };
-  return { supabase, farmId: farm.id };
+  return { service, farmId: farm.id };
 }
 
 // ---- product CRUD ----
 
 export async function createProduct(formData: FormData) {
-  const { supabase, farmId } = await getFarm();
+  const { service, farmId } = await getFarm();
 
   const priceRaw = parseFloat(formData.get("price") as string);
   const stock = parseInt(formData.get("stock") as string, 10);
@@ -39,18 +40,19 @@ export async function createProduct(formData: FormData) {
     );
   }
 
-  const { error } = await supabase.from("products").insert({
+  const { error } = await service.from("products").insert({
     farm_id: farmId,
     name: (formData.get("name") as string).trim(),
     description: (formData.get("description") as string).trim() || null,
     category: formData.get("category") as ProductCategory,
-    price: Math.round(priceRaw * 100), // store in cents
+    price: Math.round(priceRaw * 100),
     stock: isNaN(stock) ? 0 : stock,
     image_url: (formData.get("image_url") as string).trim() || null,
     is_active: true,
   });
 
   if (error) {
+    console.error("[createProduct] Supabase error:", JSON.stringify(error));
     redirect(
       `/inventory/new?error=${encodeURIComponent("Could not create product. Please try again.")}`
     );
@@ -61,13 +63,13 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(formData: FormData) {
-  const { supabase, farmId } = await getFarm();
+  const { service, farmId } = await getFarm();
 
   const productId = formData.get("product_id") as string;
   const priceRaw = parseFloat(formData.get("price") as string);
   const stock = parseInt(formData.get("stock") as string, 10);
 
-  const { error } = await supabase
+  const { error } = await service
     .from("products")
     .update({
       name: (formData.get("name") as string).trim(),
@@ -78,7 +80,7 @@ export async function updateProduct(formData: FormData) {
       image_url: (formData.get("image_url") as string).trim() || null,
     })
     .eq("id", productId)
-    .eq("farm_id", farmId); // ownership check
+    .eq("farm_id", farmId);
 
   if (error) {
     redirect(
@@ -91,9 +93,9 @@ export async function updateProduct(formData: FormData) {
 }
 
 export async function deleteProduct(productId: string) {
-  const { supabase, farmId } = await getFarm();
+  const { service, farmId } = await getFarm();
 
-  await supabase
+  await service
     .from("products")
     .update({ deleted_at: new Date().toISOString(), is_active: false })
     .eq("id", productId)
@@ -103,9 +105,9 @@ export async function deleteProduct(productId: string) {
 }
 
 export async function restoreProduct(productId: string) {
-  const { supabase, farmId } = await getFarm();
+  const { service, farmId } = await getFarm();
 
-  await supabase
+  await service
     .from("products")
     .update({ deleted_at: null, is_active: true })
     .eq("id", productId)
@@ -115,10 +117,9 @@ export async function restoreProduct(productId: string) {
 }
 
 export async function updateStock(productId: string, delta: number) {
-  const { supabase, farmId } = await getFarm();
+  const { service, farmId } = await getFarm();
 
-  // Read current stock, then apply delta — prevents going below 0
-  const { data: product } = await supabase
+  const { data: product } = await service
     .from("products")
     .select("stock")
     .eq("id", productId)
@@ -127,9 +128,9 @@ export async function updateStock(productId: string, delta: number) {
 
   if (!product) return;
 
-  const newStock = Math.max(0, product.stock + delta);
+  const newStock = Math.max(0, (product as { stock: number }).stock + delta);
 
-  await supabase
+  await service
     .from("products")
     .update({ stock: newStock })
     .eq("id", productId)
