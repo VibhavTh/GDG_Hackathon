@@ -28,23 +28,27 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}${next}`);
       }
 
-      // Farmer flow — check if onboarding is needed
+      // Farmer flow — check if farm setup is needed
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
         const { data: farm } = await supabase
           .from("farms")
-          .select("description, location")
+          .select("id")
           .eq("owner_id", user.id)
           .single();
 
-        // New farmer with no profile filled in yet
-        if (farm && !farm.description && !farm.location) {
-          return NextResponse.redirect(`${origin}/farmer/onboarding`);
-        }
-
-        // Customer who signed up without role param — send to account
+        // No farm row yet — could be a new farmer or a customer
         if (!farm) {
+          const { data: profile } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", user.id)
+            .single();
+
+          if (profile?.role === "farmer") {
+            return NextResponse.redirect(`${origin}/farmer/setup`);
+          }
           return NextResponse.redirect(`${origin}/account/orders`);
         }
       }

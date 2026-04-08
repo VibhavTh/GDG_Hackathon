@@ -42,7 +42,7 @@ export default async function InventoryPage({ searchParams }: Props) {
     .eq("owner_id", user.id)
     .single();
 
-  if (!farm) redirect("/farmer/onboarding");
+  if (!farm) redirect("/farmer/setup");
 
   const { category, q } = await searchParams;
 

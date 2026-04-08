@@ -6,7 +6,7 @@ const FARMER_PROTECTED_PREFIXES = [
   "/orders",
   "/inventory",
   "/settings",
-  "/farmer/onboarding",
+  "/farmer/setup",
 ];
 
 const CUSTOMER_PROTECTED_PREFIXES = ["/account/orders"];

@@ -82,19 +82,12 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
             </button>
           </form>
 
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-outline-variant" />
-            <span className="text-xs text-on-surface-variant font-label">or</span>
-            <div className="flex-1 h-px bg-outline-variant" />
-          </div>
-
-          <Link
-            href="/farmer/register"
-            className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-95 transition-all"
-          >
-            Register New Farm
-          </Link>
-
+          <p className="text-center text-xs text-on-surface-variant font-body">
+            New here?{" "}
+            <Link href="/farmer/register" className="text-primary font-bold hover:underline">
+              Create an account
+            </Link>
+          </p>
           <p className="text-center text-xs text-on-surface-variant font-body">
             Looking to shop?{" "}
             <Link href="/customer/login" className="text-primary font-bold hover:underline">

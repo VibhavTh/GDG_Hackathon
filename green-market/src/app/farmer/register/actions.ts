@@ -10,13 +10,6 @@ export async function register(formData: FormData) {
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const farmName = (formData.get("farm_name") as string).trim();
-
-  if (!farmName) {
-    redirect(
-      `/farmer/register?error=${encodeURIComponent("Please enter your farm name.")}`
-    );
-  }
 
   // 1. Create auth user
   const { data, error: signUpError } = await supabase.auth.signUp({
@@ -24,7 +17,6 @@ export async function register(formData: FormData) {
     password,
     options: {
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
-      data: { farm_name: farmName },
     },
   });
 
@@ -58,30 +50,6 @@ export async function register(formData: FormData) {
     redirect(
       `/farmer/register?error=${encodeURIComponent("Something went wrong. Please try again.")}`
     );
-  }
-
-  // 3. Create farms row — check it doesn't already exist first
-  const { data: existingFarm } = await service
-    .from("farms")
-    .select("id")
-    .eq("owner_id", userId)
-    .single();
-
-  if (!existingFarm) {
-    const { error: farmError } = await service.from("farms").insert({
-      owner_id: userId,
-      name: farmName,
-      is_approved: false,
-    });
-
-    if (farmError) {
-      // Roll back users row and auth user so the farmer can retry cleanly
-      await service.from("users").delete().eq("id", userId);
-      await service.auth.admin.deleteUser(userId);
-      redirect(
-        `/farmer/register?error=${encodeURIComponent("Something went wrong creating your farm. Please try again.")}`
-      );
-    }
   }
 
   redirect("/farmer/verify-email");

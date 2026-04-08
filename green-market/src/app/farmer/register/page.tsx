@@ -58,10 +58,10 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
 
           <div className="mb-10 text-center md:text-left">
             <h2 className="font-headline font-semibold text-3xl text-on-surface mb-2">
-              Register Your Farm
+              Create Your Account
             </h2>
             <p className="text-on-surface-variant font-body">
-              Create your account and start listing products today.
+              Sign up and you can set up your farm right after.
             </p>
           </div>
 
@@ -74,24 +74,6 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
           )}
 
           <form action={register} className="space-y-6">
-            <div className="space-y-1.5">
-              <label
-                className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
-                htmlFor="farm_name"
-              >
-                Farm Name
-              </label>
-              <input
-                className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline"
-                id="farm_name"
-                name="farm_name"
-                placeholder="e.g. Sunrise Valley Farm"
-                required
-                type="text"
-                autoComplete="organization"
-              />
-            </div>
-
             <div className="space-y-1.5">
               <label
                 className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
@@ -148,7 +130,7 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
                 className="w-full bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-sm"
                 type="submit"
               >
-                Create Farm Account
+                Create Account
               </button>
               <Link
                 href="/farmer/login"

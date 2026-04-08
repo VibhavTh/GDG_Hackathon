@@ -21,7 +21,7 @@ async function getFarm() {
     .eq("owner_id", user.id)
     .single();
 
-  if (!farmData) redirect("/farmer/onboarding");
+  if (!farmData) redirect("/farmer/setup");
   const farm = farmData as { id: string };
   return { service, farmId: farm.id };
 }
