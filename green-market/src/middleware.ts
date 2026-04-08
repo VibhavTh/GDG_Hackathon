@@ -9,7 +9,7 @@ const FARMER_PROTECTED_PREFIXES = [
   "/farmer/setup",
 ];
 
-const CUSTOMER_PROTECTED_PREFIXES = ["/account/orders"];
+const CUSTOMER_PROTECTED_PREFIXES = ["/account/orders", "/checkout"];
 
 const PROTECTED_PREFIXES = [
   ...FARMER_PROTECTED_PREFIXES,
