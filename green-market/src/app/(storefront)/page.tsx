@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -8,368 +7,442 @@ import { createServiceClient } from "@/lib/supabase/server";
 export default async function HomePage() {
   const service = createServiceClient();
 
-  // Fetch latest 4 active products with farm info for the bento grid
   const { data: featuredProducts } = await service
     .from("products")
-    .select("id, name, price, description, image_url, unit, farm_id, farms(id, name)")
+    .select("id, name, price, description, image_url, unit, farm_id, farms(id, name, location)")
     .eq("is_active", true)
     .is("deleted_at", null)
     .gt("stock", 0)
     .order("created_at", { ascending: false })
     .limit(4);
 
+  const { data: farmCount } = await service
+    .from("farms")
+    .select("id", { count: "exact", head: true });
+
+  const { data: productCount } = await service
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("is_active", true)
+    .is("deleted_at", null);
+
   const featured = featuredProducts ?? [];
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative min-h-[600px] md:min-h-[870px] flex items-center px-6 md:px-12 overflow-hidden">
-        <div className="absolute inset-0 z-0">
+      {/* ── HERO — Split screen, left text / right image ── */}
+      <section className="min-h-[100dvh] grid grid-cols-1 md:grid-cols-2">
+        {/* Left — content */}
+        <div className="flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-28 pb-16 md:pt-0 md:pb-0 bg-surface">
+          <div className="max-w-lg">
+            <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-8 animate-slide-up" style={{ animationDelay: "0ms" }}>
+              <span className="w-6 h-px bg-secondary inline-block" />
+              Farm to Table Marketplace
+            </span>
+
+            <h1 className="font-headline italic text-tertiary leading-[1.05] tracking-tight mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
+              <span className="block text-5xl md:text-6xl lg:text-7xl">Where local</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl text-primary">growers meet</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl">your table.</span>
+            </h1>
+
+            <p className="text-on-surface-variant font-body text-lg leading-relaxed max-w-[52ch] mb-10 animate-slide-up" style={{ animationDelay: "160ms" }}>
+              Discover seasonal produce, small-batch goods, and farm-fresh staples from real farmers in your community. No middlemen. No mystery.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 animate-slide-up" style={{ animationDelay: "240ms" }}>
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-primary/90 active:scale-[0.97] transition-all duration-150"
+              >
+                Browse the Harvest
+                <Icon name="arrow_forward" size="sm" />
+              </Link>
+              <Link
+                href="#about"
+                className="inline-flex items-center gap-2 text-tertiary/70 font-label font-bold text-sm uppercase tracking-widest hover:text-tertiary transition-colors duration-150"
+              >
+                Our Story
+              </Link>
+            </div>
+
+            {/* Stats row */}
+            <div className="mt-16 pt-10 border-t border-outline-variant/40 grid grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: "320ms" }}>
+              {[
+                { value: `${farmCount ?? "20"}+`, label: "Local Farms" },
+                { value: `${productCount ?? "100"}+`, label: "Listings" },
+                { value: "100%", label: "Locally Sourced" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-headline italic text-2xl text-secondary mb-1">{stat.value}</p>
+                  <p className="text-[11px] font-label uppercase tracking-widest text-on-surface-variant/60">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right — full-bleed image with overlay card */}
+        <div className="relative min-h-[60vw] md:min-h-0 overflow-hidden">
           <Image
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHfgOxwKYkHJuM69CO1KboNBFHv_XlIy9bFlLeMbvCmUhMHSpOW089IuqcsKzBLEgmoR9NJ9lpX4fG9tcRw8faRdIrIegsfgcQveZvSMR5LusPsWbhq9uVNb817C04rlv9e6UQQK4gHROMEwdp8gpu7hIL6O0JK7aMkxWYaRpz6SGJv3NNmK-59Dis8OuQ0OHrkVgrrpPEoa6REY3f7lv_0bJ0sefcdlhLU_mSN-7xY4K9sPgkuZ9Ph_7u06i2VzLSsmV60NvR_Y6x"
-            alt="Misty morning sun rising over a lush rolling green organic farm"
+            alt="Misty morning sun rising over a lush organic farm"
             fill
-            sizes="100vw"
-            className="object-cover opacity-90"
             priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
-        </div>
+          {/* Subtle left fade into surface */}
+          <div className="absolute inset-0 bg-gradient-to-r from-surface/30 via-transparent to-transparent" />
+          {/* Bottom fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-tertiary/30 via-transparent to-transparent" />
 
-        <div className="relative z-10 max-w-2xl">
-          <span className="text-secondary font-label text-sm uppercase tracking-[0.2em] mb-4 block animate-slide-up" style={{ animationDelay: "0ms" }}>
-            Hand-Sown, Heart-Grown
-          </span>
-          <h1 className="text-6xl md:text-8xl font-headline italic text-tertiary leading-[1.1] mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
-            Grown with the <br />
-            <span className="text-primary not-italic font-bold">
-              Rhythm of Nature.
-            </span>
-          </h1>
-          <p className="text-on-surface-variant text-lg md:text-xl font-body max-w-lg mb-10 leading-relaxed animate-slide-up" style={{ animationDelay: "160ms" }}>
-            A marketplace for local growers — discover seasonal produce, small-batch goods, and farm-fresh staples from farmers in your community.
-          </p>
-          <div className="flex flex-wrap gap-4 animate-slide-up" style={{ animationDelay: "240ms" }}>
-            <Link href="/products">
-              <Button size="lg">Shop Now</Button>
-            </Link>
-            <Link href="/#about">
-              <Button variant="secondary" size="lg">
-                Our Story
-              </Button>
-            </Link>
+          {/* Floating harvest badge */}
+          <div className="absolute bottom-8 left-8 right-8 md:left-auto md:right-8 md:max-w-[260px] bg-surface/90 backdrop-blur-md rounded-2xl p-5 shadow-ambient border border-outline-variant/20">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center">
+                <Icon name="eco" fill className="text-on-primary-container text-sm" />
+              </div>
+              <div>
+                <p className="text-xs font-label font-bold text-tertiary uppercase tracking-wider">This Week&rsquo;s Pick</p>
+                <p className="text-[11px] text-on-surface-variant">Fresh from the field</p>
+              </div>
+            </div>
+            {featured[0] ? (
+              <Link href={`/products/${featured[0].id}`} className="group">
+                <p className="font-headline italic text-lg text-tertiary group-hover:text-primary transition-colors duration-150">
+                  {featured[0].name}
+                </p>
+                <p className="text-sm text-primary font-bold mt-1">
+                  ${(featured[0].price / 100).toFixed(2)}
+                  {featured[0].unit && <span className="text-on-surface-variant font-normal ml-1">/ {featured[0].unit}</span>}
+                </p>
+              </Link>
+            ) : (
+              <p className="font-headline italic text-lg text-tertiary">Season&rsquo;s Finest</p>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Philosophy Section */}
-      <section id="about" className="py-24 bg-surface-container-low content-lazy">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-16 items-center">
-          <div className="md:col-span-5 relative">
-            {/* Asymmetrical Harvest Card */}
-            <div className="relative rounded-xl overflow-visible bg-surface-container-lowest p-4">
-              <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdTkBD3e3jg4WHXjb9bdU_sPBNGwO1wDJDAPshqnsxUJu9VkZ_VS5RYAQMijA9NqjbcuAJ3XVYIy85_H1-vzA8LViTOuu9QMNb0CzbmqyBWEcmQ684tQ6ZpCc_wARQ802sUj-s5N6WRed9RmQnYBIqRxsNbHjymV5Eiqy8itpCaGY8XtAcwb1lJdxuDrKWYLfRHySVdEkfCzJeQELAWTXg_YuhLYhify456UG81upBPXdvbZb00zTGgUDyHgC7vQcXiVACJ3IShg5P"
-                alt="Rustic wooden table covered in freshly harvested organic vegetables"
-                width={600}
-                height={400}
-                sizes="(max-width: 768px) 100vw, 42vw"
-                loading="lazy"
-                className="-ml-8 -mt-8 rounded-lg w-full object-cover rotate-[-2deg]"
-                style={{ height: "400px" }}
-              />
-            </div>
-          </div>
-
-          <div className="md:col-span-7">
-            <h2 className="text-5xl font-headline italic text-tertiary mb-6">
-              Rooted in Community
-            </h2>
-            <div className="space-y-6 text-on-surface-variant text-lg leading-relaxed">
-              <p>
-                Green Market is a gathering place for local growers and the
-                neighbors who love their food. We connect small farms, family
-                orchards, and artisan producers with customers who care where
-                their food comes from.
-              </p>
-              <p>
-                Every listing on this marketplace represents a real farm with a
-                real story&mdash;people tending soil, raising animals, and
-                nurturing harvests with patience and pride.
-              </p>
-            </div>
-            <div className="mt-10 flex gap-12">
-              <div>
-                <span className="block text-3xl font-headline text-secondary italic">
-                  20+
-                </span>
-                <span className="text-xs font-label uppercase tracking-widest opacity-60">
-                  Local Farms
-                </span>
-              </div>
-              <div>
-                <span className="block text-3xl font-headline text-secondary italic">
-                  100+
-                </span>
-                <span className="text-xs font-label uppercase tracking-widest opacity-60">
-                  Seasonal Products
-                </span>
-              </div>
-              <div>
-                <span className="block text-3xl font-headline text-secondary italic">
-                  100%
-                </span>
-                <span className="text-xs font-label uppercase tracking-widest opacity-60">
-                  Locally Sourced
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products Bento Grid */}
-      <section className="py-24 px-6 max-w-7xl mx-auto content-lazy animate-slide-up" style={{ animationDelay: "100ms" }}>
-        <div className="flex justify-between items-end mb-16">
+      {/* ── FEATURED PRODUCTS — Asymmetric bento ── */}
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-4 mb-12">
           <div>
-            <span className="text-secondary font-label text-xs uppercase tracking-widest mb-2 block">
+            <span className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-3 block">
               Local Harvest
             </span>
-            <h2 className="text-5xl font-headline text-tertiary">
-              Featured Provisions
+            <h2 className="font-headline italic text-4xl md:text-5xl text-tertiary leading-tight">
+              What&rsquo;s ready now
             </h2>
           </div>
           <Link
             href="/products"
-            className="font-label font-bold text-primary flex items-center gap-2 hover:translate-x-1 transition-transform"
+            className="inline-flex items-center gap-2 font-label font-bold text-sm text-primary uppercase tracking-wider hover:gap-3 transition-all duration-150 mb-2"
           >
-            View Catalog <Icon name="arrow_right_alt" />
+            All Products <Icon name="arrow_forward" size="sm" />
           </Link>
         </div>
 
         {featured.length === 0 ? (
-          /* Empty state — no products in DB yet */
           <div className="py-24 text-center bg-surface-container-low rounded-2xl">
             <Icon name="eco" className="text-5xl text-on-surface-variant/40 mb-4" />
-            <p className="font-headline italic text-2xl text-tertiary mb-2">
-              First harvest coming soon.
-            </p>
-            <p className="text-on-surface-variant font-body mb-6">
-              Local farmers are adding listings — check back shortly.
-            </p>
-            <Link href="/products" className="text-primary font-bold text-sm hover:underline">
-              Browse the catalog
-            </Link>
+            <p className="font-headline italic text-2xl text-tertiary mb-2">First harvest coming soon.</p>
+            <p className="text-on-surface-variant font-body mb-6">Local farmers are adding listings — check back shortly.</p>
+            <Link href="/products" className="text-primary font-bold text-sm hover:underline">Browse the catalog</Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 stagger-children [&>*]:animate-slide-up-fast">
-            {/* Hero card — first product, large */}
-            {(() => {
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 stagger-children">
+            {/* Large hero card — col-span-7 */}
+            {featured[0] && (() => {
               const p = featured[0];
-              const farm = p.farms as unknown as { id: string; name: string } | null;
+              const farm = p.farms as unknown as { id: string; name: string; location?: string | null } | null;
               return (
-                <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-xl bg-surface-container-highest">
+                <div className="md:col-span-7 group relative overflow-hidden rounded-2xl bg-surface-container-highest min-h-[420px] animate-slide-up-fast">
                   {p.image_url ? (
                     <Image
                       src={p.image_url}
                       alt={p.name}
                       fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 58vw"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/10" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/10" />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-tertiary/80 via-transparent to-transparent p-8 flex flex-col justify-end">
-                    {farm && (
-                      <span className="bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase font-bold px-3 py-1 rounded-full w-fit mb-3">
-                        {farm.name}
-                      </span>
-                    )}
-                    <h3 className="text-3xl font-headline text-on-tertiary italic mb-2">
-                      {p.name}
-                    </h3>
+                  <div className="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-8">
+                    <div className="flex items-center gap-2 mb-3">
+                      {farm && (
+                        <Link href={`/farms/${farm.id}`} className="text-[10px] font-label font-bold uppercase tracking-widest text-on-tertiary/70 hover:text-on-tertiary transition-colors duration-150">
+                          {farm.name}
+                          {farm.location ? ` · ${farm.location}` : ""}
+                        </Link>
+                      )}
+                    </div>
+                    <Link href={`/products/${p.id}`}>
+                      <h3 className="font-headline italic text-3xl md:text-4xl text-on-tertiary leading-tight mb-2 hover:text-on-tertiary/80 transition-colors duration-150">
+                        {p.name}
+                      </h3>
+                    </Link>
                     {p.description && (
-                      <p className="text-on-tertiary-container font-body mb-4 line-clamp-2">
+                      <p className="text-on-tertiary/70 font-body text-sm line-clamp-2 mb-5 max-w-[40ch]">
                         {p.description}
                       </p>
                     )}
-                    <p className="text-on-tertiary font-headline text-xl mb-6">
-                      ${(p.price / 100).toFixed(2)}
-                      {p.unit && <span className="text-sm font-body opacity-75 ml-1">/ {p.unit}</span>}
-                    </p>
-                    {farm && (
-                      <AddToCartButton
-                        farmId={farm.id}
-                        item={{
-                          productId: p.id,
-                          name: p.name,
-                          price: p.price / 100,
-                          image: p.image_url ?? "",
-                          unit: p.unit ?? "each",
-                        }}
-                        className="w-fit px-6"
-                      />
-                    )}
+                    <div className="flex items-center justify-between">
+                      <p className="font-headline text-2xl text-on-tertiary">
+                        ${(p.price / 100).toFixed(2)}
+                        {p.unit && <span className="text-sm font-body opacity-60 ml-1">/ {p.unit}</span>}
+                      </p>
+                      {farm && (
+                        <AddToCartButton
+                          farmId={farm.id}
+                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                          className="w-auto px-6"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })()}
 
-            {/* Cards 2 + 3 */}
-            {featured.slice(1, 3).map((p) => {
-              const farm = p.farms as unknown as { id: string; name: string } | null;
-              return (
-                <div key={p.id} className="bg-surface-container-low p-6 rounded-xl group">
-                  <div className="overflow-hidden rounded-lg aspect-square mb-6 bg-surface-container-highest relative">
-                    {p.image_url ? (
-                      <Image
-                        src={p.image_url}
-                        alt={p.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-outline-variant">
-                        <Icon name="image" className="text-4xl" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-start mb-2">
-                    <Link href={`/products/${p.id}`} className="hover:underline">
-                      <h4 className="font-headline text-xl text-tertiary italic">
-                        {p.name}
-                      </h4>
-                    </Link>
-                    <span className="text-primary font-bold shrink-0 ml-2">
-                      ${(p.price / 100).toFixed(2)}
-                    </span>
-                  </div>
-                  {p.description && (
-                    <p className="text-sm text-on-surface-variant font-body mb-4 line-clamp-2">
-                      {p.description}
-                    </p>
-                  )}
-                  {farm && (
-                    <AddToCartButton
-                      variant="underline"
-                      farmId={farm.id}
-                      item={{
-                        productId: p.id,
-                        name: p.name,
-                        price: p.price / 100,
-                        image: p.image_url ?? "",
-                        unit: p.unit ?? "each",
-                      }}
-                    />
-                  )}
-                </div>
-              );
-            })}
-
-            {/* Bottom banner — 4th product or CTA */}
-            {featured[3] ? (() => {
-              const p = featured[3];
-              const farm = p.farms as unknown as { id: string; name: string } | null;
-              return (
-                <div className="md:col-span-2 bg-surface-container p-8 rounded-xl flex flex-col md:flex-row items-center gap-8 group">
-                  <div className="flex-1">
-                    {farm && (
-                      <span className="text-secondary font-label text-[10px] uppercase tracking-widest font-bold block mb-2">
-                        {farm.name}
-                      </span>
-                    )}
-                    <Link href={`/products/${p.id}`} className="hover:underline">
-                      <h4 className="text-3xl font-headline text-tertiary mb-3 italic">
-                        {p.name}
-                      </h4>
-                    </Link>
-                    {p.description && (
-                      <p className="text-on-surface-variant mb-4 text-sm line-clamp-2">
-                        {p.description}
-                      </p>
-                    )}
-                    <p className="text-primary font-headline text-xl mb-6">
-                      ${(p.price / 100).toFixed(2)}
-                      {p.unit && <span className="text-sm font-body text-on-surface-variant ml-1">/ {p.unit}</span>}
-                    </p>
-                    {farm && (
-                      <AddToCartButton
-                        farmId={farm.id}
-                        item={{
-                          productId: p.id,
-                          name: p.name,
-                          price: p.price / 100,
-                          image: p.image_url ?? "",
-                          unit: p.unit ?? "each",
-                        }}
-                        className="w-fit"
-                      />
-                    )}
-                  </div>
-                  {p.image_url && (
-                    <div className="w-full md:w-1/2 aspect-[4/3] rounded-lg overflow-hidden">
-                      <Image
-                        src={p.image_url}
-                        alt={p.name}
-                        width={600}
-                        height={450}
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+            {/* Right column — stacked smaller cards — col-span-5 */}
+            <div className="md:col-span-5 flex flex-col gap-4">
+              {featured.slice(1, 3).map((p, i) => {
+                const farm = p.farms as unknown as { id: string; name: string } | null;
+                return (
+                  <div key={p.id} className="group bg-surface-container-low rounded-2xl p-6 flex gap-5 items-center hover:bg-surface-container transition-colors duration-150 animate-slide-up-fast" style={{ animationDelay: `${(i + 1) * 80}ms` }}>
+                    <div className="w-24 h-24 rounded-xl overflow-hidden bg-surface-container-highest shrink-0 relative">
+                      {p.image_url ? (
+                        <Image
+                          src={p.image_url}
+                          alt={p.name}
+                          fill
+                          sizes="96px"
+                          className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-outline-variant">
+                          <Icon name="image" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })() : (
-              /* CTA when fewer than 4 products */
-              <div className="md:col-span-2 bg-surface-container p-8 rounded-xl flex items-center justify-center">
-                <div className="text-center">
-                  <p className="font-headline italic text-2xl text-tertiary mb-4">
-                    More coming soon.
-                  </p>
-                  <Link
-                    href="/products"
-                    className="px-6 py-3 bg-primary text-on-primary rounded-md font-bold text-sm transition-transform active:scale-95 inline-block"
-                  >
-                    Browse All Products
+                    <div className="flex-1 min-w-0">
+                      {farm && (
+                        <p className="text-[10px] font-label font-bold uppercase tracking-widest text-secondary mb-1">{farm.name}</p>
+                      )}
+                      <Link href={`/products/${p.id}`} className="hover:underline">
+                        <h4 className="font-headline italic text-xl text-tertiary leading-tight mb-1">{p.name}</h4>
+                      </Link>
+                      {p.description && (
+                        <p className="text-xs text-on-surface-variant line-clamp-1 mb-3">{p.description}</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="font-headline text-lg text-primary">
+                          ${(p.price / 100).toFixed(2)}
+                          {p.unit && <span className="text-xs font-body text-on-surface-variant ml-1">/ {p.unit}</span>}
+                        </span>
+                        {farm && (
+                          <AddToCartButton
+                            variant="underline"
+                            farmId={farm.id}
+                            item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* 4th product or CTA card */}
+              {featured[3] ? (() => {
+                const p = featured[3];
+                const farm = p.farms as unknown as { id: string; name: string } | null;
+                return (
+                  <div className="group bg-surface-container rounded-2xl overflow-hidden flex-1 flex items-end relative min-h-[160px] animate-slide-up-fast" style={{ animationDelay: "240ms" }}>
+                    {p.image_url && (
+                      <>
+                        <Image src={p.image_url} alt={p.name} fill sizes="(max-width: 768px) 100vw, 40vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-tertiary/80 to-tertiary/20" />
+                      </>
+                    )}
+                    <div className="relative z-10 p-6 flex items-end justify-between w-full">
+                      <div>
+                        {farm && <p className="text-[10px] font-label font-bold uppercase tracking-widest text-on-tertiary/60 mb-1">{farm.name}</p>}
+                        <Link href={`/products/${p.id}`}>
+                          <h4 className="font-headline italic text-xl text-on-tertiary hover:text-on-tertiary/80 transition-colors duration-150">{p.name}</h4>
+                        </Link>
+                        <p className="font-headline text-lg text-on-tertiary mt-1">${(p.price / 100).toFixed(2)}</p>
+                      </div>
+                      {farm && (
+                        <AddToCartButton
+                          farmId={farm.id}
+                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                          className="w-auto px-5 shrink-0"
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })() : (
+                <div className="bg-surface-container-low rounded-2xl p-6 flex-1 flex flex-col items-center justify-center text-center animate-slide-up-fast" style={{ animationDelay: "240ms" }}>
+                  <p className="font-headline italic text-xl text-tertiary mb-4">More coming soon.</p>
+                  <Link href="/products" className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-2.5 rounded-xl font-label font-bold text-xs uppercase tracking-widest hover:bg-primary/90 active:scale-[0.97] transition-all duration-150">
+                    Browse All
                   </Link>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </section>
 
-      {/* Newsletter Section */}
-      <section className="mt-20 bg-primary-container py-24 relative overflow-hidden content-lazy">
-        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <Icon name="potted_plant" fill className="text-secondary text-5xl mb-6" />
-          <h2 className="text-4xl md:text-6xl font-headline text-on-primary-container italic mb-6">
-            Join Our Table
-          </h2>
-          <p className="text-on-primary-container/80 text-lg mb-10 max-w-xl mx-auto">
-            Sign up for the Field Notes newsletter to receive seasonal recipes,
-            harvest updates from local growers, and first access to small-batch releases.
-          </p>
-          <form className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
-            <label htmlFor="newsletter-email-home" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="newsletter-email-home"
-              className="flex-1 bg-primary-container/60 border-0 border-b-2 border-on-primary-container/30 focus:border-on-primary-container text-on-primary-container placeholder:text-on-primary-container/50 px-4 py-3 rounded-t-md font-body focus:outline-none transition-colors"
-              placeholder="Your email address"
-              type="email"
-              autoComplete="email"
+      {/* ── ABOUT — Left image / Right editorial text ── */}
+      <section id="about" className="py-24 bg-surface-container-low content-lazy">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-0 rounded-3xl overflow-hidden">
+          {/* Image side */}
+          <div className="relative min-h-[400px]">
+            <Image
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdTkBD3e3jg4WHXjb9bdU_sPBNGwO1wDJDAPshqnsxUJu9VkZ_VS5RYAQMijA9NqjbcuAJ3XVYIy85_H1-vzA8LViTOuu9QMNb0CzbmqyBWEcmQ684tQ6ZpCc_wARQ802sUj-s5N6WRed9RmQnYBIqRxsNbHjymV5Eiqy8itpCaGY8XtAcwb1lJdxuDrKWYLfRHySVdEkfCzJeQELAWTXg_YuhLYhify456UG81upBPXdvbZb00zTGgUDyHgC7vQcXiVACJ3IShg5P"
+              alt="Rustic wooden table covered in freshly harvested organic vegetables"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              loading="lazy"
+              className="object-cover"
             />
-            <button className="bg-secondary text-on-secondary px-8 py-3 rounded-md font-bold uppercase tracking-widest text-xs hover:bg-secondary/90 transition-all active:scale-95 whitespace-nowrap">
-              Subscribe
-            </button>
-          </form>
+          </div>
+
+          {/* Text side */}
+          <div className="bg-surface-container p-12 md:p-16 flex flex-col justify-center">
+            <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-6">
+              <span className="w-5 h-px bg-secondary inline-block" />
+              Our Mission
+            </span>
+            <h2 className="font-headline italic text-4xl md:text-5xl text-tertiary leading-tight mb-6">
+              Rooted in community.
+            </h2>
+            <div className="space-y-5 text-on-surface-variant font-body leading-relaxed">
+              <p>
+                Green Market connects small farms, family orchards, and artisan producers with customers who care where their food comes from.
+              </p>
+              <p>
+                Every listing represents a real farm with a real story — people tending soil, raising animals, and nurturing harvests with patience and pride.
+              </p>
+            </div>
+            <div className="mt-10 pt-8 border-t border-outline-variant/30 flex gap-10">
+              {[
+                { value: "No intermediaries", label: "Direct from farmer" },
+                { value: "Seasonal", label: "What's fresh now" },
+              ].map((item) => (
+                <div key={item.label}>
+                  <p className="font-headline italic text-tertiary text-lg mb-0.5">{item.value}</p>
+                  <p className="text-[11px] font-label uppercase tracking-widest text-on-surface-variant/60">{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS — Horizontal asymmetric ── */}
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
+        <div className="mb-14">
+          <span className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-3 block">
+            Simple by design
+          </span>
+          <h2 className="font-headline italic text-4xl md:text-5xl text-tertiary">
+            How it works
+          </h2>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-6">
+          {/* Step 1 — large */}
+          <div className="bg-surface-container-low rounded-2xl p-10">
+            <span className="inline-block font-headline italic text-6xl text-primary/20 mb-4">01</span>
+            <h3 className="font-headline italic text-2xl text-tertiary mb-3">Browse the harvest</h3>
+            <p className="text-on-surface-variant font-body leading-relaxed">
+              Explore what&rsquo;s in season from farms near you. Filter by category, search for something specific, or let the weekly picks guide you.
+            </p>
+            <Link href="/products" className="inline-flex items-center gap-2 mt-6 text-sm font-label font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all duration-150">
+              Shop now <Icon name="arrow_forward" size="sm" />
+            </Link>
+          </div>
+
+          {/* Step 2 */}
+          <div className="bg-primary-container/30 rounded-2xl p-8">
+            <span className="inline-block font-headline italic text-6xl text-primary/30 mb-4">02</span>
+            <h3 className="font-headline italic text-xl text-tertiary mb-3">Add to your basket</h3>
+            <p className="text-on-surface-variant font-body text-sm leading-relaxed">
+              Your cart holds items from one farm at a time — keeping your order fresh and traceable.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="bg-secondary-fixed/20 rounded-2xl p-8">
+            <span className="inline-block font-headline italic text-6xl text-secondary/20 mb-4">03</span>
+            <h3 className="font-headline italic text-xl text-tertiary mb-3">Pick up or get delivery</h3>
+            <p className="text-on-surface-variant font-body text-sm leading-relaxed">
+              Choose farm pickup or home delivery at checkout. Pay securely, then track your order from preparation to your door.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── NEWSLETTER — Full bleed, editorial ── */}
+      <section className="content-lazy">
+        <div className="bg-primary mx-6 md:mx-12 mb-24 rounded-3xl overflow-hidden relative">
+          {/* Background image, darkened */}
+          <div className="absolute inset-0 opacity-10">
+            <Image
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF4A6idYdLAiAOn2lGufidL7mH58z9Dl9U6DCQSIk8TWfSYtTxtlkiQQDMiGD0dQMNcN0K4f9TnML0dFaZKcrSasdY6DlgbD_GLYTKo0YVrUAAmy3p6ER2ghw34ejWevGFb6MIw3SxaZUMrh_RD82ah7f4ju3vB7Ty-XXPT3nuyjVy62nH-RW6V8Vw791yAHqXa1kLzReLRmNO1WvFXFb0-YiKOZVDQvL_8XyW_51rTOCafHePoX2YdXiwDuXCZ4hX5FkHSc_d-S3p"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+              aria-hidden="true"
+            />
+          </div>
+
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-0 items-center">
+            <div className="p-12 md:p-16">
+              <span className="inline-flex items-center gap-2 text-on-primary/60 font-label text-[11px] uppercase tracking-[0.25em] mb-6">
+                <span className="w-5 h-px bg-on-primary/40 inline-block" />
+                Field Notes
+              </span>
+              <h2 className="font-headline italic text-4xl md:text-5xl text-on-primary leading-tight mb-4">
+                Grow with the season.
+              </h2>
+              <p className="text-on-primary/70 font-body leading-relaxed">
+                Weekly harvest updates, seasonal recipes, and first access to small-batch releases — direct from the farmers.
+              </p>
+            </div>
+
+            <div className="px-12 pb-12 md:px-16 md:py-16">
+              <form className="space-y-3">
+                <label htmlFor="newsletter-email-home" className="block text-[11px] font-label font-bold uppercase tracking-widest text-on-primary/60 mb-2">
+                  Your email
+                </label>
+                <input
+                  id="newsletter-email-home"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  className="w-full bg-on-primary/10 border border-on-primary/20 text-on-primary placeholder:text-on-primary/40 px-5 py-3.5 rounded-xl font-body text-sm focus:outline-none focus:border-on-primary/50 focus:-translate-y-px transition-all duration-150"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-on-primary text-primary px-8 py-3.5 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-on-primary/90 active:scale-[0.97] transition-all duration-150"
+                >
+                  Subscribe to Field Notes
+                </button>
+              </form>
+              <p className="text-on-primary/40 text-[11px] font-body mt-3">No spam. Unsubscribe anytime.</p>
+            </div>
+          </div>
+        </div>
       </section>
     </>
   );
