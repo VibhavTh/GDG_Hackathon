@@ -5,7 +5,15 @@
       "Bash(npx skills:*)",
       "Bash(ls:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{time_total}s\" http://localhost:3000)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(npx tsc:*)",
+      "Bash(gh pr create --title 'feat: complete MVP storefront, farmer auth, and dashboard' --body ':*)",
+      "Bash(stripe --version)"
     ]
   }
 }
