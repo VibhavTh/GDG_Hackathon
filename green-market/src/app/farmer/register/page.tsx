@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { register } from "./actions";
@@ -11,143 +10,100 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
   const { error } = await searchParams;
 
   return (
-    <main className="min-h-screen flex flex-col md:flex-row">
-      {/* Visual Column */}
-      <section className="hidden md:flex md:w-5/12 lg:w-1/2 bg-primary relative overflow-hidden items-center justify-center p-12">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVmECiXzUTd-80c4bDsTm40mB9pwbSulNo6zk1ruWIzXgbcoRLvNR_nBJ0S2gz_C7GyaWPOtxdj_k_fSMxgV0D2-BlUP1Eokpd6z4pJTfcG1jokDlI_cG2G3xQdnD427tqAjFugKAZkzndTNS03gKqfwBFpfL-cQZzQdJtZ-OWtCFUbgOUga6wi_3VQ6TZ9iG1YJNDWw45jqUAG9zbKgv7Igy2X3ywJ0yXXeTU28u5AaxKVQipKSpbhm_EFiP8oGwi8ZgGxdRFIxzI"
-            alt="Rolling green farm landscape at dawn"
-            fill
-            sizes="(max-width: 1024px) 42vw, 50vw"
-            className="object-cover opacity-60 mix-blend-multiply"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-primary via-transparent to-transparent opacity-80" />
-        </div>
-
-        <div className="relative z-10 max-w-lg">
-          <span className="inline-block px-4 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label text-xs tracking-widest uppercase mb-6">
-            Join the Market
-          </span>
-          <h1 className="font-headline italic text-5xl lg:text-7xl text-surface leading-tight mb-6">
-            Your farm deserves a wider table.
+    <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-surface">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+              <Icon name="potted_plant" fill className="text-on-primary-container" />
+            </div>
+            <span className="font-headline text-xl text-tertiary font-bold">Green Market</span>
+          </Link>
+          <h1 className="text-3xl font-headline italic text-tertiary mb-2">
+            Create your farm account
           </h1>
-          <p className="font-body text-surface/80 text-lg leading-relaxed max-w-md">
-            List your products, manage orders, and reach more customers in your
-            community. Setup takes under five minutes.
+          <p className="text-on-surface-variant font-body text-sm">
+            List products, manage orders, and reach local customers.
           </p>
-          <div className="mt-12 flex items-center gap-4 text-surface/60">
-            <div className="h-[1px] w-12 bg-surface/20" />
-            <span className="font-label text-xs uppercase tracking-widest">
-              The Green Market Farm
-            </span>
-          </div>
         </div>
-      </section>
 
-      {/* Registration Form */}
-      <section className="flex-1 flex items-center justify-center p-6 md:p-12 lg:p-24 bg-surface">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="md:hidden flex justify-center mb-12">
-            <span className="font-headline italic text-2xl text-tertiary">
-              The Green Market Farm
-            </span>
-          </div>
-
-          <div className="mb-10 text-center md:text-left">
-            <h2 className="font-headline font-semibold text-3xl text-on-surface mb-2">
-              Create Your Account
-            </h2>
-            <p className="text-on-surface-variant font-body">
-              Sign up and you can set up your farm right after.
-            </p>
-          </div>
-
-          {/* Error message */}
+        <div className="bg-surface-container-low rounded-2xl p-8 space-y-6">
           {error && (
-            <div className="mb-6 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-sm font-body flex items-start gap-3">
-              <Icon name="error" size="sm" className="mt-0.5 shrink-0" />
+            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2">
+              <Icon name="error" size="sm" className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          <form action={register} className="space-y-6">
-            <div className="space-y-1.5">
-              <label
-                className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
-                htmlFor="email"
-              >
-                Email Address
+          <form action={register} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+                Email address
               </label>
               <input
-                className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline"
                 id="email"
                 name="email"
-                placeholder="farmer@greenmarket.farm"
-                required
                 type="email"
+                required
                 autoComplete="email"
+                placeholder="farmer@greenmarket.farm"
+                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label
-                className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
-                htmlFor="password"
-              >
+            <div>
+              <label htmlFor="password" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
                 Password
               </label>
               <input
-                className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline"
                 id="password"
                 name="password"
-                placeholder="At least 8 characters"
-                required
                 type="password"
+                required
                 minLength={8}
                 autoComplete="new-password"
+                placeholder="At least 8 characters"
+                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
               />
             </div>
 
-            {/* Info badge */}
-            <div className="bg-surface-container-low rounded-lg p-4 flex items-start gap-4">
-              <Icon name="mail" className="text-primary mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-on-surface">
-                  Confirm your email
-                </p>
-                <p className="text-xs text-on-surface-variant mt-0.5">
-                  We will send a confirmation link to your email before your
-                  listing goes live.
-                </p>
-              </div>
+            <div className="flex items-start gap-3 bg-surface-container rounded-lg px-4 py-3">
+              <Icon name="mail" size="sm" className="text-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-on-surface-variant font-body leading-relaxed">
+                We will send a confirmation link to your email. After confirming, you will set up your farm profile.
+              </p>
             </div>
 
-            <div className="pt-4 space-y-4">
-              <button
-                className="w-full bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-sm"
-                type="submit"
-              >
-                Create Account
-              </button>
-              <Link
-                href="/farmer/login"
-                className="block w-full bg-surface-container-highest text-primary font-label font-bold py-4 rounded-xl hover:bg-surface-variant active:scale-95 transition-all duration-200 uppercase tracking-widest text-sm text-center"
-              >
-                Already have an account
-              </Link>
-            </div>
+            <button
+              type="submit"
+              className="w-full bg-primary text-on-primary py-3 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all"
+            >
+              Create Account
+            </button>
           </form>
 
-          <footer className="mt-16 pt-8 flex flex-col items-center md:items-start gap-6">
-            <p className="font-headline italic text-on-surface-variant/40 text-sm">
-              &copy; 2024 The Green Market Farm. Cultivated with care.
-            </p>
-          </footer>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-px bg-outline-variant" />
+            <span className="text-xs text-on-surface-variant font-label">or</span>
+            <div className="flex-1 h-px bg-outline-variant" />
+          </div>
+
+          <Link
+            href="/farmer/login"
+            className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-95 transition-all"
+          >
+            Already have an account
+          </Link>
         </div>
-      </section>
-    </main>
+
+        <p className="text-center mt-6 text-sm text-on-surface-variant font-body">
+          Looking to shop?{" "}
+          <Link href="/customer/login" className="text-primary font-bold hover:underline">
+            Customer sign in
+          </Link>
+        </p>
+      </div>
+    </div>
   );
 }
