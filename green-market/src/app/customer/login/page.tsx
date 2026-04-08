@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/icon";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { magicLink, googleSignIn } from "./actions";
 
 interface Props {
@@ -12,16 +13,15 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Already signed in — go to account or next
   const { error, success, next } = await searchParams;
   if (user) redirect(next ?? "/account/orders");
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-surface">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-3 mb-6">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-70 transition-opacity duration-150">
             <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
               <Icon name="potted_plant" fill className="text-on-primary-container" />
             </div>
@@ -37,13 +37,15 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
 
         <div className="bg-surface-container-low rounded-2xl p-8 space-y-6">
           {error && (
-            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body">
-              {error}
+            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2 animate-slide-down">
+              <Icon name="error" size="sm" className="shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
           {success && (
-            <div className="bg-primary/10 text-primary text-sm px-4 py-3 rounded-lg font-body">
-              {success}
+            <div className="bg-primary/10 text-primary text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2 animate-slide-down">
+              <Icon name="check_circle" size="sm" className="shrink-0 mt-0.5" />
+              <span>{success}</span>
             </div>
           )}
 
@@ -52,7 +54,7 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
             {next && <input type="hidden" name="next" value={next} />}
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-surface-container-highest hover:bg-surface-variant text-on-surface font-medium py-3 rounded-xl transition-colors text-sm"
+              className="w-full flex items-center justify-center gap-3 bg-surface-container-highest hover:bg-surface-variant text-on-surface font-medium py-3 rounded-xl transition-colors duration-150 active:scale-[0.97] text-sm"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -85,15 +87,10 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
                 required
                 autoComplete="email"
                 placeholder="you@example.com"
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
+                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none focus:-translate-y-px transition-all duration-150"
               />
             </div>
-            <button
-              type="submit"
-              className="w-full bg-primary text-on-primary py-3 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all"
-            >
-              Send Magic Link
-            </button>
+            <SubmitButton label="Send Magic Link" loadingLabel="Sending..." />
           </form>
 
           <p className="text-center text-xs text-on-surface-variant font-body">

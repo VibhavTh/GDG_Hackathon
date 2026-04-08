@@ -93,13 +93,13 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
         </div>
 
         {products && products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-14">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-14 stagger-children">
             {products.map((product) => {
               const farm = product.farms as { id: string; name: string; location: string | null } | null;
               return (
                 <div
                   key={product.id}
-                  className="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-all duration-500"
+                  className="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-colors duration-200 hover:-translate-y-0.5 transition-transform animate-slide-up-fast"
                 >
                   <div className="relative -mt-12 mb-6 h-64 overflow-visible rounded-lg">
                     {product.image_url ? (
@@ -108,7 +108,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
                         alt={product.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105 group-hover:-translate-y-2 rounded-lg"
+                        className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 group-hover:-translate-y-2 rounded-lg"
                       />
                     ) : (
                       <div className="w-full h-full bg-surface-container-high rounded-lg flex items-center justify-center">

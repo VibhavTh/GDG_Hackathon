@@ -37,19 +37,19 @@ export default async function HomePage() {
         </div>
 
         <div className="relative z-10 max-w-2xl">
-          <span className="text-secondary font-label text-sm uppercase tracking-[0.2em] mb-4 block">
+          <span className="text-secondary font-label text-sm uppercase tracking-[0.2em] mb-4 block animate-slide-up" style={{ animationDelay: "0ms" }}>
             Hand-Sown, Heart-Grown
           </span>
-          <h1 className="text-6xl md:text-8xl font-headline italic text-tertiary leading-[1.1] mb-8">
+          <h1 className="text-6xl md:text-8xl font-headline italic text-tertiary leading-[1.1] mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
             Grown with the <br />
             <span className="text-primary not-italic font-bold">
               Rhythm of Nature.
             </span>
           </h1>
-          <p className="text-on-surface-variant text-lg md:text-xl font-body max-w-lg mb-10 leading-relaxed">
+          <p className="text-on-surface-variant text-lg md:text-xl font-body max-w-lg mb-10 leading-relaxed animate-slide-up" style={{ animationDelay: "160ms" }}>
             A marketplace for local growers — discover seasonal produce, small-batch goods, and farm-fresh staples from farmers in your community.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 animate-slide-up" style={{ animationDelay: "240ms" }}>
             <Link href="/products">
               <Button size="lg">Shop Now</Button>
             </Link>
@@ -129,7 +129,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Products Bento Grid */}
-      <section className="py-24 px-6 max-w-7xl mx-auto content-lazy">
+      <section className="py-24 px-6 max-w-7xl mx-auto content-lazy animate-slide-up" style={{ animationDelay: "100ms" }}>
         <div className="flex justify-between items-end mb-16">
           <div>
             <span className="text-secondary font-label text-xs uppercase tracking-widest mb-2 block">
@@ -162,7 +162,7 @@ export default async function HomePage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 stagger-children [&>*]:animate-slide-up-fast">
             {/* Hero card — first product, large */}
             {(() => {
               const p = featured[0];

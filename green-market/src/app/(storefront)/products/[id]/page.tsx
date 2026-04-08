@@ -107,7 +107,7 @@ export default async function ProductDetailPage({ params }: Props) {
       </nav>
 
       {/* Main Product Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24 animate-slide-up">
         {/* Image */}
         <div className="relative aspect-square rounded-2xl overflow-hidden bg-surface-container-low">
           {product.image_url ? (
@@ -126,7 +126,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
           )}
           {product.stock > 0 && product.stock <= 5 && (
-            <div className="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
+            <div className="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest animate-pulse-soft">
               Almost Gone
             </div>
           )}
@@ -208,7 +208,7 @@ export default async function ProductDetailPage({ params }: Props) {
           {farm && (
             <Link
               href={`/farms/${farm.id}`}
-              className="mt-8 p-5 bg-surface-container-low rounded-xl flex items-center gap-4 hover:bg-surface-container-high transition-colors group"
+              className="mt-8 p-5 bg-surface-container-low rounded-xl flex items-center gap-4 hover:bg-surface-container-high transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] group"
             >
               <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center shrink-0 text-on-primary-container font-bold text-lg">
                 {farm.name[0].toUpperCase()}
@@ -256,7 +256,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 stagger-children">
             {morePrducts.map((p) => (
               <Link
                 key={p.id}
@@ -270,7 +270,7 @@ export default async function ProductDetailPage({ params }: Props) {
                       alt={p.name}
                       fill
                       sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-outline-variant">
