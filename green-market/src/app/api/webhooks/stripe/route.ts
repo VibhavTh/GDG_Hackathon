@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
             .from("orders")
             .update({ status: "abandoned", updated_at: new Date().toISOString() })
             .eq("id", orderId)
-            .eq("status", "pending_payment"); // only if still pending
+            .eq("status", "placed"); // only if still pending
         }
 
         await supabase
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
           .eq("stripe_payment_intent", paymentIntent.id)
           .single();
 
-        if (order && order.status === "pending_payment") {
+        if (order && order.status === "placed") {
           await supabase
             .from("orders")
             .update({ status: "failed", updated_at: new Date().toISOString() })

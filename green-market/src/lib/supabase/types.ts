@@ -116,6 +116,7 @@ export interface Database {
           image_url: string | null;
           embedding: number[] | null;
           embedding_updated_at: string | null;
+          unit: string | null;
           is_active: boolean;
           deleted_at: string | null;
           created_at: string;
@@ -130,6 +131,7 @@ export interface Database {
           tax_category?: string | null;
           price: number;
           stock?: number;
+          unit?: string | null;
           image_url?: string | null;
           embedding?: number[] | null;
           embedding_updated_at?: string | null;
@@ -145,6 +147,7 @@ export interface Database {
           tax_category?: string | null;
           price?: number;
           stock?: number;
+          unit?: string | null;
           image_url?: string | null;
           embedding?: number[] | null;
           embedding_updated_at?: string | null;

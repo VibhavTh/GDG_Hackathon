@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       customer_id: null,
       guest_email: customerEmail.toLowerCase().trim(),
       total_amount: totalCents,
-      status: "pending_payment" as const,
+      status: "placed",
       special_instructions: specialInstructions?.trim() || null,
     })
     .select()

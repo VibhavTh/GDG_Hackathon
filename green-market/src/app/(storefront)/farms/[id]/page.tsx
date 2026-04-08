@@ -63,7 +63,7 @@ export default async function FarmProfilePage({ params }: Props) {
 
   const { data: farm } = await service
     .from("farms")
-    .select("id, name, location, description, categories, banner_url, logo_url, created_at")
+    .select("id, name, location, description, categories, image_url, created_at")
     .eq("id", id)
     .single();
 
@@ -90,9 +90,9 @@ export default async function FarmProfilePage({ params }: Props) {
     <div className="pb-24">
       {/* Hero banner */}
       <div className="relative h-64 md:h-80 bg-surface-container-highest overflow-hidden">
-        {farm.banner_url ? (
+        {farm.image_url ? (
           <Image
-            src={farm.banner_url}
+            src={farm.image_url}
             alt={`${farm.name} banner`}
             fill
             sizes="100vw"
@@ -110,17 +110,7 @@ export default async function FarmProfilePage({ params }: Props) {
         <div className="relative -mt-16 mb-10 flex items-end gap-6">
           {/* Logo / initial avatar */}
           <div className="w-24 h-24 rounded-2xl bg-primary-container border-4 border-surface flex items-center justify-center text-on-primary-container font-bold text-3xl font-headline shrink-0 overflow-hidden shadow-ambient">
-            {farm.logo_url ? (
-              <Image
-                src={farm.logo_url}
-                alt={farm.name}
-                width={96}
-                height={96}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              farm.name[0].toUpperCase()
-            )}
+            {farm.name[0].toUpperCase()}
           </div>
           <div className="pb-2">
             <h1 className="text-3xl md:text-4xl font-headline italic text-tertiary leading-tight">
