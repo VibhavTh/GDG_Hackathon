@@ -6,26 +6,30 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next");
   const type = searchParams.get("type"); // 'recovery' for password reset emails
+  const role = searchParams.get("role"); // 'customer' for customer auth flows
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Password reset link — send to the reset password form
-      if (type === "recovery" || next === "/farmer/reset-password") {
+      // Password reset — send straight to the reset form
+      if (type === "recovery") {
         return NextResponse.redirect(`${origin}/farmer/reset-password`);
       }
 
-      // Explicit next param (e.g. from middleware redirect)
-      if (next && next !== "/farmer/reset-password") {
+      // Customer flow — go to next or orders page
+      if (role === "customer") {
+        return NextResponse.redirect(`${origin}${next ?? "/account/orders"}`);
+      }
+
+      // Explicit next param
+      if (next) {
         return NextResponse.redirect(`${origin}${next}`);
       }
 
-      // New farmer — check if onboarding is needed
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Farmer flow — check if onboarding is needed
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
         const { data: farm } = await supabase
@@ -34,8 +38,14 @@ export async function GET(request: Request) {
           .eq("owner_id", user.id)
           .single();
 
+        // New farmer with no profile filled in yet
         if (farm && !farm.description && !farm.location) {
           return NextResponse.redirect(`${origin}/farmer/onboarding`);
+        }
+
+        // Customer who signed up without role param — send to account
+        if (!farm) {
+          return NextResponse.redirect(`${origin}/account/orders`);
         }
       }
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { CategoryFilter } from "./category-filter";
@@ -28,7 +29,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
 
   let query = supabase
     .from("products")
-    .select("*, farms(name, location)")
+    .select("*, farms(id, name, location)")
     .is("deleted_at", null)
     .eq("is_active", true)
     .gt("stock", 0)
@@ -94,7 +95,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
         {products && products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-14">
             {products.map((product) => {
-              const farm = product.farms as { name: string; location: string | null } | null;
+              const farm = product.farms as { id: string; name: string; location: string | null } | null;
               return (
                 <div
                   key={product.id}
@@ -122,19 +123,21 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
                   </div>
 
                   <div className="flex justify-between items-start mb-1">
-                    <h3 className="text-2xl font-headline text-tertiary">
-                      {product.name}
-                    </h3>
+                    <Link href={`/products/${product.id}`} className="hover:underline">
+                      <h3 className="text-2xl font-headline text-tertiary">
+                        {product.name}
+                      </h3>
+                    </Link>
                     <span className="text-xl font-headline text-primary">
                       ${(product.price / 100).toFixed(2)}
                     </span>
                   </div>
 
                   {farm && (
-                    <p className="text-xs text-secondary font-label font-semibold mb-2">
+                    <Link href={`/farms/${farm.id}`} className="text-xs text-secondary font-label font-semibold mb-2 hover:underline block">
                       {farm.name}
                       {farm.location ? ` · ${farm.location}` : ""}
-                    </p>
+                    </Link>
                   )}
 
                   {product.description && (
@@ -145,12 +148,13 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
 
                   <div className="mt-auto">
                     <AddToCartButton
+                      farmId={(product.farms as { id?: string } | null)?.id ?? ""}
                       item={{
                         productId: product.id,
                         name: product.name,
                         price: product.price / 100,
                         image: product.image_url ?? "",
-                        unit: "each",
+                        unit: product.unit ?? "each",
                       }}
                     />
                   </div>

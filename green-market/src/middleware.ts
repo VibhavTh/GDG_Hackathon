@@ -1,12 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = [
+const FARMER_PROTECTED_PREFIXES = [
   "/dashboard",
   "/orders",
   "/inventory",
   "/settings",
   "/farmer/onboarding",
+];
+
+const CUSTOMER_PROTECTED_PREFIXES = ["/account/orders"];
+
+const PROTECTED_PREFIXES = [
+  ...FARMER_PROTECTED_PREFIXES,
+  ...CUSTOMER_PROTECTED_PREFIXES,
 ];
 
 // Routes a logged-in farmer should not see
@@ -50,9 +57,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Unauthenticated user hitting a protected route -> login
+  // Unauthenticated user hitting a protected route -> appropriate login
   if (isProtected && !user) {
-    const loginUrl = new URL("/farmer/login", request.url);
+    const isCustomerRoute = CUSTOMER_PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+    const loginPath = isCustomerRoute ? "/customer/login" : "/farmer/login";
+    const loginUrl = new URL(loginPath, request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
