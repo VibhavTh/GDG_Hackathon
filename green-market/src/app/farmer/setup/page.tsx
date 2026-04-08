@@ -51,7 +51,7 @@ export default async function FarmSetupPage({ searchParams }: Props) {
         </span>
       </header>
 
-      <div className="max-w-2xl mx-auto px-6 py-12">
+      <div className="max-w-2xl mx-auto px-6 py-12 animate-slide-up">
         {/* Progress indicator */}
         <div className="flex items-center gap-3 mb-10">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
@@ -78,7 +78,7 @@ export default async function FarmSetupPage({ searchParams }: Props) {
         </div>
 
         {error && (
-          <div className="mb-8 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-sm font-body flex items-start gap-3">
+          <div className="mb-8 bg-error/10 text-error rounded-lg px-4 py-3 text-sm font-body flex items-start gap-3 animate-slide-down">
             <Icon name="error" size="sm" className="mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
@@ -152,20 +152,20 @@ export default async function FarmSetupPage({ searchParams }: Props) {
                 Select all that apply
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {CATEGORIES.map((cat) => (
-                <label key={cat.value} className="relative cursor-pointer">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger-children">
+              {CATEGORIES.map((cat, i) => (
+                <label key={cat.value} className="relative cursor-pointer animate-slide-up-fast" style={{ animationDelay: `${i * 40}ms` }}>
                   <input
                     type="checkbox"
                     name="categories"
                     value={cat.value}
                     className="peer sr-only"
                   />
-                  <div className="flex items-center gap-3 p-3 rounded-xl border-2 border-outline-variant bg-surface-container-low transition-all duration-200 peer-checked:border-primary peer-checked:bg-primary-fixed peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-primary">
+                  <div className="flex items-center gap-3 p-3 rounded-xl border-2 border-outline-variant bg-surface-container-low transition-all duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] peer-checked:border-primary peer-checked:bg-primary-fixed peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-primary active:scale-[0.97]">
                     <Icon
                       name={cat.icon}
                       size="sm"
-                      className="text-on-surface-variant peer-checked:text-primary shrink-0"
+                      className="text-on-surface-variant shrink-0"
                     />
                     <span className="text-sm font-label font-medium text-on-surface leading-tight">
                       {cat.label}
@@ -179,7 +179,7 @@ export default async function FarmSetupPage({ searchParams }: Props) {
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-sm"
+              className="w-full bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 uppercase tracking-widest text-sm"
             >
               Create My Farm
             </button>
