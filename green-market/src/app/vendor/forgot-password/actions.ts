@@ -9,8 +9,8 @@ export async function requestPasswordReset(formData: FormData) {
 
   // Always redirect to the same success page — don't reveal whether the email exists
   await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/farmer/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/vendor/reset-password`,
   });
 
-  redirect("/farmer/forgot-password?sent=true");
+  redirect("/vendor/forgot-password?sent=true");
 }

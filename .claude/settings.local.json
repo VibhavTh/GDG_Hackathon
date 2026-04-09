@@ -17,7 +17,11 @@
       "Bash(git commit:*)",
       "Bash(gh pr create --title 'feat: wire dashboard, settings, inventory, and checkout to real data' --body ':*)",
       "Bash(npm install:*)",
-      "Bash(find /Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\\\\\(storefront\\\\\\)/order* -type f)"
+      "Bash(find /Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\\\\\(storefront\\\\\\)/order* -type f)",
+      "Bash(find /Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/vendor -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -exec sed -i '' 's|/farmer/|/vendor/|g' {} +)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }

@@ -10,13 +10,13 @@ export async function resetPassword(formData: FormData) {
 
   if (password !== confirm) {
     redirect(
-      `/farmer/reset-password?error=${encodeURIComponent("Passwords do not match.")}`
+      `/vendor/reset-password?error=${encodeURIComponent("Passwords do not match.")}`
     );
   }
 
   if (password.length < 8) {
     redirect(
-      `/farmer/reset-password?error=${encodeURIComponent("Password must be at least 8 characters.")}`
+      `/vendor/reset-password?error=${encodeURIComponent("Password must be at least 8 characters.")}`
     );
   }
 
@@ -24,7 +24,7 @@ export async function resetPassword(formData: FormData) {
 
   if (error) {
     redirect(
-      `/farmer/reset-password?error=${encodeURIComponent("Could not update your password. The reset link may have expired.")}`
+      `/vendor/reset-password?error=${encodeURIComponent("Could not update your password. The reset link may have expired.")}`
     );
   }
 

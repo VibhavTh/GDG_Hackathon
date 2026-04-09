@@ -2,16 +2,16 @@
 
 import { Icon } from "@/components/ui/icon";
 import { customerLogout } from "@/app/customer/logout/actions";
-import { logout as farmerLogout } from "@/app/farmer/logout/actions";
+import { logout as vendorLogout } from "@/app/vendor/logout/actions";
 
 interface SignOutButtonProps {
-  role: "farmer" | "customer";
+  role: "vendor" | "customer";
   className?: string;
 }
 
 export function SignOutButton({ role, className = "" }: SignOutButtonProps) {
   return (
-    <form action={role === "farmer" ? farmerLogout : customerLogout}>
+    <form action={role === "vendor" ? vendorLogout : customerLogout}>
       <button
         type="submit"
         title="Sign out"

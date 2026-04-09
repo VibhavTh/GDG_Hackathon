@@ -76,9 +76,9 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
         </div>
 
         <p className="text-center mt-6 text-sm text-on-surface-variant font-body">
-          Are you a farmer?{" "}
-          <Link href="/farmer/login" className="text-primary font-bold hover:underline">
-            Farmer sign in
+          Are you a vendor?{" "}
+          <Link href="/vendor/login" className="text-primary font-bold hover:underline">
+            Vendor sign in
           </Link>
         </p>
       </div>

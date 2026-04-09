@@ -116,7 +116,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-7 space-y-10">
           <header>
             <h1 className="font-headline text-5xl text-tertiary mb-2">
-              Finalize Your Harvest
+              Review Your Order
             </h1>
             <p className="text-on-surface-variant font-body italic text-lg">
               Just a few details to get these farm-fresh goods to you.
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
                   htmlFor="special-instructions"
                   className="text-sm font-label uppercase tracking-widest text-on-surface-variant"
                 >
-                  Notes for the Farmer
+                  Notes for the Vendor
                 </label>
                 <textarea
                   id="special-instructions"

@@ -12,7 +12,7 @@ export default async function NewProductPage({ searchParams }: Props) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   const { error } = await searchParams;
 

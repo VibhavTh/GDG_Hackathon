@@ -25,7 +25,7 @@ export default function VerifyEmailPage() {
           </p>
         </div>
         <Link
-          href="/farmer/login"
+          href="/vendor/login"
           className="font-label text-sm font-bold text-primary uppercase tracking-widest hover:underline"
         >
           Back to login

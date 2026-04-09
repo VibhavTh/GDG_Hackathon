@@ -9,7 +9,7 @@ import { siteConfig } from "@/config/site";
 import { useCartStore } from "@/stores/cart-store";
 
 interface StorefrontNavProps {
-  userRole: "farmer" | "customer" | null;
+  userRole: "vendor" | "customer" | null;
 }
 
 export function StorefrontNav({ userRole }: StorefrontNavProps) {
@@ -88,7 +88,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           </Link>
 
           {/* Auth-aware right button */}
-          {userRole === "farmer" ? (
+          {userRole === "vendor" ? (
             <>
               <Link
                 href="/dashboard"
@@ -97,7 +97,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
                 <Icon name="dashboard" size="sm" />
                 Dashboard
               </Link>
-              <SignOutButton role="farmer" />
+              <SignOutButton role="vendor" />
             </>
           ) : userRole === "customer" ? (
             <>
@@ -154,7 +154,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               {link.label}
             </Link>
           ))}
-          {userRole === "farmer" ? (
+          {userRole === "vendor" ? (
             <>
               <Link
                 href="/dashboard"
@@ -163,7 +163,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               >
                 Dashboard
               </Link>
-              <SignOutButton role="farmer" className="w-full justify-start px-0 py-3" />
+              <SignOutButton role="vendor" className="w-full justify-start px-0 py-3" />
             </>
           ) : userRole === "customer" ? (
             <>

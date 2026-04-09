@@ -23,19 +23,19 @@ export async function GET(request: Request) {
     authError = error;
   } else {
     return NextResponse.redirect(
-      `${origin}/farmer/login?error=${encodeURIComponent("The link has expired or is invalid. Please try again.")}`
+      `${origin}/vendor/login?error=${encodeURIComponent("The link has expired or is invalid. Please try again.")}`
     );
   }
 
   if (authError) {
     return NextResponse.redirect(
-      `${origin}/farmer/login?error=${encodeURIComponent("The link has expired or is invalid. Please try again.")}`
+      `${origin}/vendor/login?error=${encodeURIComponent("The link has expired or is invalid. Please try again.")}`
     );
   }
 
   // Password reset
   if (type === "recovery") {
-    return NextResponse.redirect(`${origin}/farmer/reset-password`);
+    return NextResponse.redirect(`${origin}/vendor/reset-password`);
   }
 
   // Get the authenticated user for all flows below
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
 
   if (!user) {
     return NextResponse.redirect(
-      `${origin}/farmer/login?error=${encodeURIComponent("The link has expired or is invalid. Please try again.")}`
+      `${origin}/vendor/login?error=${encodeURIComponent("The link has expired or is invalid. Please try again.")}`
     );
   }
 
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
   }
 
   // Explicit next param
-  if (next && next !== "/farmer/reset-password") {
+  if (next && next !== "/vendor/reset-password") {
     return NextResponse.redirect(`${origin}${next}`);
   }
 
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
       .single();
 
     if (!farm) {
-      return NextResponse.redirect(`${origin}/farmer/setup`);
+      return NextResponse.redirect(`${origin}/vendor/setup`);
     }
 
     return NextResponse.redirect(`${origin}/dashboard`);

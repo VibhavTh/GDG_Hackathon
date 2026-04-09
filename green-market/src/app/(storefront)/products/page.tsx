@@ -251,7 +251,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
             <p className="text-on-surface-variant font-body mb-6">
               {q
                 ? `No products matched "${q}". Try a different search.`
-                : "Check back soon — local farmers are adding listings."}
+                : "Check back soon — local vendors are adding listings."}
             </p>
             {hasFilters && (
               <Link
@@ -268,7 +268,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
         <div className="mt-24 bg-surface-container rounded-2xl p-12 flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 space-y-4">
             <h2 className="text-4xl font-headline text-tertiary tracking-tight">
-              Join the Harvest Circle
+              Stay in the Loop
             </h2>
             <p className="text-on-surface-variant">
               Weekly field notes — what&rsquo;s ready now, what&rsquo;s coming,

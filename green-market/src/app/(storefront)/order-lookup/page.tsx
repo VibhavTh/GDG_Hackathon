@@ -101,12 +101,10 @@ export default function OrderLookupPage() {
       <div className="w-full bg-surface-container-low py-12 mb-12">
         <div className="max-w-2xl mx-auto text-center px-4">
           <h1 className="text-5xl md:text-6xl font-headline text-tertiary mb-6 tracking-tight">
-            Track Your Harvest
+            Track Your Order
           </h1>
           <p className="text-lg text-on-surface-variant font-body leading-relaxed">
-            Whether it&rsquo;s heirloom tomatoes or hand-turned butter, we&rsquo;re
-            carefully preparing your local goodies for their journey from our
-            fields to your table.
+            Enter your order details below to check the status of your purchase.
           </p>
         </div>
       </div>

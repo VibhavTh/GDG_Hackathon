@@ -1,23 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const FARMER_PROTECTED_PREFIXES = [
+const VENDOR_PROTECTED_PREFIXES = [
   "/dashboard",
   "/orders",
   "/inventory",
   "/settings",
-  "/farmer/setup",
+  "/vendor/setup",
 ];
 
 const CUSTOMER_PROTECTED_PREFIXES = ["/account/orders", "/checkout"];
 
 const PROTECTED_PREFIXES = [
-  ...FARMER_PROTECTED_PREFIXES,
+  ...VENDOR_PROTECTED_PREFIXES,
   ...CUSTOMER_PROTECTED_PREFIXES,
 ];
 
-// Routes a logged-in farmer should not see
-const AUTH_PREFIXES = ["/farmer/login", "/farmer/register"];
+// Routes a logged-in vendor should not see
+const AUTH_PREFIXES = ["/vendor/login", "/vendor/register"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -59,14 +59,14 @@ export async function middleware(request: NextRequest) {
 
   // Unauthenticated user hitting a protected route -> appropriate login
   if (isProtected && !user) {
-    const isCustomerRoute = CUSTOMER_PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
-    const loginPath = isCustomerRoute ? "/customer/login" : "/farmer/login";
+    const isVendorRoute = VENDOR_PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+    const loginPath = isVendorRoute ? "/vendor/login" : "/customer/login";
     const loginUrl = new URL(loginPath, request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Authenticated farmer hitting login/register -> dashboard
+  // Authenticated vendor hitting login/register -> dashboard
   if (isAuthRoute && user) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }

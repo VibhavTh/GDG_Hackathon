@@ -22,15 +22,15 @@ interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
-export default async function FarmSetupPage({ searchParams }: Props) {
+export default async function VendorSetupPage({ searchParams }: Props) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
-  // If a farm with a name already exists, the farmer is already set up
+  // If a shop with a name already exists, the vendor is already set up
   const service = createServiceClient();
   const { data: farm } = await service
     .from("farms")
@@ -69,10 +69,10 @@ export default async function FarmSetupPage({ searchParams }: Props) {
 
         <div className="mb-10">
           <h1 className="font-headline italic text-4xl text-tertiary mb-3">
-            Set up your farm
+            Set up your shop
           </h1>
           <p className="text-on-surface-variant font-body">
-            Tell customers what makes your farm special. You can update this
+            Tell customers what makes your shop special. You can update this
             anytime from settings.
           </p>
         </div>
@@ -85,20 +85,20 @@ export default async function FarmSetupPage({ searchParams }: Props) {
         )}
 
         <form action={setupFarm} className="space-y-10">
-          {/* Farm Name */}
+          {/* Shop Name */}
           <div className="space-y-2">
             <label
               htmlFor="farm_name"
               className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
             >
-              Farm Name <span className="text-secondary">*</span>
+              Shop Name <span className="text-secondary">*</span>
             </label>
             <input
               id="farm_name"
               name="farm_name"
               type="text"
               required
-              placeholder="e.g. Sunrise Valley Farm"
+              placeholder="e.g. Green Table Co."
               autoComplete="organization"
               className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline"
             />
@@ -110,7 +110,7 @@ export default async function FarmSetupPage({ searchParams }: Props) {
               htmlFor="location"
               className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
             >
-              Farm Location
+              Location
             </label>
             <input
               id="location"
@@ -121,7 +121,7 @@ export default async function FarmSetupPage({ searchParams }: Props) {
               className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline"
             />
             <p className="text-xs text-on-surface-variant/60 font-body">
-              Shown to customers browsing local farms
+              Shown to customers browsing local vendors
             </p>
           </div>
 
@@ -131,13 +131,13 @@ export default async function FarmSetupPage({ searchParams }: Props) {
               htmlFor="description"
               className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant"
             >
-              Farm Description
+              About Your Shop
             </label>
             <textarea
               id="description"
               name="description"
               rows={4}
-              placeholder="Tell customers about your farm, your growing practices, and what makes your products special..."
+              placeholder="Tell customers about your shop, what you offer, and what makes your products special..."
               className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline resize-none"
             />
           </div>
@@ -181,7 +181,7 @@ export default async function FarmSetupPage({ searchParams }: Props) {
               type="submit"
               className="w-full bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 uppercase tracking-widest text-sm"
             >
-              Create My Farm
+              Create My Shop
             </button>
           </div>
         </form>
