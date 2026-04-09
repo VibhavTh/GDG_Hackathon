@@ -36,7 +36,7 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-2">
         {siteConfig.adminNav.map((link) => {
-          const isActive = pathname === link.href;
+          const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
           return (
             <Link
               key={link.href}

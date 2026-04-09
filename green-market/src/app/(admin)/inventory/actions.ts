@@ -130,7 +130,7 @@ export async function toggleProductActive(productId: string, isActive: boolean) 
   revalidatePath("/inventory");
 }
 
-export async function updateStock(productId: string, delta: number) {
+export async function updateStock(productId: string, delta: number): Promise<boolean> {
   const { service, farmId } = await getFarm();
 
   const { data: product } = await service
@@ -140,14 +140,20 @@ export async function updateStock(productId: string, delta: number) {
     .eq("farm_id", farmId)
     .single();
 
-  if (!product) return;
+  if (!product) return false;
 
   const newStock = Math.max(0, (product as { stock: number }).stock + delta);
-  await service
+  const { error } = await service
     .from("products")
     .update({ stock: newStock })
     .eq("id", productId)
     .eq("farm_id", farmId);
 
+  if (error) {
+    console.error("[updateStock] DB error:", error);
+    return false;
+  }
+
   revalidatePath("/inventory");
+  return true;
 }

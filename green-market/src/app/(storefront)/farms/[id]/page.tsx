@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { Icon } from "@/components/ui/icon";
+import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
   produce: "Produce",
@@ -206,7 +207,7 @@ export default async function FarmProfilePage({ params }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
               {products.map((product, i) => {
-                const isLowStock = product.stock <= 5;
+                const isLowStock = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
                 return (
                   <div
                     key={product.id}

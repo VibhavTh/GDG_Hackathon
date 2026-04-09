@@ -20,6 +20,7 @@ export default async function OrderConfirmationPage({ searchParams }: Props) {
     .from("orders")
     .select(`
       id,
+      order_number,
       status,
       total_amount,
       guest_email,
@@ -48,7 +49,6 @@ export default async function OrderConfirmationPage({ searchParams }: Props) {
     return <NotFound />;
   }
 
-  // Supabase returns nested relations as arrays; cast to our known shape
   return <ConfirmationContent order={order as unknown as Order} />;
 }
 

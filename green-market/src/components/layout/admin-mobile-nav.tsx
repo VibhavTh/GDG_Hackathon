@@ -17,7 +17,7 @@ export function AdminMobileNav() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-lg px-4 py-3 flex justify-between items-center z-50">
       {mobileNavItems.map((item, index) => {
-        const isActive = pathname === item.href;
+        const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
         // Insert the floating FAB in the middle
         if (index === 2) {

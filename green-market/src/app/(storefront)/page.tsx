@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
+import { NewsletterForm } from "@/components/ui/newsletter-form";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
@@ -418,24 +419,7 @@ export default async function HomePage() {
             </div>
 
             <div className="px-12 pb-12 md:px-16 md:py-16">
-              <form className="space-y-3">
-                <label htmlFor="newsletter-email-home" className="block text-[11px] font-label font-bold uppercase tracking-widest text-on-primary/60 mb-2">
-                  Your email
-                </label>
-                <input
-                  id="newsletter-email-home"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className="w-full bg-on-primary/10 border border-on-primary/20 text-on-primary placeholder:text-on-primary/40 px-5 py-3.5 rounded-xl font-body text-sm focus:outline-none focus:border-on-primary/50 focus:-translate-y-px transition-all duration-150"
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-on-primary text-primary px-8 py-3.5 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-on-primary/90 active:scale-[0.97] transition-all duration-150"
-                >
-                  Subscribe to Field Notes
-                </button>
-              </form>
+              <NewsletterForm id="newsletter-email-home" variant="dark" />
               <p className="text-on-primary/40 text-[11px] font-body mt-3">No spam. Unsubscribe anytime.</p>
             </div>
           </div>

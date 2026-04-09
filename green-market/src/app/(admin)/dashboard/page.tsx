@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { OrderStatus } from "@/lib/supabase/types";
+import { SalesChart } from "./sales-chart";
+import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 
 const STATUS_STYLE: Partial<Record<OrderStatus, string>> = {
@@ -88,17 +90,41 @@ export default async function DashboardPage() {
     const day = new Date(row.order_date).getDay();
     dailyTotals[day] = (dailyTotals[day] ?? 0) + (row.farm_subtotal as number);
   }
-  const chartBars = Array.from({ length: 7 }, (_, i) => {
+  const weeklyBars = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (6 - i));
     const dayIndex = d.getDay();
     return {
-      day: DAY_LABELS[dayIndex],
+      label: DAY_LABELS[dayIndex],
       amount: dailyTotals[dayIndex] ?? 0,
-      isToday: i === 6,
+      isHighlight: i === 6,
     };
   });
-  const maxBarAmount = Math.max(...chartBars.map((b) => b.amount), 1);
+
+  // Today hourly data (last 24 hours in 4-hour buckets)
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const { data: todayRows } = farm
+    ? await service
+        .from("farm_order_summary")
+        .select("order_date, farm_subtotal")
+        .eq("farm_id", farm.id)
+        .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
+        .gte("order_date", todayStart.toISOString())
+    : { data: [] };
+
+  const HOUR_BUCKETS = ["12a", "4a", "8a", "12p", "4p", "8p"];
+  const hourlyTotals: Record<number, number> = {};
+  for (const row of todayRows ?? []) {
+    const bucket = Math.floor(new Date(row.order_date).getHours() / 4);
+    hourlyTotals[bucket] = (hourlyTotals[bucket] ?? 0) + (row.farm_subtotal as number);
+  }
+  const currentBucket = Math.floor(new Date().getHours() / 4);
+  const dailyBars = HOUR_BUCKETS.map((label, i) => ({
+    label,
+    amount: hourlyTotals[i] ?? 0,
+    isHighlight: i === currentBucket,
+  }));
 
   // Low stock products
   const { data: lowStockProducts } = farm
@@ -106,7 +132,7 @@ export default async function DashboardPage() {
         .from("products")
         .select("id, name, stock")
         .eq("farm_id", farm.id)
-        .lte("stock", 5)
+        .lte("stock", LOW_STOCK_THRESHOLD)
         .is("deleted_at", null)
         .eq("is_active", true)
         .order("stock", { ascending: true })
@@ -356,40 +382,7 @@ export default async function DashboardPage() {
 
       {/* Chart */}
       <div className="mb-12">
-        {/* Sales Chart */}
-        <div className="bg-surface-container-low p-8 rounded-xl h-80 flex flex-col">
-          <div className="flex justify-between items-center mb-8">
-            <h4 className="font-headline italic text-xl text-tertiary">
-              Sales Performance
-            </h4>
-            <div className="flex gap-2">
-              <button className="text-xs px-3 py-1 bg-surface-container rounded-full text-on-surface-variant">
-                Daily
-              </button>
-              <button className="text-xs px-3 py-1 bg-primary text-on-primary rounded-full">
-                Weekly
-              </button>
-            </div>
-          </div>
-          <div className="flex-1 flex items-end gap-4 px-4 pb-4">
-            {chartBars.map((bar, i) => {
-              const heightPct = `${Math.max(4, Math.round((bar.amount / maxBarAmount) * 100))}%`;
-              return (
-                <div key={bar.day} className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-label text-on-surface-variant/60">
-                    {bar.amount > 0 ? `$${(bar.amount / 100).toFixed(0)}` : ""}
-                  </span>
-                  <div
-                    className={`w-full rounded-t-lg animate-grow-bar ${bar.isToday ? "bg-primary" : "bg-primary/20"}`}
-                    style={{ height: heightPct, animationDelay: `${i * 60}ms` }}
-                    title={`${bar.day}: $${(bar.amount / 100).toFixed(2)}`}
-                  />
-                  <span className="text-[10px] font-label text-on-surface-variant">{bar.day}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <SalesChart weeklyBars={weeklyBars} dailyBars={dailyBars} />
       </div>
 
       {/* Active Orders */}

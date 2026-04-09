@@ -46,6 +46,12 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("Image must be under 5 MB. Please choose a smaller file.");
+      e.target.value = "";
+      return;
+    }
+    setFormError(null);
     setImagePreview(URL.createObjectURL(file));
     setImageUrl("");
     setFormSuccess(false);
@@ -199,7 +205,7 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
             />
           </label>
 
-          <input type="hidden" name="image_url" value={imageUrl} onChange={() => {}} />
+          <input type="hidden" name="image_url" value={imageUrl} readOnly />
         </div>
       </section>
 
