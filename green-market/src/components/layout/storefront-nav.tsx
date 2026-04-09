@@ -102,11 +102,11 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           ) : userRole === "customer" ? (
             <>
               <Link
-                href="/account/orders"
+                href="/account"
                 className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm flex items-center gap-1.5"
               >
                 <Icon name="person" size="sm" />
-                My Orders
+                My Account
               </Link>
               <SignOutButton role="customer" />
             </>
@@ -168,11 +168,11 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           ) : userRole === "customer" ? (
             <>
               <Link
-                href="/account/orders"
+                href="/account"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
               >
-                My Orders
+                My Account
               </Link>
               <SignOutButton role="customer" className="w-full justify-start px-0 py-3" />
             </>
