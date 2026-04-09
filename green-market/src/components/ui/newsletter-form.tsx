@@ -8,14 +8,26 @@ interface Props {
   variant?: "dark" | "light";
 }
 
+async function subscribe(email: string) {
+  const res = await fetch("/api/newsletter/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  return res.ok;
+}
+
 export function NewsletterForm({ id, variant = "light" }: Props) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
-    // No backend yet -- store locally and show confirmation
+    setLoading(true);
+    await subscribe(email.trim());
+    setLoading(false);
     setSubmitted(true);
   }
 
@@ -48,9 +60,10 @@ export function NewsletterForm({ id, variant = "light" }: Props) {
         />
         <button
           type="submit"
-          className="w-full bg-on-primary text-primary px-8 py-3.5 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-on-primary/90 active:scale-[0.97] transition-all duration-150"
+          disabled={loading}
+          className="w-full bg-on-primary text-primary px-8 py-3.5 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-on-primary/90 active:scale-[0.97] transition-all duration-150 disabled:opacity-60"
         >
-          Subscribe to Field Notes
+          {loading ? "Subscribing..." : "Subscribe to The Weekly Harvest"}
         </button>
       </form>
     );
@@ -66,15 +79,16 @@ export function NewsletterForm({ id, variant = "light" }: Props) {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Your farm-friendly email"
+        placeholder="Your email address"
         className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary focus:outline-none px-4 py-3 w-full sm:w-72 text-sm font-body transition-colors"
       />
       <button
         onClick={handleSubmit}
         type="button"
-        className="bg-primary text-on-primary px-8 py-3 rounded-md font-medium text-sm transition-all active:scale-95 hover:bg-primary-container whitespace-nowrap"
+        disabled={loading}
+        className="bg-primary text-on-primary px-8 py-3 rounded-md font-medium text-sm transition-all active:scale-95 hover:bg-primary-container whitespace-nowrap disabled:opacity-60"
       >
-        Subscribe
+        {loading ? "..." : "Subscribe"}
       </button>
     </div>
   );

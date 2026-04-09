@@ -7,7 +7,7 @@ interface FooterProps {
 const footerLinks = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Shipping Info", href: "/shipping" },
-  { label: "Contact Us", href: "mailto:hello@greenmarketfarm.com" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
 export function Footer({ variant = "storefront" }: FooterProps) {

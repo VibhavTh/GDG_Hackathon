@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { NewsletterForm } from "@/components/ui/newsletter-form";
+import { EventCountdown } from "@/components/ui/event-countdown";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
@@ -27,7 +28,16 @@ export default async function HomePage() {
     .eq("is_active", true)
     .is("deleted_at", null);
 
+  const { data: upcomingEvents } = await service
+    .from("events")
+    .select("id, title, description, event_date, event_time, location")
+    .eq("is_published", true)
+    .gte("event_date", new Date().toISOString().slice(0, 10))
+    .order("event_date", { ascending: true })
+    .limit(4);
+
   const featured = featuredProducts ?? [];
+  const events = upcomingEvents ?? [];
 
   return (
     <>
@@ -389,6 +399,19 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── UPCOMING EVENT COUNTDOWN ── */}
+      {events.length > 0 && (
+        <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
+          <EventCountdown
+            eventDate={events[0].event_date}
+            eventTime={events[0].event_time}
+            eventTitle={events[0].title}
+            eventDescription={events[0].description}
+            eventLocation={events[0].location}
+          />
+        </section>
+      )}
+
       {/* ── NEWSLETTER — Full bleed, editorial ── */}
       <section className="content-lazy">
         <div className="bg-primary mx-6 md:mx-12 mb-24 rounded-3xl overflow-hidden relative">
@@ -408,7 +431,7 @@ export default async function HomePage() {
             <div className="p-12 md:p-16">
               <span className="inline-flex items-center gap-2 text-on-primary/60 font-label text-[11px] uppercase tracking-[0.25em] mb-6">
                 <span className="w-5 h-px bg-on-primary/40 inline-block" />
-                Field Notes
+                The Weekly Harvest
               </span>
               <h2 className="font-headline italic text-4xl md:text-5xl text-on-primary leading-tight mb-4">
                 Grow with the season.
