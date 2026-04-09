@@ -19,6 +19,7 @@ interface CheckoutBody {
   specialInstructions: string;
   farmId: string;
   items: CheckoutItem[];
+  customerId?: string | null;
 }
 
 const FULFILLMENT_FEE = 4.0; // dollars
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { customerName, customerEmail, customerPhone, fulfillmentType, specialInstructions, farmId, items } = body;
+  const { customerName, customerEmail, customerPhone, fulfillmentType, specialInstructions, farmId, items, customerId } = body;
 
   // Validate required fields
   if (!customerName?.trim() || customerName.trim().length > 100) {
@@ -105,11 +106,11 @@ export async function POST(request: NextRequest) {
   const fulfillmentFeeCents = fulfillmentType === "delivery" ? Math.round(FULFILLMENT_FEE * 100) : 0;
   const totalCents = subtotalCents + fulfillmentFeeCents;
 
-  // Create order row with pending_payment status
+  // Create order row
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
-      customer_id: null,
+      customer_id: customerId ?? null,
       guest_email: customerEmail.toLowerCase().trim(),
       total_amount: totalCents,
       status: "placed",

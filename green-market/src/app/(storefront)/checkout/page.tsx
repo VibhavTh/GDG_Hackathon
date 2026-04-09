@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
+import { createClient } from "@/lib/supabase/client";
 
 const DELIVERY_FEE = 4.0;
 
@@ -31,6 +32,19 @@ export default function CheckoutPage() {
   const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">("delivery");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [customerId, setCustomerId] = useState<string | null>(null);
+
+  // Pre-fill email and capture customer_id if logged in
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        setCustomerId(user.id);
+        if (!customerEmail) setCustomerEmail(user.email ?? "");
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const subtotal = mounted ? cart.subtotal() : 0;
   const fulfillmentFee = fulfillmentType === "delivery" ? DELIVERY_FEE : 0;
@@ -67,6 +81,7 @@ export default function CheckoutPage() {
           fulfillmentType,
           specialInstructions: cart.specialInstructions,
           farmId: cart.farmId,
+          customerId,
           items: cart.items.map((item) => ({
             productId: item.productId,
             name: item.name,

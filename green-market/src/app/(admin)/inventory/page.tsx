@@ -246,6 +246,9 @@ export default async function InventoryPage({ searchParams }: Props) {
                       </p>
                       <p className="text-lg font-headline text-primary">
                         ${(product.price / 100).toFixed(2)}
+                        {product.unit && product.unit !== "each" && (
+                          <span className="text-xs text-on-surface-variant font-label ml-1">/ {product.unit}</span>
+                        )}
                       </p>
                     </div>
                     <div className="text-right">

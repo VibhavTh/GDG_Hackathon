@@ -35,6 +35,7 @@ export default async function OrderHistoryPage() {
 
   const service = createServiceClient();
 
+  // Fetch by customer_id (logged-in orders) OR by guest_email (orders placed before login)
   const { data: orders } = await service
     .from("orders")
     .select(`
@@ -54,7 +55,7 @@ export default async function OrderHistoryPage() {
         )
       )
     `)
-    .eq("customer_id", user.id)
+    .or(`customer_id.eq.${user.id},guest_email.eq.${user.email}`)
     .order("created_at", { ascending: false });
 
   return (
