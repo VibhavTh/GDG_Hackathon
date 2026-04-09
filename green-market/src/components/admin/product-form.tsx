@@ -59,6 +59,12 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("Image must be under 5 MB. Please choose a smaller file.");
+      e.target.value = "";
+      return;
+    }
+    setFormError(null);
     setImagePreview(URL.createObjectURL(file));
     // Clear the stored URL so the upload result takes over on submit
     setImageUrl("");
@@ -282,7 +288,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
             type="hidden"
             name="image_url"
             value={imageUrl}
-            onChange={() => {}}
+            readOnly
           />
         </div>
 

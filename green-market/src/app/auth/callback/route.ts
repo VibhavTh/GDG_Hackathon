@@ -61,7 +61,7 @@ export async function GET(request: Request) {
     await service.from("users").insert({
       id: user.id,
       email: user.email!,
-      role: role === "customer" ? "customer" : "customer",
+      role: "customer",
     });
   }
 

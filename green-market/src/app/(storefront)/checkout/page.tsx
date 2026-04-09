@@ -219,9 +219,15 @@ export default function CheckoutPage() {
                   className="w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-colors py-3 text-on-surface resize-none"
                   placeholder="Leave the crate under the porch oak tree..."
                   rows={3}
+                  maxLength={500}
                   value={cart.specialInstructions}
                   onChange={(e) => cart.setSpecialInstructions(e.target.value)}
                 />
+                {cart.specialInstructions.length > 400 && (
+                  <p className="text-xs text-on-surface-variant text-right mt-1">
+                    {500 - cart.specialInstructions.length} characters remaining
+                  </p>
+                )}
               </div>
             </section>
 

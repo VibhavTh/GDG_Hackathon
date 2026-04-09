@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
 import { QuantityAddToCart } from "./quantity-add-to-cart";
 import { Icon } from "@/components/ui/icon";
+import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
   produce: "Produce",
@@ -65,7 +66,7 @@ export default async function ProductDetailPage({ params }: Props) {
   } | null;
 
   // More from this farm
-  const { data: morePrducts } = await service
+  const { data: moreProducts } = await service
     .from("products")
     .select("id, name, price, image_url, unit")
     .eq("farm_id", product.farm_id)
@@ -75,17 +76,19 @@ export default async function ProductDetailPage({ params }: Props) {
     .neq("id", id)
     .limit(4);
 
+  const isLowStock = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
+
   const stockLabel =
     product.stock === 0
       ? "Out of Stock"
-      : product.stock <= 5
+      : isLowStock
       ? `Only ${product.stock} left`
       : "In Stock";
 
   const stockColor =
     product.stock === 0
       ? "text-error"
-      : product.stock <= 5
+      : isLowStock
       ? "text-secondary"
       : "text-primary";
 
@@ -125,7 +128,7 @@ export default async function ProductDetailPage({ params }: Props) {
               <p className="text-sm font-label">No photo yet</p>
             </div>
           )}
-          {product.stock > 0 && product.stock <= 5 && (
+          {isLowStock && (
             <div className="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest animate-pulse-soft">
               Almost Gone
             </div>
@@ -238,7 +241,7 @@ export default async function ProductDetailPage({ params }: Props) {
       </div>
 
       {/* More from this farm */}
-      {morePrducts && morePrducts.length > 0 && farm && (
+      {moreProducts && moreProducts.length > 0 && farm && (
         <section>
           <div className="flex items-end justify-between mb-8">
             <div>
@@ -258,7 +261,7 @@ export default async function ProductDetailPage({ params }: Props) {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 stagger-children">
-            {morePrducts.map((p) => (
+            {moreProducts.map((p) => (
               <Link
                 key={p.id}
                 href={`/products/${p.id}`}

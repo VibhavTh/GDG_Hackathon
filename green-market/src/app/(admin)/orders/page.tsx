@@ -39,23 +39,37 @@ export default async function OrdersPage() {
 
   const detailMap = new Map((details ?? []).map((d) => [d.id, d]));
 
-  const orders = (summaries ?? []).map((s) => ({
-    order_id: s.order_id,
-    customer_id: s.customer_id,
-    guest_email: s.guest_email,
-    status: s.status,
-    order_date: s.order_date,
-    farm_subtotal: s.farm_subtotal,
-    special_instructions:
-      detailMap.get(s.order_id)?.special_instructions ?? null,
-    order_items:
-      ((detailMap.get(s.order_id)?.order_items ?? []) as unknown as {
-        id: string;
-        quantity: number;
-        unit_price: number;
-        products: { name: string; image_url: string | null } | null;
-      }[]),
-  }));
+  type OrderItem = {
+    id: string;
+    quantity: number;
+    unit_price: number;
+    products: { name: string; image_url: string | null } | null;
+  };
+
+  const orders = (summaries ?? []).map((s) => {
+    const detail = detailMap.get(s.order_id);
+    const rawItems = detail?.order_items ?? [];
+    const items = rawItems.map((item) => {
+      const prod = item.products as unknown as { name: string; image_url: string | null } | null;
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        products: prod ? { name: prod.name, image_url: prod.image_url } : null,
+      };
+    }) as OrderItem[];
+
+    return {
+      order_id: s.order_id,
+      customer_id: s.customer_id,
+      guest_email: s.guest_email,
+      status: s.status,
+      order_date: s.order_date,
+      farm_subtotal: s.farm_subtotal,
+      special_instructions: detail?.special_instructions ?? null,
+      order_items: items,
+    };
+  });
 
   return <OrderList orders={orders} />;
 }

@@ -83,14 +83,18 @@ export async function POST(request: NextRequest) {
 
           if (orderData && orderData.order_items.length > 0) {
             const farmId = (orderData.order_items[0] as { farm_id: string }).farm_id;
-            const { data: farmData } = await supabase
+            const { data: farmData, error: farmFetchError } = await supabase
               .from("farms")
               .select("name, users!farms_owner_id_fkey(email)")
               .eq("id", farmId)
               .single();
 
-            if (farmData) {
-              const usersRelation = farmData.users as unknown as { email: string }[] | { email: string } | null;
+            if (farmFetchError || !farmData) {
+              console.error(`Failed to fetch farm ${farmId} for email notification:`, farmFetchError);
+            } else {
+              // Supabase FK join returns either an object or array depending on the relation type.
+              // farms_owner_id_fkey is a many-to-one join so it returns a single object.
+              const usersRelation = farmData.users as unknown as { email: string } | { email: string }[] | null;
               const farmerEmail = Array.isArray(usersRelation)
                 ? usersRelation[0]?.email
                 : usersRelation?.email;
@@ -107,6 +111,8 @@ export async function POST(request: NextRequest) {
                     unitPriceCents: i.unit_price,
                   })),
                 });
+              } else {
+                console.error(`No farmer email found for farm ${farmId}`);
               }
             }
 

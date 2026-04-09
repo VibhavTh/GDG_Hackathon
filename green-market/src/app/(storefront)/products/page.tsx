@@ -3,6 +3,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { CategoryFilter } from "./category-filter";
+import { NewsletterForm } from "@/components/ui/newsletter-form";
+import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
   produce: "Produce",
@@ -153,7 +155,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
             {products.map((product) => {
               const farm = product.farms as { id: string; name: string; location: string | null } | null;
               const outOfStock = product.stock <= 0;
-              const isLowStock = !outOfStock && product.stock <= 5;
+              const isLowStock = !outOfStock && product.stock <= LOW_STOCK_THRESHOLD;
               return (
                 <div
                   key={product.id}
@@ -273,21 +275,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
               and first access to small-batch releases.
             </p>
           </div>
-          <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
-            <label htmlFor="newsletter-email-catalog" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="newsletter-email-catalog"
-              className="bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary focus:outline-none px-4 py-3 w-full sm:w-72 text-sm font-body transition-colors"
-              placeholder="Your farm-friendly email"
-              type="email"
-              autoComplete="email"
-            />
-            <button className="bg-primary text-on-primary px-8 py-3 rounded-md font-medium text-sm transition-all active:scale-95 hover:bg-primary-container whitespace-nowrap">
-              Subscribe
-            </button>
-          </div>
+          <NewsletterForm id="newsletter-email-catalog" />
         </div>
       </main>
     </>

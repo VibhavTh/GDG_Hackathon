@@ -413,7 +413,12 @@ export default function OrderList({ orders }: { orders: Order[] }) {
                         {selectedOrder.status}
                       </div>
                     )}
-                    <button className="px-4 py-4 bg-surface-container text-on-surface rounded-xl font-bold hover:bg-surface-container-low transition-colors">
+                    <button
+                      onClick={() => window.print()}
+                      className="px-4 py-4 bg-surface-container text-on-surface rounded-xl font-bold hover:bg-surface-container-low transition-colors"
+                      aria-label="Print order"
+                      title="Print order"
+                    >
                       <Icon name="print" />
                     </button>
                   </div>

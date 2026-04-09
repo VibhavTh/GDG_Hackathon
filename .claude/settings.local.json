@@ -14,7 +14,10 @@
       "Bash(npx tsc:*)",
       "Bash(gh pr create --title 'feat: complete MVP storefront, farmer auth, and dashboard' --body ':*)",
       "Bash(stripe --version)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh pr create --title 'feat: wire dashboard, settings, inventory, and checkout to real data' --body ':*)",
+      "Bash(npm install:*)",
+      "Bash(find /Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\\\\\(storefront\\\\\\)/order* -type f)"
     ]
   }
 }

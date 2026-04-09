@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -175,12 +176,12 @@ export default function OrderLookupPage() {
                   </>
                 )}
               </Button>
-              <a
-                href="#"
+              <Link
+                href="/order-lookup"
                 className="text-sm font-label text-secondary hover:underline underline-offset-4 transition-all"
               >
-                Need help?
-              </a>
+                Start Over
+              </Link>
             </div>
           </form>
 

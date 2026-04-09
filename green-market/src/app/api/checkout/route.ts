@@ -49,6 +49,9 @@ export async function POST(request: NextRequest) {
   if (!items?.length || items.length > 50) {
     return NextResponse.json({ error: "Cart must have between 1 and 50 items" }, { status: 400 });
   }
+  if (specialInstructions && specialInstructions.length > 500) {
+    return NextResponse.json({ error: "Special instructions must be 500 characters or fewer" }, { status: 400 });
+  }
 
   const supabase = createServiceClient();
 
@@ -112,23 +115,26 @@ export async function POST(request: NextRequest) {
 
   const farmMap = new Map(farms.map((f) => [f.id, f]));
 
+  // Pre-build validated items with DB prices -- every item is guaranteed in the map
+  // because the unavailable check above returned early for any missing/inactive product.
+  const validatedItems = items.map((item) => {
+    const dbProduct = productMap.get(item.productId);
+    if (!dbProduct) throw new Error(`Product ${item.productId} missing after validation`);
+    return { ...item, dbPrice: dbProduct.price, farmId: dbProduct.farm_id };
+  });
+
   // Calculate totals from DB prices (dbPrice is already in cents)
-  const subtotalCents = items.reduce((sum, item) => {
-    const dbPrice = productMap.get(item.productId)!.price;
-    return sum + dbPrice * item.quantity;
-  }, 0);
+  const subtotalCents = validatedItems.reduce((sum, item) => sum + item.dbPrice * item.quantity, 0);
   const fulfillmentFeeCents = fulfillmentType === "delivery" ? Math.round(FULFILLMENT_FEE * 100) : 0;
   const totalCents = subtotalCents + fulfillmentFeeCents;
 
   // Calculate per-farm subtotals and platform fees (using DB farm_id)
   const farmBreakdown = new Map<string, { subtotalCents: number; platformFeeCents: number }>();
-  for (const item of items) {
-    const dbProduct = productMap.get(item.productId)!;
-    const itemTotal = dbProduct.price * item.quantity;
-    const farmId = dbProduct.farm_id;
-    const existing = farmBreakdown.get(farmId) ?? { subtotalCents: 0, platformFeeCents: 0 };
+  for (const item of validatedItems) {
+    const itemTotal = item.dbPrice * item.quantity;
+    const existing = farmBreakdown.get(item.farmId) ?? { subtotalCents: 0, platformFeeCents: 0 };
     existing.subtotalCents += itemTotal;
-    farmBreakdown.set(farmId, existing);
+    farmBreakdown.set(item.farmId, existing);
   }
 
   let totalPlatformFeeCents = 0;
@@ -156,13 +162,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 
-  // Insert order_items (farm_id from DB, not client)
-  const orderItems = items.map((item) => ({
+  // Insert order_items (farm_id and price from DB, not client)
+  const orderItems = validatedItems.map((item) => ({
     order_id: order.id,
     product_id: item.productId,
-    farm_id: productMap.get(item.productId)!.farm_id,
+    farm_id: item.farmId,
     quantity: item.quantity,
-    unit_price: productMap.get(item.productId)!.price,
+    unit_price: item.dbPrice,
   }));
 
   const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
@@ -176,14 +182,14 @@ export async function POST(request: NextRequest) {
   // Insert farm_transfers rows (one per connected farm) with status 'pending'
   const farmTransferRows = [];
   for (const [farmId, breakdown] of farmBreakdown) {
-    const farm = farmMap.get(farmId) as Record<string, unknown> | undefined;
-    if (!farm?.stripe_account_id || !farm.payouts_enabled) continue;
+    const farm = farmMap.get(farmId);
+    if (!farm || !farm.stripe_account_id || !farm.payouts_enabled) continue;
 
     const transferAmount = breakdown.subtotalCents - breakdown.platformFeeCents;
     farmTransferRows.push({
       order_id: order.id,
       farm_id: farmId,
-      stripe_account_id: farm.stripe_account_id as string,
+      stripe_account_id: farm.stripe_account_id,
       amount_cents: transferAmount,
       platform_fee_cents: breakdown.platformFeeCents,
       status: "pending" as const,
@@ -200,14 +206,14 @@ export async function POST(request: NextRequest) {
 
   // Create Stripe Checkout Session (plain charge -- no transfer_data)
   try {
-    const lineItems: { price_data: { currency: string; product_data: { name: string; images?: string[] }; unit_amount: number }; quantity: number }[] = items.map((item) => ({
+    const lineItems: { price_data: { currency: string; product_data: { name: string; images?: string[] }; unit_amount: number }; quantity: number }[] = validatedItems.map((item) => ({
       price_data: {
         currency: "usd",
         product_data: {
           name: `${item.name} (per ${item.unit})`,
           ...(item.image ? { images: [item.image] } : {}),
         },
-        unit_amount: productMap.get(item.productId)!.price, // already in cents
+        unit_amount: item.dbPrice, // already in cents, from DB
       },
       quantity: item.quantity,
     }));

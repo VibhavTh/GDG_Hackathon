@@ -4,7 +4,9 @@ import Link from "next/link";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/icon";
 import { StockControl } from "@/components/admin/stock-control";
-import { deleteProduct, restoreProduct, toggleProductActive } from "./actions";
+import { ProductActions } from "@/components/admin/product-actions";
+import { restoreProduct } from "./actions";
+import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
   produce: "Produce",
@@ -81,7 +83,7 @@ export default async function InventoryPage({ searchParams }: Props) {
 
   const activeProducts = (products ?? []).filter((p) => p.is_active);
   const pausedCount = (products ?? []).filter((p) => !p.is_active).length;
-  const lowStockCount = activeProducts.filter((p) => p.stock <= 5).length;
+  const lowStockCount = activeProducts.filter((p) => p.stock <= LOW_STOCK_THRESHOLD).length;
 
   return (
     <>
@@ -171,7 +173,7 @@ export default async function InventoryPage({ searchParams }: Props) {
         {products && products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => {
-              const isLowStock = product.stock <= 5 && product.is_active;
+              const isLowStock = product.stock <= LOW_STOCK_THRESHOLD && product.is_active;
               const isPaused = !product.is_active;
               return (
                 <div
@@ -197,7 +199,7 @@ export default async function InventoryPage({ searchParams }: Props) {
                   )}
 
                   {/* Edit / Pause / Delete */}
-                  <div className="absolute top-4 right-4 flex gap-1">
+                  <div className="absolute top-4 right-4 flex gap-1 z-20">
                     <Link
                       href={`/inventory/${product.id}/edit`}
                       className="p-2 text-on-surface-variant hover:text-secondary transition-colors focus-visible:outline-2 focus-visible:outline-primary rounded"
@@ -205,39 +207,11 @@ export default async function InventoryPage({ searchParams }: Props) {
                     >
                       <Icon name="edit" />
                     </Link>
-                    <form
-                      action={async () => {
-                        "use server";
-                        await toggleProductActive(product.id, !product.is_active);
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className={`p-2 transition-colors focus-visible:outline-2 focus-visible:outline-primary rounded ${
-                          product.is_active
-                            ? "text-on-surface-variant hover:text-secondary"
-                            : "text-primary"
-                        }`}
-                        aria-label={product.is_active ? `Pause ${product.name}` : `Unpause ${product.name}`}
-                        title={product.is_active ? "Pause listing" : "Resume listing"}
-                      >
-                        <Icon name={product.is_active ? "pause_circle" : "play_circle"} />
-                      </button>
-                    </form>
-                    <form
-                      action={async () => {
-                        "use server";
-                        await deleteProduct(product.id);
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className="p-2 text-on-surface-variant hover:text-error transition-colors focus-visible:outline-2 focus-visible:outline-error rounded"
-                        aria-label={`Delete ${product.name}`}
-                      >
-                        <Icon name="delete" />
-                      </button>
-                    </form>
+                    <ProductActions
+                      productId={product.id}
+                      productName={product.name}
+                      isActive={product.is_active}
+                    />
                   </div>
 
                   {/* Product info */}

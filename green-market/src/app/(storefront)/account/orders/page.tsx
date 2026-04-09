@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/icon";
 
 const STATUS_LABELS: Record<string, string> = {
+  pending_payment: "Awaiting Payment",
   placed: "Order Placed",
   confirmed: "Confirmed",
   preparing: "Preparing",
@@ -15,6 +17,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
+  pending_payment: "bg-surface-container-highest text-on-surface-variant",
   placed: "bg-surface-container-highest text-on-surface",
   confirmed: "bg-primary/10 text-primary",
   preparing: "bg-primary/10 text-primary",
@@ -74,7 +77,9 @@ export default async function OrderHistoryPage() {
           {orders.map((order, i) => {
             const items = order.order_items ?? [];
             const firstItem = items[0];
-            const firstProduct = firstItem?.products as unknown as { id: string; name: string; image_url: string | null } | null;
+            const firstProduct = firstItem?.products
+              ? (firstItem.products as unknown as { id: string; name: string; image_url: string | null })
+              : null;
             const extraCount = items.length - 1;
 
             return (
@@ -111,10 +116,11 @@ export default async function OrderHistoryPage() {
                   {firstProduct && (
                     <div className="w-12 h-12 rounded-lg bg-surface-container-highest overflow-hidden shrink-0 relative">
                       {firstProduct.image_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={firstProduct.image_url}
                           alt={firstProduct.name}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
                         />
                       ) : (

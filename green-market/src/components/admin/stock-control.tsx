@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useState } from "react";
 import { updateStock } from "@/app/(admin)/inventory/actions";
 
 interface StockControlProps {
@@ -15,12 +15,16 @@ export function StockControl({
   initialStock,
 }: StockControlProps) {
   const [stock, setStock] = useState(initialStock);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
-  const handleChange = (delta: number) => {
+  const handleChange = async (delta: number) => {
+    const prev = stock;
     const next = Math.max(0, stock + delta);
     setStock(next); // optimistic
-    startTransition(() => updateStock(productId, delta));
+    setIsPending(true);
+    const ok = await updateStock(productId, delta);
+    setIsPending(false);
+    if (!ok) setStock(prev); // rollback on failure
   };
 
   return (
