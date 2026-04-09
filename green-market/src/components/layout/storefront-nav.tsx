@@ -16,6 +16,14 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   const [cartKey, setCartKey] = useState(0); // used to retrigger badge pop
   const prevCountRef = useRef(0);
 
@@ -33,12 +41,12 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
   }, [itemCount, mounted]);
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl">
+    <nav className={`fixed top-0 w-full z-50 transition-colors duration-300 ${scrolled ? "bg-transparent" : "bg-primary-container"}`}>
       <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
         {/* Logo */}
         <Link
           href="/"
-          className="text-2xl font-headline font-bold text-tertiary transition-opacity duration-150 hover:opacity-70"
+          className="text-2xl font-headline font-bold text-on-primary transition-opacity duration-150 hover:opacity-70"
         >
           {siteConfig.name}
         </Link>
@@ -55,8 +63,8 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
                   relative pb-0.5 transition-all duration-150
                   hover:-translate-y-px
                   ${isActive
-                    ? "text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary after:rounded-full"
-                    : "text-tertiary/70 hover:text-tertiary"
+                    ? "text-on-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-on-primary after:rounded-full"
+                    : "text-on-primary/70 hover:text-on-primary"
                   }
                 `}
               >
@@ -64,6 +72,14 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               </Link>
             );
           })}
+          <a
+            href="https://www.blacksburgfarmersmarket.com/vendors"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative pb-0.5 transition-all duration-150 hover:-translate-y-px text-on-primary/70 hover:text-on-primary"
+          >
+            Vendors
+          </a>
         </div>
 
         {/* Right Actions */}
@@ -71,7 +87,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           {/* Cart */}
           <Link
             href="/cart"
-            className="relative flex items-center gap-2 px-4 py-2 text-tertiary hover:bg-surface-container-low rounded-lg transition-colors duration-150 active:scale-[0.97]"
+            className="relative flex items-center gap-2 px-4 py-2 text-on-primary hover:bg-on-primary/10 rounded-lg transition-colors duration-150 active:scale-[0.97]"
           >
             <Icon name="shopping_basket" />
             {mounted && itemCount > 0 && (
@@ -92,7 +108,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
             <>
               <Link
                 href="/dashboard"
-                className="px-5 py-2 bg-primary text-on-primary rounded-md font-label font-bold text-sm hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 flex items-center gap-1.5"
+                className="px-5 py-2 bg-on-primary/15 text-on-primary rounded-md font-label font-bold text-sm hover:bg-on-primary/25 active:scale-[0.97] transition-all duration-150 flex items-center gap-1.5"
               >
                 <Icon name="dashboard" size="sm" />
                 Dashboard
@@ -103,7 +119,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
             <>
               <Link
                 href="/account"
-                className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm flex items-center gap-1.5"
+                className="px-5 py-2 border border-on-primary/30 text-on-primary rounded-md hover:bg-on-primary/10 active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm flex items-center gap-1.5"
               >
                 <Icon name="person" size="sm" />
                 My Account
@@ -122,7 +138,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 text-tertiary focus-visible:outline-2 focus-visible:outline-primary rounded active:scale-[0.97] transition-transform duration-150"
+            className="md:hidden p-2 text-on-primary focus-visible:outline-2 focus-visible:outline-on-primary rounded active:scale-[0.97] transition-transform duration-150"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
@@ -137,7 +153,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
       <div
         id="mobile-menu"
         aria-hidden={!mobileMenuOpen}
-        className="md:hidden bg-surface/95 backdrop-blur-xl px-6 overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className="md:hidden bg-primary-container px-6 overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
           maxHeight: mobileMenuOpen ? "400px" : "0px",
           opacity: mobileMenuOpen ? 1 : 0,
@@ -149,17 +165,26 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               key={link.href}
               href={link.href}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
+              className="block py-3 font-headline italic text-lg text-on-primary/70 hover:text-on-primary transition-colors duration-150"
             >
               {link.label}
             </Link>
           ))}
+          <a
+            href="https://www.blacksburgfarmersmarket.com/vendors"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
+          >
+            Vendors
+          </a>
           {userRole === "farmer" ? (
             <>
               <Link
                 href="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 font-headline italic text-lg text-primary"
+                className="block py-3 font-headline italic text-lg text-on-primary"
               >
                 Dashboard
               </Link>
@@ -170,7 +195,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               <Link
                 href="/account"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
+                className="block py-3 font-headline italic text-lg text-on-primary/70 hover:text-on-primary transition-colors duration-150"
               >
                 My Account
               </Link>
@@ -180,7 +205,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
             <Link
               href="/customer/login"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
+              className="block py-3 font-headline italic text-lg text-on-primary/70 hover:text-on-primary transition-colors duration-150"
             >
               Sign In
             </Link>
