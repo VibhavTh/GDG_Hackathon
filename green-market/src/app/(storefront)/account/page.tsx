@@ -19,7 +19,8 @@ export default async function AccountPage({ searchParams }: Props) {
 
   const [{ data: profile }, { count: orderCount }] = await Promise.all([
     service.from("users").select("role, created_at").eq("id", user.id).single(),
-    service.from("orders").select("id", { count: "exact", head: true }).eq("customer_id", user.id),
+    service.from("orders").select("id", { count: "exact", head: true })
+      .or(`customer_id.eq.${user.id},guest_email.eq.${user.email}`),
   ]);
 
   const { error } = await searchParams;

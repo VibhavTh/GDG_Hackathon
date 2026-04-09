@@ -21,17 +21,25 @@ interface CategoryFilterProps {
   categories: string[];
   active?: string;
   query?: string;
+  sort?: string;
 }
 
-export function CategoryFilter({ categories, active, query }: CategoryFilterProps) {
-  if (categories.length === 0) return null;
+function buildHref(params: { category?: string; q?: string; sort?: string }) {
+  const sp = new URLSearchParams();
+  if (params.category && params.category !== "all") sp.set("category", params.category);
+  if (params.q) sp.set("q", params.q);
+  if (params.sort && params.sort !== "newest") sp.set("sort", params.sort);
+  const qs = sp.toString();
+  return `/products${qs ? `?${qs}` : ""}`;
+}
 
-  const q = query ? `&q=${encodeURIComponent(query)}` : "";
+export function CategoryFilter({ categories, active, query, sort }: CategoryFilterProps) {
+  if (categories.length === 0) return null;
 
   return (
     <div className="flex flex-wrap gap-2">
       <Link
-        href={`/products${q ? `?${q.slice(1)}` : ""}`}
+        href={buildHref({ q: query, sort })}
         className={`px-4 py-1.5 rounded-full text-xs font-label font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.96] ${
           !active || active === "all"
             ? "bg-primary text-on-primary"
@@ -43,7 +51,7 @@ export function CategoryFilter({ categories, active, query }: CategoryFilterProp
       {categories.map((cat) => (
         <Link
           key={cat}
-          href={`/products?category=${cat}${q}`}
+          href={buildHref({ category: cat, q: query, sort })}
           className={`px-4 py-1.5 rounded-full text-xs font-label font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.96] ${
             active === cat
               ? "bg-primary text-on-primary"

@@ -19,24 +19,46 @@ const CATEGORY_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+  { value: "name_asc", label: "A to Z" },
+] as const;
+
+type SortOption = (typeof SORT_OPTIONS)[number]["value"];
+
 interface Props {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; sort?: SortOption }>;
 }
 
 export default async function ProductCatalogPage({ searchParams }: Props) {
   const supabase = await createClient();
-  const { category, q } = await searchParams;
+  const { category, q, sort = "newest" } = await searchParams;
 
   let query = supabase
     .from("products")
     .select("*, farms(id, name, location)")
     .is("deleted_at", null)
     .eq("is_active", true)
-    .gt("stock", 0)
-    .order("created_at", { ascending: false });
+    .gt("stock", 0);
 
   if (category && category !== "all") query = query.eq("category", category);
   if (q) query = query.ilike("name", `%${q}%`);
+
+  switch (sort) {
+    case "price_asc":
+      query = query.order("price", { ascending: true });
+      break;
+    case "price_desc":
+      query = query.order("price", { ascending: false });
+      break;
+    case "name_asc":
+      query = query.order("name", { ascending: true });
+      break;
+    default:
+      query = query.order("created_at", { ascending: false });
+  }
 
   const { data: products } = await query;
 
@@ -49,6 +71,8 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
     .gt("stock", 0);
 
   const categories = [...new Set((categoryRows ?? []).map((r) => r.category))];
+
+  const hasFilters = !!q || (!!category && category !== "all");
 
   return (
     <>
@@ -68,34 +92,68 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 pb-24">
-        {/* Search + category filter */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-12 items-start sm:items-center justify-between">
-          <CategoryFilter categories={categories} active={category} query={q} />
+        {/* Search + filters row */}
+        <div className="flex flex-col gap-4 mb-12">
+          {/* Top row: category chips + search */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <CategoryFilter categories={categories} active={category} query={q} sort={sort} />
 
-          <form method="GET">
-            {category && (
-              <input type="hidden" name="category" value={category} />
-            )}
-            <div className="flex items-center gap-2 bg-surface-container-low rounded-lg px-4 py-2">
-              <span className="material-symbols-outlined text-on-surface-variant text-xl">
-                search
-              </span>
-              <input
-                name="q"
-                defaultValue={q}
-                type="search"
-                placeholder="Search products..."
-                className="bg-transparent border-none focus:ring-0 focus:outline-none text-sm w-48 placeholder:text-on-surface-variant/50"
-                aria-label="Search products"
-              />
-            </div>
-          </form>
+            <form method="GET" className="flex items-center gap-2">
+              {category && <input type="hidden" name="category" value={category} />}
+              {sort && sort !== "newest" && <input type="hidden" name="sort" value={sort} />}
+              <div className="flex items-center gap-2 bg-surface-container-low rounded-lg px-4 py-2">
+                <span className="material-symbols-outlined text-on-surface-variant text-xl">search</span>
+                <input
+                  name="q"
+                  defaultValue={q}
+                  type="search"
+                  placeholder="Search products..."
+                  className="bg-transparent border-none focus:ring-0 focus:outline-none text-sm w-48 placeholder:text-on-surface-variant/50"
+                  aria-label="Search products"
+                />
+              </div>
+            </form>
+          </div>
+
+          {/* Bottom row: sort + result count */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-on-surface-variant font-body">
+              {products?.length ?? 0} listing{(products?.length ?? 0) !== 1 ? "s" : ""}
+              {hasFilters && " found"}
+            </p>
+
+            <form method="GET" className="flex items-center gap-2">
+              {category && <input type="hidden" name="category" value={category} />}
+              {q && <input type="hidden" name="q" value={q} />}
+              <label htmlFor="sort" className="text-xs font-label text-on-surface-variant uppercase tracking-wider">
+                Sort:
+              </label>
+              <select
+                id="sort"
+                name="sort"
+                defaultValue={sort}
+                onChange={(e) => {
+                  // client-side submit on change -- handled via onchange below
+                  (e.target.form as HTMLFormElement).submit();
+                }}
+                className="bg-surface-container-low border-none rounded-lg px-3 py-1.5 text-sm font-body text-on-surface focus:ring-2 focus:ring-primary/20 cursor-pointer"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+              <noscript>
+                <button type="submit" className="text-xs text-primary font-bold">Go</button>
+              </noscript>
+            </form>
+          </div>
         </div>
 
         {products && products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-14 stagger-children">
             {products.map((product) => {
               const farm = product.farms as { id: string; name: string; location: string | null } | null;
+              const isLowStock = product.stock > 0 && product.stock <= 5;
               return (
                 <div
                   key={product.id}
@@ -112,24 +170,30 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
                       />
                     ) : (
                       <div className="w-full h-full bg-surface-container-high rounded-lg flex items-center justify-center">
-                        <span className="material-symbols-outlined text-outline-variant text-5xl">
-                          image
-                        </span>
+                        <span className="material-symbols-outlined text-outline-variant text-5xl">image</span>
                       </div>
                     )}
                     <span className="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">
                       {CATEGORY_LABELS[product.category] ?? product.category}
                     </span>
+                    {isLowStock && (
+                      <span className="absolute top-4 left-4 bg-secondary text-on-secondary text-[10px] uppercase px-2 py-0.5 rounded-full font-bold animate-pulse-soft">
+                        Only {product.stock} left
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-start mb-1">
-                    <Link href={`/products/${product.id}`} className="hover:underline">
-                      <h3 className="text-2xl font-headline text-tertiary">
+                    <Link href={`/products/${product.id}`} className="hover:underline flex-1 min-w-0 mr-2">
+                      <h3 className="text-2xl font-headline text-tertiary truncate">
                         {product.name}
                       </h3>
                     </Link>
-                    <span className="text-xl font-headline text-primary">
+                    <span className="text-xl font-headline text-primary shrink-0">
                       ${(product.price / 100).toFixed(2)}
+                      {product.unit && product.unit !== "each" && (
+                        <span className="text-xs font-body text-on-surface-variant ml-0.5">/{product.unit}</span>
+                      )}
                     </span>
                   </div>
 
@@ -167,11 +231,19 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
             <p className="font-headline italic text-3xl text-tertiary mb-3">
               Nothing here yet.
             </p>
-            <p className="text-on-surface-variant font-body">
+            <p className="text-on-surface-variant font-body mb-6">
               {q
                 ? `No products matched "${q}". Try a different search.`
                 : "Check back soon — local farmers are adding listings."}
             </p>
+            {hasFilters && (
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-primary/90 active:scale-[0.97] transition-all duration-150"
+              >
+                Clear Filters
+              </Link>
+            )}
           </div>
         )}
 

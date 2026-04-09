@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendNewOrderEmail, sendCustomerConfirmationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -60,6 +61,73 @@ export async function POST(request: NextRequest) {
         if (rpcError) {
           console.error("confirm_order RPC error:", rpcError);
           return NextResponse.json({ error: "Failed to confirm order" }, { status: 500 });
+        }
+
+        // Send email notification to farmer
+        try {
+          const { data: orderData } = await supabase
+            .from("orders")
+            .select(`
+              id,
+              guest_email,
+              total_amount,
+              order_items (
+                quantity,
+                unit_price,
+                products ( name ),
+                farm_id
+              )
+            `)
+            .eq("id", orderId)
+            .single();
+
+          if (orderData && orderData.order_items.length > 0) {
+            const farmId = (orderData.order_items[0] as { farm_id: string }).farm_id;
+            const { data: farmData } = await supabase
+              .from("farms")
+              .select("name, users!farms_owner_id_fkey(email)")
+              .eq("id", farmId)
+              .single();
+
+            if (farmData) {
+              const usersRelation = farmData.users as unknown as { email: string }[] | { email: string } | null;
+              const farmerEmail = Array.isArray(usersRelation)
+                ? usersRelation[0]?.email
+                : usersRelation?.email;
+              if (farmerEmail) {
+                await sendNewOrderEmail({
+                  farmerEmail,
+                  farmName: farmData.name as string,
+                  orderId: orderData.id,
+                  customerEmail: orderData.guest_email ?? "Guest",
+                  totalCents: orderData.total_amount,
+                  items: orderData.order_items.map((i) => ({
+                    name: (i.products as unknown as { name: string } | null)?.name ?? "Product",
+                    quantity: i.quantity,
+                    unitPriceCents: i.unit_price,
+                  })),
+                });
+              }
+            }
+
+            // Customer confirmation email
+            if (orderData.guest_email) {
+              await sendCustomerConfirmationEmail({
+                customerEmail: orderData.guest_email,
+                orderId: orderData.id,
+                farmName: (farmData?.name as string | null) ?? "the farm",
+                totalCents: orderData.total_amount,
+                items: orderData.order_items.map((i) => ({
+                  name: (i.products as unknown as { name: string } | null)?.name ?? "Product",
+                  quantity: i.quantity,
+                  unitPriceCents: i.unit_price,
+                })),
+              });
+            }
+          }
+        } catch (emailErr) {
+          // Non-fatal -- order is confirmed, just log the email failure
+          console.error("Failed to send email notification:", emailErr);
         }
 
         break;

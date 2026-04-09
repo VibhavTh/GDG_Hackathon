@@ -70,7 +70,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
         <div className="flex items-center gap-3">
           {/* Cart */}
           <Link
-            href="/checkout"
+            href="/cart"
             className="relative flex items-center gap-2 px-4 py-2 text-tertiary hover:bg-surface-container-low rounded-lg transition-colors duration-150 active:scale-[0.97]"
           >
             <Icon name="shopping_basket" />
