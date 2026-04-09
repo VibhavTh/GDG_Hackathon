@@ -165,6 +165,15 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               {link.label}
             </Link>
           ))}
+          <a
+            href="https://www.blacksburgfarmersmarket.com/vendors"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
+          >
+            Vendors
+          </a>
           {userRole === "admin" ? (
             <>
               <Link
