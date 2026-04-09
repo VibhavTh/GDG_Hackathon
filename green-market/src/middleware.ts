@@ -9,10 +9,14 @@ const VENDOR_PROTECTED_PREFIXES = [
   "/vendor/setup",
 ];
 
+const ADMIN_PROTECTED_PREFIXES = ["/admin"];
+const ADMIN_LOGIN_PATH = "/admin/login";
+
 const CUSTOMER_PROTECTED_PREFIXES = ["/account/orders", "/checkout"];
 
 const PROTECTED_PREFIXES = [
   ...VENDOR_PROTECTED_PREFIXES,
+  ...ADMIN_PROTECTED_PREFIXES,
   ...CUSTOMER_PROTECTED_PREFIXES,
 ];
 
@@ -22,7 +26,8 @@ const AUTH_PREFIXES = ["/vendor/login", "/vendor/register"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  // /admin/login is public -- exclude it from admin protection
+  const isProtected = pathname !== ADMIN_LOGIN_PATH && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
   const isAuthRoute = AUTH_PREFIXES.some((p) => pathname.startsWith(p));
 
   // Skip Supabase entirely for routes that never need auth checks
@@ -59,8 +64,9 @@ export async function middleware(request: NextRequest) {
 
   // Unauthenticated user hitting a protected route -> appropriate login
   if (isProtected && !user) {
+    const isAdminRoute = ADMIN_PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
     const isVendorRoute = VENDOR_PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
-    const loginPath = isVendorRoute ? "/vendor/login" : "/customer/login";
+    const loginPath = isAdminRoute ? ADMIN_LOGIN_PATH : isVendorRoute ? "/vendor/login" : "/customer/login";
     const loginUrl = new URL(loginPath, request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);

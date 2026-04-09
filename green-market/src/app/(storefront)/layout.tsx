@@ -10,7 +10,7 @@ export default async function StorefrontLayout({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let userRole: "vendor" | "customer" | null = null;
+  let userRole: "vendor" | "customer" | "admin" | null = null;
 
   if (user) {
     const service = createServiceClient();
@@ -19,8 +19,10 @@ export default async function StorefrontLayout({
       .select("role")
       .eq("id", user.id)
       .single();
-    // DB stores "farmer" — map to "vendor" for UI
-    userRole = profile?.role === "farmer" ? "vendor" : profile?.role === "customer" ? "customer" : null;
+    // DB stores "farmer" — map to "vendor" for UI; admin gets own role
+    if (profile?.role === "farmer") userRole = "vendor";
+    else if (profile?.role === "customer") userRole = "customer";
+    else if (profile?.role === "admin") userRole = "admin";
   }
 
   return (

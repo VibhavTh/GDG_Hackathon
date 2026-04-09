@@ -9,7 +9,7 @@ import { siteConfig } from "@/config/site";
 import { useCartStore } from "@/stores/cart-store";
 
 interface StorefrontNavProps {
-  userRole: "vendor" | "customer" | null;
+  userRole: "vendor" | "customer" | "admin" | null;
 }
 
 export function StorefrontNav({ userRole }: StorefrontNavProps) {
@@ -88,7 +88,18 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           </Link>
 
           {/* Auth-aware right button */}
-          {userRole === "vendor" ? (
+          {userRole === "admin" ? (
+            <>
+              <Link
+                href="/admin"
+                className="px-5 py-2 bg-primary text-on-primary rounded-md font-label font-bold text-sm hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 flex items-center gap-1.5"
+              >
+                <Icon name="admin_panel_settings" size="sm" />
+                Admin
+              </Link>
+              <SignOutButton role="vendor" />
+            </>
+          ) : userRole === "vendor" ? (
             <>
               <Link
                 href="/dashboard"
@@ -154,7 +165,18 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               {link.label}
             </Link>
           ))}
-          {userRole === "vendor" ? (
+          {userRole === "admin" ? (
+            <>
+              <Link
+                href="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-3 font-headline italic text-lg text-primary"
+              >
+                Admin Panel
+              </Link>
+              <SignOutButton role="vendor" className="w-full justify-start px-0 py-3" />
+            </>
+          ) : userRole === "vendor" ? (
             <>
               <Link
                 href="/dashboard"

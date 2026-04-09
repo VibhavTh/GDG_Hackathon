@@ -81,6 +81,12 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
             Vendor sign in
           </Link>
         </p>
+
+        <p className="text-center mt-3 text-xs text-on-surface-variant/40 font-body">
+          <Link href="/admin/login" className="hover:text-on-surface-variant transition-colors">
+            Admin access
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -253,6 +253,120 @@ export interface Database {
         };
         Update: never;
       };
+      events: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          event_date: string;
+          event_time: string | null;
+          end_date: string | null;
+          location: string | null;
+          is_published: boolean;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          event_date: string;
+          event_time?: string | null;
+          end_date?: string | null;
+          location?: string | null;
+          is_published?: boolean;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          event_date?: string;
+          event_time?: string | null;
+          end_date?: string | null;
+          location?: string | null;
+          is_published?: boolean;
+          updated_at?: string;
+        };
+      };
+      newsletters: {
+        Row: {
+          id: string;
+          subject: string;
+          body_html: string;
+          sent_at: string | null;
+          recipient_count: number;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          subject: string;
+          body_html: string;
+          sent_at?: string | null;
+          recipient_count?: number;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          subject?: string;
+          body_html?: string;
+          sent_at?: string | null;
+          recipient_count?: number;
+        };
+      };
+      newsletter_subscribers: {
+        Row: {
+          id: string;
+          email: string;
+          subscribed_at: string;
+          unsubscribed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          subscribed_at?: string;
+          unsubscribed_at?: string | null;
+        };
+        Update: {
+          unsubscribed_at?: string | null;
+        };
+      };
+      admin_messages: {
+        Row: {
+          id: string;
+          type: "contact" | "vendor_request";
+          from_name: string | null;
+          from_email: string;
+          subject: string;
+          body: string;
+          metadata: Record<string, unknown>;
+          is_read: boolean;
+          read_at: string | null;
+          archived_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          type: "contact" | "vendor_request";
+          from_name?: string | null;
+          from_email: string;
+          subject: string;
+          body: string;
+          metadata?: Record<string, unknown>;
+          is_read?: boolean;
+          read_at?: string | null;
+          archived_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          is_read?: boolean;
+          read_at?: string | null;
+          archived_at?: string | null;
+        };
+      };
       processed_webhooks: {
         Row: {
           stripe_event_id: string;

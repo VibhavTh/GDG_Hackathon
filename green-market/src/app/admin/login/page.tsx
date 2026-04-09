@@ -1,31 +1,30 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { login } from "./actions";
+import { adminLogin } from "./actions";
 
 interface Props {
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ error?: string }>;
 }
 
-export default async function VendorLoginPage({ searchParams }: Props) {
-  const { error, next } = await searchParams;
+export default async function AdminLoginPage({ searchParams }: Props) {
+  const { error } = await searchParams;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-surface">
       <div className="w-full max-w-md animate-slide-up">
-        {/* Logo */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-70 transition-opacity duration-150">
             <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
-              <Icon name="potted_plant" fill className="text-on-primary-container" />
+              <Icon name="admin_panel_settings" className="text-on-primary-container" />
             </div>
             <span className="font-headline text-xl text-tertiary font-bold">Green Market</span>
           </Link>
           <h1 className="text-3xl font-headline italic text-tertiary mb-2">
-            Vendor sign in
+            Admin sign in
           </h1>
           <p className="text-on-surface-variant font-body text-sm">
-            Access your dashboard to manage listings and orders.
+            Restricted access. Authorized personnel only.
           </p>
         </div>
 
@@ -37,9 +36,7 @@ export default async function VendorLoginPage({ searchParams }: Props) {
             </div>
           )}
 
-          <form action={login} className="space-y-5">
-            {next && <input type="hidden" name="next" value={next} />}
-
+          <form action={adminLogin} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
                 Email address
@@ -50,20 +47,15 @@ export default async function VendorLoginPage({ searchParams }: Props) {
                 type="email"
                 required
                 autoComplete="email"
-                placeholder="you@example.com"
+                placeholder="admin@example.com"
                 className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none focus:-translate-y-px transition-all duration-150"
               />
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <label htmlFor="password" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant">
-                  Password
-                </label>
-                <Link href="/vendor/forgot-password" className="text-xs text-secondary hover:text-primary transition-colors duration-150 font-body">
-                  Forgot?
-                </Link>
-              </div>
+              <label htmlFor="password" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+                Password
+              </label>
               <input
                 id="password"
                 name="password"
@@ -75,35 +67,13 @@ export default async function VendorLoginPage({ searchParams }: Props) {
               />
             </div>
 
-            <SubmitButton label="Access Dashboard" loadingLabel="Signing in..." />
+            <SubmitButton label="Access Admin Panel" loadingLabel="Signing in..." />
           </form>
 
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-outline-variant" />
-            <span className="text-xs text-on-surface-variant font-label">or</span>
-            <div className="flex-1 h-px bg-outline-variant" />
-          </div>
-
-          <Link
-            href="/vendor/register"
-            className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-[0.97] transition-all duration-150"
-          >
-            Create a Vendor Account
-          </Link>
-
-          <p className="text-center text-xs text-on-surface-variant font-body">
-            Looking to shop?{" "}
-            <Link href="/customer/login" className="text-primary font-bold hover:underline">
-              Customer sign in
-            </Link>
+          <p className="text-center text-xs text-on-surface-variant font-body pt-2">
+            <Link href="/" className="text-primary hover:underline">Back to storefront</Link>
           </p>
         </div>
-
-        <p className="text-center mt-6 text-xs text-on-surface-variant/40 font-body">
-          <Link href="/admin/login" className="hover:text-on-surface-variant transition-colors">
-            Admin access
-          </Link>
-        </p>
       </div>
     </div>
   );

@@ -21,7 +21,10 @@
       "Bash(find /Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/vendor -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) -exec sed -i '' 's|/farmer/|/vendor/|g' {} +)",
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(sed -i '' 's/{item\\\\.badge > 0 && \\(/{\\(item.badge ?? 0\\) > 0 \\\\&\\\\& \\(/g' \"/Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\(site-admin\\)/layout.tsx\")",
+      "Bash(sed -i '' 's/{item\\\\.badge}/{ item.badge ?? 0 }/g' \"/Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\(site-admin\\)/layout.tsx\")",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }
