@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Missing order_id" }, { status: 400 });
         }
 
-        // Call atomic confirm_order RPC — updates status, decrements stock, records webhook
+        // Call atomic confirm_order RPC -- updates status, decrements stock, records webhook
         const { error: rpcError } = await supabase.rpc("confirm_order", {
           p_event_id: event.id,
           p_order_id: orderId,
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Failed to confirm order" }, { status: 500 });
         }
 
-        // Send email notification to farmer
+        // Send email notification to farmer and customer
         try {
           const { data: orderData } = await supabase
             .from("orders")
@@ -130,6 +130,63 @@ export async function POST(request: NextRequest) {
           console.error("Failed to send email notification:", emailErr);
         }
 
+        // Execute per-farm transfers (separate charges and transfers pattern)
+        if (paymentIntentId) {
+          try {
+            const pi = await stripe.paymentIntents.retrieve(paymentIntentId, {
+              expand: ["latest_charge"],
+            });
+            const charge = pi.latest_charge;
+            const chargeId = typeof charge === "object" ? charge?.id : charge;
+
+            if (chargeId) {
+              const { data: pendingTransfers } = await supabase
+                .from("farm_transfers")
+                .select("*")
+                .eq("order_id", orderId)
+                .eq("status", "pending");
+
+              if (pendingTransfers && pendingTransfers.length > 0) {
+                for (const row of pendingTransfers) {
+                  try {
+                    const transfer = await stripe.transfers.create({
+                      amount: row.amount_cents,
+                      currency: "usd",
+                      destination: row.stripe_account_id,
+                      source_transaction: chargeId,
+                      metadata: {
+                        order_id: orderId,
+                        farm_id: row.farm_id,
+                      },
+                    });
+
+                    await supabase
+                      .from("farm_transfers")
+                      .update({
+                        stripe_transfer_id: transfer.id,
+                        status: "completed",
+                        updated_at: new Date().toISOString(),
+                      })
+                      .eq("id", row.id);
+                  } catch (transferErr) {
+                    console.error(`Transfer failed for farm ${row.farm_id}:`, transferErr);
+                    await supabase
+                      .from("farm_transfers")
+                      .update({
+                        status: "failed",
+                        error_message: transferErr instanceof Error ? transferErr.message : "Unknown error",
+                        updated_at: new Date().toISOString(),
+                      })
+                      .eq("id", row.id);
+                  }
+                }
+              }
+            }
+          } catch (err) {
+            console.error("Failed to process farm transfers:", err);
+          }
+        }
+
         break;
       }
 
@@ -176,8 +233,27 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      case "account.updated": {
+        const account = event.data.object as { id: string; payouts_enabled?: boolean; details_submitted?: boolean };
+
+        await supabase
+          .from("farms")
+          .update({
+            payouts_enabled: account.payouts_enabled ?? false,
+            stripe_onboarding_complete: account.details_submitted ?? false,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_account_id", account.id);
+
+        await supabase
+          .from("processed_webhooks")
+          .insert({ stripe_event_id: event.id });
+
+        break;
+      }
+
       default:
-        // Unhandled event type — still return 200 so Stripe doesn't retry
+        // Unhandled event type -- still return 200 so Stripe doesn't retry
         break;
     }
   } catch (err) {

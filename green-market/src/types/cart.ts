@@ -5,10 +5,11 @@ export interface CartItem {
   quantity: number;
   image: string;
   unit: string;
+  farmId: string;
+  farmName: string;
 }
 
 export interface Cart {
-  farmId: string | null;
   items: CartItem[];
   specialInstructions: string;
 }

@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/icon";
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, farmId, subtotal, itemCount, removeItem, updateQuantity, clearCart } = useCartStore();
+  const { items, subtotal, itemCount, removeItem, updateQuantity, clearCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -47,7 +47,7 @@ export default function CartPage() {
           Your Basket
         </h1>
         <p className="text-on-surface-variant font-body mt-2">
-          {count} item{count !== 1 ? "s" : ""} from a local farm
+          {count} item{count !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -174,13 +174,6 @@ export default function CartPage() {
               </p>
             </div>
 
-            {/* Single farm notice */}
-            <div className="mt-4 flex items-start gap-3">
-              <Icon name="info" size="sm" className="text-on-surface-variant/40 mt-0.5 shrink-0" />
-              <p className="text-[11px] text-on-surface-variant/50 font-body leading-relaxed">
-                Cart items must be from a single farm. Add from another farm to start a new cart.
-              </p>
-            </div>
           </div>
         </aside>
       </div>

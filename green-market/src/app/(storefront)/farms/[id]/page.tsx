@@ -256,13 +256,14 @@ export default async function FarmProfilePage({ params }: Props) {
 
                     <div className="mt-auto">
                       <AddToCartButton
-                        farmId={farm.id}
                         item={{
                           productId: product.id,
                           name: product.name,
                           price: product.price / 100,
                           image: product.image_url ?? "",
                           unit: product.unit ?? "each",
+                          farmId: farm.id,
+                          farmName: farm.name,
                         }}
                       />
                     </div>

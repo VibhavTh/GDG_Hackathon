@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 import type { Cart, CartItem } from "@/types/cart";
 
 interface CartStore extends Cart {
-  addItem: (farmId: string, item: CartItem) => boolean;
+  addItem: (item: CartItem) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   setSpecialInstructions: (instructions: string) => void;
@@ -17,25 +17,16 @@ interface CartStore extends Cart {
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      farmId: null,
       items: [],
       specialInstructions: "",
 
-      addItem: (farmId: string, item: CartItem) => {
+      addItem: (item: CartItem) => {
         const state = get();
-
-        // Single-farm constraint: if adding from a different farm, return false
-        // (caller should show confirmation dialog before clearing)
-        if (state.farmId && state.farmId !== farmId && state.items.length > 0) {
-          return false;
-        }
-
         const existing = state.items.find(
           (i) => i.productId === item.productId
         );
         if (existing) {
           set({
-            farmId,
             items: state.items.map((i) =>
               i.productId === item.productId
                 ? { ...i, quantity: i.quantity + item.quantity }
@@ -43,14 +34,13 @@ export const useCartStore = create<CartStore>()(
             ),
           });
         } else {
-          set({ farmId, items: [...state.items, item] });
+          set({ items: [...state.items, item] });
         }
-        return true;
       },
 
       removeItem: (productId: string) => {
         const items = get().items.filter((i) => i.productId !== productId);
-        set({ items, farmId: items.length === 0 ? null : get().farmId });
+        set({ items });
       },
 
       updateQuantity: (productId: string, quantity: number) => {
@@ -70,7 +60,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => {
-        set({ farmId: null, items: [], specialInstructions: "" });
+        set({ items: [], specialInstructions: "" });
       },
 
       itemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
@@ -78,6 +68,13 @@ export const useCartStore = create<CartStore>()(
       subtotal: () =>
         get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
-    { name: "green-market-cart" }
+    {
+      name: "green-market-cart",
+      version: 2,
+      migrate: () => {
+        // v1 had root-level farmId -- clear cart on migration
+        return { items: [], specialInstructions: "" };
+      },
+    }
   )
 );

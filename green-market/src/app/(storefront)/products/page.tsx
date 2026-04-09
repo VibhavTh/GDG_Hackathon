@@ -41,7 +41,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
     .select("*, farms(id, name, location)")
     .is("deleted_at", null)
     .eq("is_active", true)
-    .gt("stock", 0);
+    .order("stock", { ascending: false });
 
   if (category && category !== "all") query = query.eq("category", category);
   if (q) query = query.ilike("name", `%${q}%`);
@@ -67,8 +67,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
     .from("products")
     .select("category")
     .is("deleted_at", null)
-    .eq("is_active", true)
-    .gt("stock", 0);
+    .eq("is_active", true);
 
   const categories = [...new Set((categoryRows ?? []).map((r) => r.category))];
 
@@ -153,11 +152,12 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-14 stagger-children">
             {products.map((product) => {
               const farm = product.farms as { id: string; name: string; location: string | null } | null;
-              const isLowStock = product.stock > 0 && product.stock <= 5;
+              const outOfStock = product.stock <= 0;
+              const isLowStock = !outOfStock && product.stock <= 5;
               return (
                 <div
                   key={product.id}
-                  className="harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-colors duration-200 hover:-translate-y-0.5 transition-transform animate-slide-up-fast"
+                  className={`harvest-card group bg-surface-container-low p-6 rounded-xl flex flex-col transition-colors duration-200 transition-transform animate-slide-up-fast ${outOfStock ? "opacity-60 grayscale" : "hover:-translate-y-0.5"}`}
                 >
                   <div className="relative -mt-12 mb-6 h-64 overflow-visible rounded-lg">
                     {product.image_url ? (
@@ -176,6 +176,11 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
                     <span className="absolute top-4 right-4 bg-secondary-fixed text-on-secondary-fixed text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">
                       {CATEGORY_LABELS[product.category] ?? product.category}
                     </span>
+                    {outOfStock && (
+                      <span className="absolute top-4 left-4 bg-error text-on-error text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-bold">
+                        Out of Stock
+                      </span>
+                    )}
                     {isLowStock && (
                       <span className="absolute top-4 left-4 bg-secondary text-on-secondary text-[10px] uppercase px-2 py-0.5 rounded-full font-bold animate-pulse-soft">
                         Only {product.stock} left
@@ -211,16 +216,26 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
                   )}
 
                   <div className="mt-auto">
-                    <AddToCartButton
-                      farmId={(product.farms as { id?: string } | null)?.id ?? ""}
-                      item={{
-                        productId: product.id,
-                        name: product.name,
-                        price: product.price / 100,
-                        image: product.image_url ?? "",
-                        unit: product.unit ?? "each",
-                      }}
-                    />
+                    {outOfStock ? (
+                      <button
+                        disabled
+                        className="w-full py-3 rounded-lg bg-surface-container-highest text-on-surface-variant font-bold text-sm cursor-not-allowed"
+                      >
+                        Out of Stock
+                      </button>
+                    ) : (
+                      <AddToCartButton
+                        item={{
+                          productId: product.id,
+                          name: product.name,
+                          price: product.price / 100,
+                          image: product.image_url ?? "",
+                          unit: product.unit ?? "each",
+                          farmId: farm?.id ?? "",
+                          farmName: farm?.name ?? "",
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               );

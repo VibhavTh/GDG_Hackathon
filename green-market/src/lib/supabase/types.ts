@@ -75,6 +75,8 @@ export interface Database {
           image_url: string | null;
           categories: ProductCategory[];
           stripe_account_id: string | null;
+          stripe_onboarding_complete: boolean;
+          payouts_enabled: boolean;
           is_approved: boolean;
           created_at: string;
           updated_at: string;
@@ -88,6 +90,8 @@ export interface Database {
           image_url?: string | null;
           categories?: ProductCategory[];
           stripe_account_id?: string | null;
+          stripe_onboarding_complete?: boolean;
+          payouts_enabled?: boolean;
           is_approved?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -99,6 +103,8 @@ export interface Database {
           image_url?: string | null;
           categories?: ProductCategory[];
           stripe_account_id?: string | null;
+          stripe_onboarding_complete?: boolean;
+          payouts_enabled?: boolean;
           is_approved?: boolean;
           updated_at?: string;
         };
@@ -164,6 +170,7 @@ export interface Database {
           stripe_session_id: string | null;
           stripe_payment_intent: string | null;
           total_amount: number;
+          platform_fee_cents: number;
           status: OrderStatus;
           special_instructions: string | null;
           created_at: string;
@@ -176,6 +183,7 @@ export interface Database {
           stripe_session_id?: string | null;
           stripe_payment_intent?: string | null;
           total_amount: number;
+          platform_fee_cents?: number;
           status?: OrderStatus;
           special_instructions?: string | null;
           created_at?: string;
@@ -185,7 +193,42 @@ export interface Database {
           status?: OrderStatus;
           stripe_session_id?: string | null;
           stripe_payment_intent?: string | null;
+          platform_fee_cents?: number;
           special_instructions?: string | null;
+          updated_at?: string;
+        };
+      };
+      farm_transfers: {
+        Row: {
+          id: string;
+          order_id: string;
+          farm_id: string;
+          stripe_account_id: string;
+          amount_cents: number;
+          platform_fee_cents: number;
+          stripe_transfer_id: string | null;
+          status: "pending" | "completed" | "failed" | "reversed";
+          error_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          order_id: string;
+          farm_id: string;
+          stripe_account_id: string;
+          amount_cents: number;
+          platform_fee_cents?: number;
+          stripe_transfer_id?: string | null;
+          status?: "pending" | "completed" | "failed" | "reversed";
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          stripe_transfer_id?: string | null;
+          status?: "pending" | "completed" | "failed" | "reversed";
+          error_message?: string | null;
           updated_at?: string;
         };
       };
@@ -296,3 +339,5 @@ export type OrderRow = Database["public"]["Tables"]["orders"]["Row"];
 export type OrderItemRow = Database["public"]["Tables"]["order_items"]["Row"];
 export type NotificationRow =
   Database["public"]["Tables"]["notifications"]["Row"];
+export type FarmTransferRow =
+  Database["public"]["Tables"]["farm_transfers"]["Row"];

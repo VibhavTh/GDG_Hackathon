@@ -29,10 +29,15 @@ export default async function OrderConfirmationPage({ searchParams }: Props) {
         id,
         quantity,
         unit_price,
+        farm_id,
         products (
           id,
           name,
           image_url
+        ),
+        farms (
+          id,
+          name
         )
       )
     `)

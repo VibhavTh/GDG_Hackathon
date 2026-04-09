@@ -6,56 +6,21 @@ import { useCartStore } from "@/stores/cart-store";
 import type { CartItem } from "@/types/cart";
 
 interface Props {
-  farmId: string;
   item: Omit<CartItem, "quantity">;
 }
 
-export function QuantityAddToCart({ farmId, item }: Props) {
+export function QuantityAddToCart({ item }: Props) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  const [conflict, setConflict] = useState(false);
-  const { addItem, clearCart } = useCartStore();
+  const addItem = useCartStore((s) => s.addItem);
 
   function dec() { setQuantity((q) => Math.max(1, q - 1)); }
   function inc() { setQuantity((q) => q + 1); }
 
   function handleAdd() {
-    const success = addItem(farmId, { ...item, quantity });
-    if (!success) { setConflict(true); return; }
+    addItem({ ...item, quantity });
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
-  }
-
-  function handleConfirmSwitch() {
-    clearCart();
-    addItem(farmId, { ...item, quantity });
-    setConflict(false);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
-  }
-
-  if (conflict) {
-    return (
-      <div className="w-full rounded-xl bg-surface-container-highest p-5 space-y-3">
-        <p className="text-sm text-on-surface-variant font-body leading-snug">
-          Your cart has items from another farm. Clear it and start fresh?
-        </p>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setConflict(false)}
-            className="flex-1 py-2.5 rounded-lg text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-colors border border-outline-variant"
-          >
-            Keep Cart
-          </button>
-          <button
-            onClick={handleConfirmSwitch}
-            className="flex-1 py-2.5 rounded-lg bg-secondary text-on-secondary text-sm font-bold hover:bg-secondary/90 active:scale-[0.97] transition-all duration-150"
-          >
-            Clear & Add
-          </button>
-        </div>
-      </div>
-    );
   }
 
   return (

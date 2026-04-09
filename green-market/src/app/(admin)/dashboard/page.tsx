@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   const { data: farm } = user
     ? await service
         .from("farms")
-        .select("id, name, description, location")
+        .select("id, name, description, location, stripe_account_id, stripe_onboarding_complete, payouts_enabled")
         .eq("owner_id", user.id)
         .single()
     : {
@@ -38,6 +38,9 @@ export default async function DashboardPage() {
           name: string;
           description: string | null;
           location: string | null;
+          stripe_account_id: string | null;
+          stripe_onboarding_complete: boolean;
+          payouts_enabled: boolean;
         } | null,
       };
 
@@ -181,6 +184,79 @@ export default async function DashboardPage() {
             className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-primary hover:underline"
           >
             Complete Profile
+          </Link>
+        </div>
+      )}
+
+      {/* Stripe Connect banners */}
+      {farm && !farm.stripe_account_id && (
+        <div className="mb-8 bg-primary/8 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <Icon name="account_balance" className="text-primary" size="sm" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold font-body text-on-surface">
+                Set up payments to receive customer orders.
+              </p>
+              <p className="text-xs text-on-surface-variant font-body mt-0.5">
+                Connect your Stripe account so customers can pay and you receive payouts.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/settings"
+            className="shrink-0 bg-primary text-on-primary font-label font-bold py-2.5 px-6 rounded-lg hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-xs"
+          >
+            Set Up Payments
+          </Link>
+        </div>
+      )}
+
+      {farm?.stripe_account_id && !farm.stripe_onboarding_complete && (
+        <div className="mb-8 bg-amber-50 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+              <Icon name="pending" className="text-amber-600" size="sm" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold font-body text-on-surface">
+                Stripe setup is incomplete.
+              </p>
+              <p className="text-xs text-on-surface-variant font-body mt-0.5">
+                Complete your Stripe onboarding to start receiving payments.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/settings"
+            className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-amber-600 hover:underline"
+          >
+            Complete Setup
+          </Link>
+        </div>
+      )}
+
+      {farm?.stripe_onboarding_complete && !farm.payouts_enabled && (
+        <div className="mb-8 bg-red-50 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+              <Icon name="warning" className="text-error" size="sm" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold font-body text-on-surface">
+                Payouts paused by Stripe.
+              </p>
+              <p className="text-xs text-on-surface-variant font-body mt-0.5">
+                Stripe needs additional information to keep your payouts active.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/settings"
+            className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-error hover:underline"
+          >
+            Update Details
           </Link>
         </div>
       )}

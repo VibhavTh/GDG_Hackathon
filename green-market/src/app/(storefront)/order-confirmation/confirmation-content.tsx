@@ -11,10 +11,15 @@ export interface OrderItem {
   id: string;
   quantity: number;
   unit_price: number;
+  farm_id: string;
   products: {
     id: string;
     name: string;
     image_url: string | null;
+  } | null;
+  farms: {
+    id: string;
+    name: string;
   } | null;
 }
 
@@ -108,36 +113,53 @@ export function ConfirmationContent({ order }: Props) {
           </div>
         )}
 
-        {/* Items */}
+        {/* Items grouped by farm */}
         <div className="space-y-4 mb-6">
-          {order.order_items.map((item) => (
-            <div key={item.id} className="flex gap-3 items-center">
-              {item.products?.image_url ? (
-                <Image
-                  src={item.products.image_url}
-                  alt={item.products.name ?? "Product"}
-                  width={56}
-                  height={56}
-                  className="w-14 h-14 object-cover rounded-lg flex-shrink-0"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-lg flex-shrink-0 bg-surface-container-highest flex items-center justify-center">
-                  <Icon name="eco" className="text-on-surface-variant" size="sm" />
-                </div>
-              )}
-              <div className="flex-grow">
-                <p className="font-bold text-on-surface text-sm">
-                  {item.products?.name ?? "Product"}
-                </p>
-                <p className="text-xs text-on-surface-variant">
-                  Qty: {item.quantity}
-                </p>
+          {(() => {
+            const grouped = new Map<string, { farmName: string; items: OrderItem[] }>();
+            for (const item of order.order_items) {
+              const key = item.farm_id;
+              if (!grouped.has(key)) grouped.set(key, { farmName: item.farms?.name ?? "Farm", items: [] });
+              grouped.get(key)!.items.push(item);
+            }
+            return Array.from(grouped.entries()).map(([farmId, { farmName, items }]) => (
+              <div key={farmId}>
+                {grouped.size > 1 && (
+                  <p className="text-xs font-label uppercase tracking-widest text-secondary font-bold mb-2 mt-2">
+                    {farmName}
+                  </p>
+                )}
+                {items.map((item) => (
+                  <div key={item.id} className="flex gap-3 items-center mb-3">
+                    {item.products?.image_url ? (
+                      <Image
+                        src={item.products.image_url}
+                        alt={item.products.name ?? "Product"}
+                        width={56}
+                        height={56}
+                        className="w-14 h-14 object-cover rounded-lg flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-lg flex-shrink-0 bg-surface-container-highest flex items-center justify-center">
+                        <Icon name="eco" className="text-on-surface-variant" size="sm" />
+                      </div>
+                    )}
+                    <div className="flex-grow">
+                      <p className="font-bold text-on-surface text-sm">
+                        {item.products?.name ?? "Product"}
+                      </p>
+                      <p className="text-xs text-on-surface-variant">
+                        Qty: {item.quantity}
+                      </p>
+                    </div>
+                    <span className="font-headline text-lg text-tertiary">
+                      ${((item.unit_price * item.quantity) / 100).toFixed(2)}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <span className="font-headline text-lg text-tertiary">
-                ${((item.unit_price * item.quantity) / 100).toFixed(2)}
-              </span>
-            </div>
-          ))}
+            ));
+          })()}
         </div>
 
         {/* Total */}

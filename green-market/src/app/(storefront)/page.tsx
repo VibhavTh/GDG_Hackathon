@@ -197,8 +197,7 @@ export default async function HomePage() {
                       </p>
                       {farm && (
                         <AddToCartButton
-                          farmId={farm.id}
-                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each", farmId: farm.id, farmName: farm.name }}
                           className="w-auto px-6"
                         />
                       )}
@@ -247,8 +246,7 @@ export default async function HomePage() {
                         {farm && (
                           <AddToCartButton
                             variant="underline"
-                            farmId={farm.id}
-                            item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                            item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each", farmId: farm.id, farmName: farm.name }}
                           />
                         )}
                       </div>
@@ -279,8 +277,7 @@ export default async function HomePage() {
                       </div>
                       {farm && (
                         <AddToCartButton
-                          farmId={farm.id}
-                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each", farmId: farm.id, farmName: farm.name }}
                           className="w-auto px-5 shrink-0"
                         />
                       )}

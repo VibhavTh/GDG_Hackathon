@@ -4,7 +4,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
 import { QuantityAddToCart } from "./quantity-add-to-cart";
-import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { Icon } from "@/components/ui/icon";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -187,13 +186,14 @@ export default async function ProductDetailPage({ params }: Props) {
 
           {product.stock > 0 && farm ? (
             <QuantityAddToCart
-              farmId={farm.id}
               item={{
                 productId: product.id,
                 name: product.name,
                 price: product.price / 100,
                 image: product.image_url ?? "",
                 unit: product.unit ?? "each",
+                farmId: farm.id,
+                farmName: farm.name,
               }}
             />
           ) : (

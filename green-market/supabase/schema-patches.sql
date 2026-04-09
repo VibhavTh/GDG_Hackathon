@@ -67,3 +67,44 @@ begin
   on conflict do nothing;
 end;
 $$;
+
+
+-- ============================================================
+-- Phase 2: Stripe Connect columns
+-- ============================================================
+
+-- Farms: Connect onboarding state
+alter table public.farms
+  add column if not exists stripe_onboarding_complete boolean not null default false;
+
+alter table public.farms
+  add column if not exists payouts_enabled boolean not null default false;
+
+-- Orders: platform fee (transfer tracking moved to farm_transfers table)
+alter table public.orders
+  drop column if exists stripe_transfer_id;
+
+alter table public.orders
+  add column if not exists platform_fee_cents integer not null default 0;
+
+-- ============================================================
+-- Phase 2b: Multi-farm transfer tracking
+-- ============================================================
+
+create table if not exists public.farm_transfers (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.orders(id),
+  farm_id uuid not null references public.farms(id),
+  stripe_account_id text not null,
+  amount_cents integer not null,
+  platform_fee_cents integer not null default 0,
+  stripe_transfer_id text,
+  status text not null default 'pending'
+    check (status in ('pending', 'completed', 'failed', 'reversed')),
+  error_message text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists idx_farm_transfers_order on public.farm_transfers(order_id);
+create index if not exists idx_farm_transfers_farm on public.farm_transfers(farm_id);
