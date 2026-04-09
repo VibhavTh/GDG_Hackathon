@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
 import { siteConfig } from "@/config/site";
-import { logout } from "@/app/farmer/logout/actions";
+import { logout } from "@/app/vendor/logout/actions";
 
 interface AdminSidebarProps {
   farmName: string;
@@ -27,7 +27,7 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
               Green Market
             </h1>
             <p className="text-xs text-on-surface-variant/60 italic">
-              Farm Dashboard
+              Vendor Dashboard
             </p>
           </div>
         </div>
@@ -68,6 +68,14 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
           New Listing
         </Link>
 
+        <Link
+          href="/"
+          className="w-full text-on-surface-variant/60 py-2 rounded-lg flex items-center justify-center gap-2 hover:text-tertiary hover:bg-surface-container-highest/50 transition-all text-sm"
+        >
+          <Icon name="storefront" size="sm" />
+          View Storefront
+        </Link>
+
         {/* User card + sign out */}
         <div className="flex items-center gap-3 p-2 pt-4">
           <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-sm shrink-0">
@@ -75,7 +83,7 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-tertiary truncate">{farmName}</p>
-            <p className="text-xs text-on-surface-variant">Farm Owner</p>
+            <p className="text-xs text-on-surface-variant">Vendor</p>
           </div>
           <form action={logout}>
             <button

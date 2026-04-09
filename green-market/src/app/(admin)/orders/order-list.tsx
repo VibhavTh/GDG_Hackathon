@@ -146,7 +146,7 @@ export default function OrderList({ orders }: { orders: Order[] }) {
             <span className="text-primary font-bold">Order Inbox</span>
           </nav>
           <h1 className="text-4xl md:text-5xl font-headline font-semibold text-tertiary italic">
-            Harvest Requests
+            Orders
           </h1>
         </header>
         <div className="flex flex-col items-center justify-center py-24 text-on-surface-variant">
@@ -169,11 +169,10 @@ export default function OrderList({ orders }: { orders: Order[] }) {
             <span className="text-primary font-bold">Order Inbox</span>
           </nav>
           <h1 className="text-4xl md:text-5xl font-headline font-semibold text-tertiary italic">
-            Harvest Requests
+            Orders
           </h1>
           <p className="text-on-surface-variant mt-2 max-w-md">
-            Manage your daily yields and direct-to-consumer fulfillment requests
-            from the community.
+            Manage and fulfill customer orders from your shop.
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
@@ -345,7 +344,7 @@ export default function OrderList({ orders }: { orders: Order[] }) {
                 {selectedOrder.order_items.length > 0 && (
                   <div>
                     <p className="text-[10px] uppercase tracking-widest font-bold text-secondary mb-4">
-                      Produce Reserved
+                      Items Ordered
                     </p>
                     <ul className="space-y-4">
                       {selectedOrder.order_items.map((item) => (

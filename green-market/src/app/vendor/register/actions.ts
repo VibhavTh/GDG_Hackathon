@@ -22,13 +22,13 @@ export async function register(formData: FormData) {
     const message = signUpError.message.toLowerCase().includes("already registered")
       ? "An account with that email already exists. Try logging in instead."
       : signUpError.message;
-    redirect(`/farmer/register?error=${encodeURIComponent(message)}`);
+    redirect(`/vendor/register?error=${encodeURIComponent(message)}`);
   }
 
   // Silent duplicate: Supabase returns a user with no identities for unconfirmed existing emails
   if (!data.user || data.user.identities?.length === 0) {
     redirect(
-      `/farmer/register?error=${encodeURIComponent("An account with that email already exists. Try logging in instead.")}`
+      `/vendor/register?error=${encodeURIComponent("An account with that email already exists. Try logging in instead.")}`
     );
   }
 
@@ -43,9 +43,9 @@ export async function register(formData: FormData) {
   if (userError) {
     await service.auth.admin.deleteUser(userId);
     redirect(
-      `/farmer/register?error=${encodeURIComponent("Something went wrong. Please try again.")}`
+      `/vendor/register?error=${encodeURIComponent("Something went wrong. Please try again.")}`
     );
   }
 
-  redirect("/farmer/verify-email");
+  redirect("/vendor/verify-email");
 }

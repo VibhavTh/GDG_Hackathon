@@ -187,7 +187,7 @@ export default async function DashboardPage() {
             </div>
           </div>
           <Link
-            href="/farmer/setup"
+            href="/vendor/setup"
             className="shrink-0 bg-primary text-on-primary font-label font-bold py-2.5 px-6 rounded-lg hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-xs"
           >
             Create Your Farm
@@ -291,7 +291,7 @@ export default async function DashboardPage() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
         <div>
           <h2 className="text-4xl font-headline italic text-tertiary leading-tight">
-            {farm?.name ? `Welcome, ${farm.name}.` : "Good morning, Farmer."}
+            {farm?.name ? `Welcome, ${farm.name}.` : "Good morning, Vendor."}
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
             {farm ? "Your listings are live and orders are coming in." : "Set up your farm to get started."}
@@ -329,7 +329,7 @@ export default async function DashboardPage() {
         {/* Orders — real count */}
         <div className="bg-surface-container-highest p-8 rounded-xl animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
-            Harvest Orders
+            Active Orders
           </p>
           <div className="flex items-baseline gap-2">
             <h3 className="text-4xl font-headline italic text-tertiary">
@@ -389,7 +389,7 @@ export default async function DashboardPage() {
       <div className="bg-surface-container-low rounded-xl overflow-hidden mb-12">
         <div className="px-6 md:px-8 py-6 flex justify-between items-center">
           <h4 className="font-headline italic text-2xl text-tertiary">
-            Active Harvest Orders
+            Active Orders
           </h4>
           <Link
             href="/orders"
@@ -441,7 +441,7 @@ export default async function DashboardPage() {
                       Customer
                     </th>
                     <th scope="col" className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-left">
-                      Harvest Items
+                      Items
                     </th>
                     <th scope="col" className="px-8 py-4 text-xs font-label uppercase tracking-widest text-on-surface-variant text-left">
                       Status

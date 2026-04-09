@@ -76,7 +76,7 @@ export async function sendNewOrderEmail({
       </a>
 
       <p style="margin:24px 0 0;font-size:12px;color:#aaa;text-align:center;">
-        You received this email because you are a farmer on Green Market.
+        You received this email because you are a vendor on Green Market.
       </p>
     </div>
   </div>

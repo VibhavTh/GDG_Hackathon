@@ -13,7 +13,7 @@ export default async function ForgotPasswordPage({ searchParams }: Props) {
     <main className="min-h-screen bg-surface flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <Link
-          href="/farmer/login"
+          href="/vendor/login"
           className="inline-flex items-center gap-2 text-xs font-label uppercase tracking-wider text-on-surface-variant/60 hover:text-primary transition-colors mb-10"
         >
           <Icon name="arrow_back" size="sm" />

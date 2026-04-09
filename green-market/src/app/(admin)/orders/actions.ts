@@ -18,7 +18,7 @@ async function getFarm() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   const service = createServiceClient();
   const { data: farmData } = await service
@@ -27,7 +27,7 @@ async function getFarm() {
     .eq("owner_id", user.id)
     .single();
 
-  if (!farmData) redirect("/farmer/setup");
+  if (!farmData) redirect("/vendor/setup");
   return { supabase, farmId: (farmData as { id: string }).id };
 }
 

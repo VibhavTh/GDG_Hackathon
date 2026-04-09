@@ -48,7 +48,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="text-on-surface-variant font-body text-lg leading-relaxed max-w-[52ch] mb-10 animate-slide-up" style={{ animationDelay: "160ms" }}>
-              Discover seasonal produce, small-batch goods, and farm-fresh staples from real farmers in your community. No middlemen. No mystery.
+              Discover seasonal produce, small-batch goods, and locally made staples from real vendors in your community. No middlemen. No mystery.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 animate-slide-up" style={{ animationDelay: "240ms" }}>
@@ -56,7 +56,7 @@ export default async function HomePage() {
                 href="/products"
                 className="inline-flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl font-label font-bold text-sm uppercase tracking-widest hover:bg-primary/90 active:scale-[0.97] transition-all duration-150"
               >
-                Browse the Harvest
+                Shop Now
                 <Icon name="arrow_forward" size="sm" />
               </Link>
               <Link
@@ -131,7 +131,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-4 mb-12">
           <div>
             <span className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-3 block">
-              Local Harvest
+              Local Picks
             </span>
             <h2 className="font-headline italic text-4xl md:text-5xl text-tertiary leading-tight">
               What&rsquo;s ready now
@@ -148,8 +148,8 @@ export default async function HomePage() {
         {featured.length === 0 ? (
           <div className="py-24 text-center bg-surface-container-low rounded-2xl">
             <Icon name="eco" className="text-5xl text-on-surface-variant/40 mb-4" />
-            <p className="font-headline italic text-2xl text-tertiary mb-2">First harvest coming soon.</p>
-            <p className="text-on-surface-variant font-body mb-6">Local farmers are adding listings — check back shortly.</p>
+            <p className="font-headline italic text-2xl text-tertiary mb-2">New listings coming soon.</p>
+            <p className="text-on-surface-variant font-body mb-6">Local vendors are adding listings — check back shortly.</p>
             <Link href="/products" className="text-primary font-bold text-sm hover:underline">Browse the catalog</Link>
           </div>
         ) : (
@@ -332,7 +332,7 @@ export default async function HomePage() {
             </div>
             <div className="mt-10 pt-8 border-t border-outline-variant/30 flex gap-10">
               {[
-                { value: "No intermediaries", label: "Direct from farmer" },
+                { value: "No intermediaries", label: "Direct from vendor" },
                 { value: "Seasonal", label: "What's fresh now" },
               ].map((item) => (
                 <div key={item.label}>
@@ -360,7 +360,7 @@ export default async function HomePage() {
           {/* Step 1 — large */}
           <div className="bg-surface-container-low rounded-2xl p-10">
             <span className="inline-block font-headline italic text-6xl text-primary/20 mb-4">01</span>
-            <h3 className="font-headline italic text-2xl text-tertiary mb-3">Browse the harvest</h3>
+            <h3 className="font-headline italic text-2xl text-tertiary mb-3">Browse the shop</h3>
             <p className="text-on-surface-variant font-body leading-relaxed">
               Explore what&rsquo;s in season from farms near you. Filter by category, search for something specific, or let the weekly picks guide you.
             </p>
@@ -414,7 +414,7 @@ export default async function HomePage() {
                 Grow with the season.
               </h2>
               <p className="text-on-primary/70 font-body leading-relaxed">
-                Weekly harvest updates, seasonal recipes, and first access to small-batch releases — direct from the farmers.
+                Weekly updates, seasonal recipes, and first access to small-batch releases — direct from local vendors.
               </p>
             </div>
 
