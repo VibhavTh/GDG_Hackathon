@@ -20,7 +20,6 @@ export default async function OrderConfirmationPage({ searchParams }: Props) {
     .from("orders")
     .select(`
       id,
-      order_number,
       status,
       total_amount,
       guest_email,

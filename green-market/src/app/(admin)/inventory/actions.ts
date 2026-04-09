@@ -47,6 +47,7 @@ export async function createProduct(formData: FormData) {
     category: formData.get("category") as ProductCategory,
     price: Math.round(priceRaw * 100),
     stock: isNaN(stock) ? 0 : stock,
+    unit: (formData.get("unit") as string | null)?.trim() || "each",
     image_url: (formData.get("image_url") as string).trim() || null,
     is_active: true,
   });
@@ -77,6 +78,7 @@ export async function updateProduct(formData: FormData) {
       category: formData.get("category") as ProductCategory,
       price: Math.round(priceRaw * 100),
       stock: isNaN(stock) ? 0 : stock,
+      unit: (formData.get("unit") as string | null)?.trim() || "each",
       image_url: (formData.get("image_url") as string).trim() || null,
     })
     .eq("id", productId)
@@ -129,7 +131,6 @@ export async function updateStock(productId: string, delta: number) {
   if (!product) return;
 
   const newStock = Math.max(0, (product as { stock: number }).stock + delta);
-
   await service
     .from("products")
     .update({ stock: newStock })

@@ -52,6 +52,51 @@ export default async function DashboardPage() {
         .in("status", ["placed", "confirmed", "preparing", "ready"])
     : { count: 0 };
 
+  // Total revenue from fulfilled orders
+  const { data: revenueRows } = farm
+    ? await service
+        .from("farm_order_summary")
+        .select("farm_subtotal")
+        .eq("farm_id", farm.id)
+        .eq("status", "fulfilled")
+    : { data: [] };
+  const totalRevenue = (revenueRows ?? []).reduce(
+    (sum, r) => sum + (r.farm_subtotal as number),
+    0
+  );
+
+  // Weekly chart data (last 7 days)
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 6);
+  weekAgo.setHours(0, 0, 0, 0);
+
+  const { data: weeklyRows } = farm
+    ? await service
+        .from("farm_order_summary")
+        .select("order_date, farm_subtotal")
+        .eq("farm_id", farm.id)
+        .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
+        .gte("order_date", weekAgo.toISOString())
+    : { data: [] };
+
+  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dailyTotals: Record<number, number> = {};
+  for (const row of weeklyRows ?? []) {
+    const day = new Date(row.order_date).getDay();
+    dailyTotals[day] = (dailyTotals[day] ?? 0) + (row.farm_subtotal as number);
+  }
+  const chartBars = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    const dayIndex = d.getDay();
+    return {
+      day: DAY_LABELS[dayIndex],
+      amount: dailyTotals[dayIndex] ?? 0,
+      isToday: i === 6,
+    };
+  });
+  const maxBarAmount = Math.max(...chartBars.map((b) => b.amount), 1);
+
   // Low stock products
   const { data: lowStockProducts } = farm
     ? await service
@@ -164,18 +209,18 @@ export default async function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 stagger-children">
-        {/* Revenue — not yet connected to Supabase */}
+        {/* Revenue */}
         <div className="bg-surface-container-low p-8 rounded-xl group animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Total Revenue
           </p>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-4xl font-headline italic text-on-surface-variant/40">
-              $0
+            <h3 className={`text-4xl font-headline italic ${totalRevenue > 0 ? "text-tertiary" : "text-on-surface-variant/40"}`}>
+              {(totalRevenue / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}
             </h3>
           </div>
           <p className="text-xs text-on-surface-variant mt-4">
-            No revenue yet
+            {totalRevenue > 0 ? "From fulfilled orders" : "No fulfilled orders yet"}
           </p>
         </div>
 
@@ -251,22 +296,22 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="flex-1 flex items-end gap-4 px-4 pb-4">
-            {[
-              { day: "Mon", height: "40%" },
-              { day: "Tue", height: "65%" },
-              { day: "Wed", height: "50%" },
-              { day: "Thu", height: "85%" },
-              { day: "Fri", height: "100%", highlight: true },
-              { day: "Sat", height: "75%" },
-              { day: "Sun", height: "45%" },
-            ].map((bar, i) => (
-              <div
-                key={bar.day}
-                className={`flex-1 rounded-t-lg animate-grow-bar ${bar.highlight ? "bg-primary" : "bg-primary/10"}`}
-                style={{ height: bar.height, animationDelay: `${i * 60}ms` }}
-                title={bar.day}
-              />
-            ))}
+            {chartBars.map((bar, i) => {
+              const heightPct = `${Math.max(4, Math.round((bar.amount / maxBarAmount) * 100))}%`;
+              return (
+                <div key={bar.day} className="flex-1 flex flex-col items-center gap-1">
+                  <span className="text-[10px] font-label text-on-surface-variant/60">
+                    {bar.amount > 0 ? `$${(bar.amount / 100).toFixed(0)}` : ""}
+                  </span>
+                  <div
+                    className={`w-full rounded-t-lg animate-grow-bar ${bar.isToday ? "bg-primary" : "bg-primary/20"}`}
+                    style={{ height: heightPct, animationDelay: `${i * 60}ms` }}
+                    title={`${bar.day}: $${(bar.amount / 100).toFixed(2)}`}
+                  />
+                  <span className="text-[10px] font-label text-on-surface-variant">{bar.day}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

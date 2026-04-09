@@ -1,5 +1,10 @@
+"use client";
+
+import { useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
+import { createClient } from "@/lib/supabase/client";
 import type { ProductRow } from "@/lib/supabase/types";
 
 const CATEGORIES = [
@@ -17,6 +22,19 @@ const CATEGORIES = [
   { value: "other", label: "Other" },
 ] as const;
 
+const UNITS = [
+  { value: "each", label: "Each" },
+  { value: "lb", label: "Per lb" },
+  { value: "oz", label: "Per oz" },
+  { value: "bunch", label: "Per bunch" },
+  { value: "dozen", label: "Per dozen" },
+  { value: "pint", label: "Per pint" },
+  { value: "quart", label: "Per quart" },
+  { value: "bag", label: "Per bag" },
+  { value: "jar", label: "Per jar" },
+  { value: "box", label: "Per box" },
+];
+
 interface ProductFormProps {
   action: (formData: FormData) => Promise<void>;
   product?: ProductRow;
@@ -25,16 +43,71 @@ interface ProductFormProps {
 
 const inputClass =
   "w-full bg-surface-container-highest border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all duration-300 py-3 px-0 font-body placeholder:text-outline";
-
 const labelClass =
   "font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant";
 
 export function ProductForm({ action, product, error }: ProductFormProps) {
   const isEdit = !!product;
+  const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(product?.image_url ?? null);
+  const [imageUrl, setImageUrl] = useState<string>(product?.image_url ?? "");
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(error ?? null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImagePreview(URL.createObjectURL(file));
+    // Clear the stored URL so the upload result takes over on submit
+    setImageUrl("");
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+    setFormError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const file = fileInputRef.current?.files?.[0];
+
+    if (file) {
+      setUploading(true);
+      try {
+        const supabase = createClient();
+        const ext = file.name.split(".").pop();
+        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("product-images")
+          .upload(filename, file, { upsert: false, contentType: file.type });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(uploadData.path);
+
+        formData.set("image_url", publicUrl);
+        setImageUrl(publicUrl);
+      } catch {
+        setFormError("Image upload failed. Check that the product-images storage bucket exists.");
+        setUploading(false);
+        setSubmitting(false);
+        return;
+      }
+      setUploading(false);
+    }
+
+    await action(formData);
+    setSubmitting(false);
+  }
+
+  const isPending = submitting || uploading;
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      {/* Back link */}
       <Link
         href="/inventory"
         className="inline-flex items-center gap-2 text-xs font-label uppercase tracking-wider text-on-surface-variant/60 hover:text-primary transition-colors mb-10"
@@ -52,17 +125,15 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
           : "Fill in the details to add a new product to your storefront."}
       </p>
 
-      {error && (
-        <div className="mb-8 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-sm font-body flex items-start gap-3">
+      {formError && (
+        <div className="mb-8 bg-error/10 text-error rounded-lg px-4 py-3 text-sm font-body flex items-start gap-3 animate-slide-down">
           <Icon name="error" size="sm" className="mt-0.5 shrink-0" />
-          <span>{error}</span>
+          <span>{formError}</span>
         </div>
       )}
 
-      <form action={action} className="space-y-8">
-        {isEdit && (
-          <input type="hidden" name="product_id" value={product.id} />
-        )}
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
+        {isEdit && <input type="hidden" name="product_id" value={product.id} />}
 
         {/* Name */}
         <div className="space-y-1.5">
@@ -82,9 +153,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
 
         {/* Description */}
         <div className="space-y-1.5">
-          <label htmlFor="description" className={labelClass}>
-            Description
-          </label>
+          <label htmlFor="description" className={labelClass}>Description</label>
           <textarea
             id="description"
             name="description"
@@ -95,7 +164,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
           />
         </div>
 
-        {/* Category + Price row */}
+        {/* Category + Unit */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div className="space-y-1.5">
             <label htmlFor="category" className={labelClass}>
@@ -109,21 +178,34 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
               className={`${inputClass} cursor-pointer`}
             >
               {CATEGORIES.map((cat) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1.5">
+            <label htmlFor="unit" className={labelClass}>Unit</label>
+            <select
+              id="unit"
+              name="unit"
+              defaultValue={product?.unit ?? "each"}
+              className={`${inputClass} cursor-pointer`}
+            >
+              {UNITS.map((u) => (
+                <option key={u.value} value={u.value}>{u.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Price + Stock */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="space-y-1.5">
             <label htmlFor="price" className={labelClass}>
               Price (USD) <span className="text-error">*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-0 top-3 text-on-surface-variant font-body">
-                $
-              </span>
+              <span className="absolute left-0 top-3 text-on-surface-variant font-body">$</span>
               <input
                 id="price"
                 name="price"
@@ -131,65 +213,97 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
                 required
                 min="0"
                 step="0.01"
-                defaultValue={
-                  product ? (product.price / 100).toFixed(2) : ""
-                }
+                defaultValue={product ? (product.price / 100).toFixed(2) : ""}
                 placeholder="0.00"
                 className={`${inputClass} pl-4`}
               />
             </div>
           </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="stock" className={labelClass}>Stock</label>
+            <input
+              id="stock"
+              name="stock"
+              type="number"
+              min="0"
+              step="1"
+              defaultValue={product?.stock ?? 0}
+              placeholder="0"
+              className={inputClass}
+            />
+          </div>
         </div>
 
-        {/* Stock */}
-        <div className="space-y-1.5">
-          <label htmlFor="stock" className={labelClass}>
-            Initial Stock
-          </label>
-          <input
-            id="stock"
-            name="stock"
-            type="number"
-            min="0"
-            step="1"
-            defaultValue={product?.stock ?? 0}
-            placeholder="0"
-            className={inputClass}
-          />
-          <p className="text-xs text-on-surface-variant/60 font-body">
-            You can adjust stock any time from the inventory page.
-          </p>
-        </div>
+        {/* Image upload */}
+        <div className="space-y-3">
+          <p className={labelClass}>Product Image</p>
 
-        {/* Image URL */}
-        <div className="space-y-1.5">
-          <label htmlFor="image_url" className={labelClass}>
-            Image URL
+          {/* Preview */}
+          {imagePreview && (
+            <div className="relative w-full h-48 rounded-xl overflow-hidden bg-surface-container-highest">
+              <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+              <button
+                type="button"
+                onClick={() => {
+                  setImagePreview(null);
+                  setImageUrl("");
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="absolute top-2 right-2 bg-surface/80 backdrop-blur-sm rounded-full p-1.5 hover:bg-error/10 hover:text-error transition-colors"
+              >
+                <Icon name="close" size="sm" />
+              </button>
+            </div>
+          )}
+
+          {/* File input drop area */}
+          <label
+            htmlFor="image_file"
+            className="flex flex-col items-center justify-center gap-2 w-full py-8 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-200"
+          >
+            <Icon name="upload" className="text-on-surface-variant" />
+            <span className="text-sm font-body text-on-surface-variant">
+              {imagePreview ? "Replace image" : "Upload image"}
+            </span>
+            <span className="text-xs text-on-surface-variant/50">JPG, PNG, WEBP up to 5MB</span>
+            <input
+              id="image_file"
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              onChange={handleFileChange}
+            />
           </label>
+
+          {/* Hidden URL field -- controlled via state so remove/upload always reflects correctly */}
           <input
-            id="image_url"
+            type="hidden"
             name="image_url"
-            type="url"
-            defaultValue={product?.image_url ?? ""}
-            placeholder="https://..."
-            className={inputClass}
+            value={imageUrl}
+            onChange={() => {}}
           />
-          <p className="text-xs text-on-surface-variant/60 font-body">
-            Paste a direct image link. Drag-and-drop upload coming soon.
-          </p>
         </div>
 
         {/* Actions */}
         <div className="flex gap-4 pt-4">
           <button
             type="submit"
-            className="flex-1 bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-sm"
+            disabled={isPending}
+            className="flex-1 bg-primary text-on-primary font-label font-bold py-4 rounded-xl hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 uppercase tracking-widest text-sm disabled:opacity-60 flex items-center justify-center gap-2"
           >
-            {isEdit ? "Save Changes" : "Add to Inventory"}
+            {uploading ? (
+              <><Icon name="progress_activity" size="sm" className="animate-spin" /> Uploading...</>
+            ) : submitting ? (
+              <><Icon name="progress_activity" size="sm" className="animate-spin" /> Saving...</>
+            ) : (
+              isEdit ? "Save Changes" : "Add to Inventory"
+            )}
           </button>
           <Link
             href="/inventory"
-            className="px-8 py-4 bg-surface-container-highest text-on-surface font-label font-bold rounded-xl hover:bg-surface-variant active:scale-95 transition-all duration-200 uppercase tracking-widest text-sm text-center"
+            className="px-8 py-4 bg-surface-container-highest text-on-surface font-label font-bold rounded-xl hover:bg-surface-variant active:scale-[0.97] transition-all duration-150 uppercase tracking-widest text-sm text-center"
           >
             Cancel
           </Link>

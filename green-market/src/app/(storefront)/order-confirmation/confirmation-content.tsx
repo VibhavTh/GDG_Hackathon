@@ -134,7 +134,7 @@ export function ConfirmationContent({ order }: Props) {
                 </p>
               </div>
               <span className="font-headline text-lg text-tertiary">
-                ${(item.unit_price * item.quantity).toFixed(2)}
+                ${((item.unit_price * item.quantity) / 100).toFixed(2)}
               </span>
             </div>
           ))}
@@ -144,7 +144,7 @@ export function ConfirmationContent({ order }: Props) {
         <div className="pt-4 bg-surface-container -mx-8 px-8 pb-0 flex justify-between items-center">
           <span className="font-headline text-xl text-tertiary">Total</span>
           <span className="font-headline text-3xl text-primary">
-            ${order.total_amount.toFixed(2)}
+            ${(order.total_amount / 100).toFixed(2)}
           </span>
         </div>
 
