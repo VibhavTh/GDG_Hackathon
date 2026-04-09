@@ -72,8 +72,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}${next ?? "/account"}`);
   }
 
-  // Explicit next param
-  if (next && next !== "/farmer/reset-password") {
+  // Explicit next param (honored for all flows, including PKCE recovery)
+  if (next) {
     return NextResponse.redirect(`${origin}${next}`);
   }
 
