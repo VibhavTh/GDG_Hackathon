@@ -50,6 +50,7 @@ export async function createProduct(formData: FormData) {
     unit: (formData.get("unit") as string | null)?.trim() || "each",
     image_url: (formData.get("image_url") as string).trim() || null,
     is_active: true,
+    is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
   });
 
   if (error) {
@@ -80,6 +81,7 @@ export async function updateProduct(formData: FormData) {
       stock: isNaN(stock) ? 0 : stock,
       unit: (formData.get("unit") as string | null)?.trim() || "each",
       image_url: (formData.get("image_url") as string).trim() || null,
+      is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
     })
     .eq("id", productId)
     .eq("farm_id", farmId);

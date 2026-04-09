@@ -55,6 +55,8 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(error ?? null);
+  const [selectedCategory, setSelectedCategory] = useState<string>(product?.category ?? "produce");
+  const [isOrganic, setIsOrganic] = useState<boolean>((product as (typeof product & { is_organic?: boolean }) | undefined)?.is_organic ?? false);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -181,6 +183,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
               name="category"
               required
               defaultValue={product?.category ?? "produce"}
+              onChange={(e) => setSelectedCategory(e.target.value)}
               className={`${inputClass} cursor-pointer`}
             >
               {CATEGORIES.map((cat) => (
@@ -203,6 +206,32 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
             </select>
           </div>
         </div>
+
+        {/* Organic — visible for food/agricultural categories */}
+        {["produce", "baked_goods", "dairy", "eggs", "meat", "honey_beeswax", "mushrooms", "value_added"].includes(selectedCategory) && (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={isOrganic}
+              onClick={() => setIsOrganic((v) => !v)}
+              className={`w-5 h-5 rounded-[var(--radius-sm)] border-2 flex items-center justify-center shrink-0 transition-colors duration-150 cursor-pointer ${
+                isOrganic ? "bg-primary border-primary" : "border-outline-variant bg-surface-container-lowest"
+              }`}
+            >
+              {isOrganic && (
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true">
+                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </button>
+            <div>
+              <p className={labelClass}>Certified Organic</p>
+              <p className="text-xs text-on-surface-variant mt-0.5">This produce is grown without synthetic pesticides or fertilizers</p>
+            </div>
+            <input type="hidden" name="is_organic" value={isOrganic ? "true" : "false"} />
+          </div>
+        )}
 
         {/* Price + Stock */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">

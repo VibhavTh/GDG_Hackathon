@@ -7,7 +7,7 @@ export const siteConfig = {
     "A local farm marketplace — discover fresh, seasonal produce from growers in your community.",
   storefrontNav: [
     { label: "Home", href: "/" },
-    { label: "Products", href: "/products" },
+    { label: "Market", href: "/products" },
     { label: "About", href: "/#about" },
     { label: "Contact", href: "/contact" },
   ],
