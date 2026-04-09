@@ -7,7 +7,7 @@ interface Props {
   searchParams: Promise<{ error?: string; next?: string }>;
 }
 
-export default async function FarmerLoginPage({ searchParams }: Props) {
+export default async function VendorLoginPage({ searchParams }: Props) {
   const { error, next } = await searchParams;
 
   return (
@@ -22,7 +22,7 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
             <span className="font-headline text-xl text-tertiary font-bold">Green Market</span>
           </Link>
           <h1 className="text-3xl font-headline italic text-tertiary mb-2">
-            Farmer sign in
+            Vendor sign in
           </h1>
           <p className="text-on-surface-variant font-body text-sm">
             Access your dashboard to manage listings and orders.
@@ -50,7 +50,7 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
                 type="email"
                 required
                 autoComplete="email"
-                placeholder="farmer@greenmarket.farm"
+                placeholder="you@example.com"
                 className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none focus:-translate-y-px transition-all duration-150"
               />
             </div>
@@ -60,7 +60,7 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
                 <label htmlFor="password" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant">
                   Password
                 </label>
-                <Link href="/farmer/forgot-password" className="text-xs text-secondary hover:text-primary transition-colors duration-150 font-body">
+                <Link href="/vendor/forgot-password" className="text-xs text-secondary hover:text-primary transition-colors duration-150 font-body">
                   Forgot?
                 </Link>
               </div>
@@ -85,10 +85,10 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
           </div>
 
           <Link
-            href="/farmer/register"
+            href="/vendor/register"
             className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-[0.97] transition-all duration-150"
           >
-            Register New Farm
+            Create a Vendor Account
           </Link>
 
           <p className="text-center text-xs text-on-surface-variant font-body">

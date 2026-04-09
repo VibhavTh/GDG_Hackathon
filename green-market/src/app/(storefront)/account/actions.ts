@@ -31,5 +31,5 @@ export async function upgradeToFarmer() {
     await service.from("farms").insert({ owner_id: user.id });
   }
 
-  redirect("/farmer/setup");
+  redirect("/vendor/setup");
 }

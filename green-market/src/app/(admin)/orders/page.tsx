@@ -7,7 +7,7 @@ export default async function OrdersPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   const service = createServiceClient();
 
@@ -16,7 +16,7 @@ export default async function OrdersPage() {
     .select("id")
     .eq("owner_id", user.id)
     .single();
-  if (!farmData) redirect("/farmer/setup");
+  if (!farmData) redirect("/vendor/setup");
   const farm = farmData as { id: string };
 
   const { data: summaries } = await service

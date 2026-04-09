@@ -7,7 +7,7 @@ interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
-export default async function FarmerRegisterPage({ searchParams }: Props) {
+export default async function VendorRegisterPage({ searchParams }: Props) {
   const { error } = await searchParams;
 
   return (
@@ -22,7 +22,7 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
             <span className="font-headline text-xl text-tertiary font-bold">Green Market</span>
           </Link>
           <h1 className="text-3xl font-headline italic text-tertiary mb-2">
-            Create your farm account
+            Create your vendor account
           </h1>
           <p className="text-on-surface-variant font-body text-sm">
             List products, manage orders, and reach local customers.
@@ -48,7 +48,7 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
                 type="email"
                 required
                 autoComplete="email"
-                placeholder="farmer@greenmarket.farm"
+                placeholder="you@example.com"
                 className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none focus:-translate-y-px transition-all duration-150"
               />
             </div>
@@ -86,7 +86,7 @@ export default async function FarmerRegisterPage({ searchParams }: Props) {
           </div>
 
           <Link
-            href="/farmer/login"
+            href="/vendor/login"
             className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-[0.97] transition-all duration-150"
           >
             Already have an account

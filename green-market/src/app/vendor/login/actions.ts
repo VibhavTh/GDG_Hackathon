@@ -15,7 +15,7 @@ export async function login(formData: FormData) {
   if (error) {
     const params = new URLSearchParams({ error: "We couldn't find an account with those details. Double-check your email and password." });
     if (next !== "/dashboard") params.set("next", next);
-    redirect(`/farmer/login?${params.toString()}`);
+    redirect(`/vendor/login?${params.toString()}`);
   }
 
   redirect(next);

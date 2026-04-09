@@ -33,7 +33,7 @@ export default async function InventoryPage({ searchParams }: Props) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   // Use service client for all table queries — RLS policies may not be applied yet
   const service = createServiceClient();
@@ -44,7 +44,7 @@ export default async function InventoryPage({ searchParams }: Props) {
     .eq("owner_id", user.id)
     .single();
 
-  if (!farm) redirect("/farmer/setup");
+  if (!farm) redirect("/vendor/setup");
 
   const { category, q } = await searchParams;
 

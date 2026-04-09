@@ -14,7 +14,7 @@ export default async function EditProductPage({ params, searchParams }: Props) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   const { id } = await params;
   const { error } = await searchParams;

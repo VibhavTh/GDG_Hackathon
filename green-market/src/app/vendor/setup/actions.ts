@@ -9,7 +9,7 @@ export async function setupFarm(formData: FormData) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   const service = createServiceClient();
 
@@ -20,7 +20,7 @@ export async function setupFarm(formData: FormData) {
 
   if (!farmName) {
     redirect(
-      `/farmer/setup?error=${encodeURIComponent("Farm name is required.")}`
+      `/vendor/setup?error=${encodeURIComponent("Farm name is required.")}`
     );
   }
 
@@ -44,7 +44,7 @@ export async function setupFarm(formData: FormData) {
 
     if (error) {
       redirect(
-        `/farmer/setup?error=${encodeURIComponent("Could not save your farm. Please try again.")}`
+        `/vendor/setup?error=${encodeURIComponent("Could not save your farm. Please try again.")}`
       );
     }
     redirect("/dashboard");
@@ -61,7 +61,7 @@ export async function setupFarm(formData: FormData) {
 
   if (error) {
     redirect(
-      `/farmer/setup?error=${encodeURIComponent("Could not create your farm. Please try again.")}`
+      `/vendor/setup?error=${encodeURIComponent("Could not create your farm. Please try again.")}`
     );
   }
 

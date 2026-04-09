@@ -11,7 +11,7 @@ interface Props {
 export default async function SettingsPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/farmer/login");
+  if (!user) redirect("/vendor/login");
 
   const service = createServiceClient();
   const { data: farm } = await service
