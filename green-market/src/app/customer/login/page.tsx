@@ -2,26 +2,26 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/icon";
-import { magicLink, googleSignIn } from "./actions";
+import { MagicLinkForm } from "./magic-link-form";
+import { googleSignIn } from "./actions";
 
 interface Props {
-  searchParams: Promise<{ error?: string; success?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }
 
 export default async function CustomerLoginPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Already signed in — go to account or next
-  const { error, success, next } = await searchParams;
+  const { error, next } = await searchParams;
   if (user) redirect(next ?? "/account/orders");
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-surface">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-3 mb-6">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-70 transition-opacity duration-150">
             <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
               <Icon name="potted_plant" fill className="text-on-primary-container" />
             </div>
@@ -37,13 +37,9 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
 
         <div className="bg-surface-container-low rounded-2xl p-8 space-y-6">
           {error && (
-            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="bg-primary/10 text-primary text-sm px-4 py-3 rounded-lg font-body">
-              {success}
+            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2 animate-slide-down">
+              <Icon name="error" size="sm" className="shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -52,7 +48,7 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
             {next && <input type="hidden" name="next" value={next} />}
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-3 bg-surface-container-highest hover:bg-surface-variant text-on-surface font-medium py-3 rounded-xl transition-colors text-sm"
+              className="w-full flex items-center justify-center gap-3 bg-surface-container-highest hover:bg-surface-container-high hover:-translate-y-px text-on-surface font-medium py-3 rounded-xl transition-[background-color,transform] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] active:translate-y-0 text-sm"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -72,29 +68,7 @@ export default async function CustomerLoginPage({ searchParams }: Props) {
           </div>
 
           {/* Magic link */}
-          <form action={magicLink} className="space-y-4">
-            {next && <input type="hidden" name="next" value={next} />}
-            <div>
-              <label htmlFor="email" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@example.com"
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-primary text-on-primary py-3 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all"
-            >
-              Send Magic Link
-            </button>
-          </form>
+          <MagicLinkForm next={next} />
 
           <p className="text-center text-xs text-on-surface-variant font-body">
             We&rsquo;ll email you a link to sign in instantly. No password needed.

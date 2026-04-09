@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { login } from "./actions";
 
 interface Props {
@@ -11,10 +12,10 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-surface">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-3 mb-6">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6 hover:opacity-70 transition-opacity duration-150">
             <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
               <Icon name="potted_plant" fill className="text-on-primary-container" />
             </div>
@@ -30,7 +31,7 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
 
         <div className="bg-surface-container-low rounded-2xl p-8 space-y-6">
           {error && (
-            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2">
+            <div className="bg-error/10 text-error text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2 animate-slide-down">
               <Icon name="error" size="sm" className="shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -50,7 +51,7 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
                 required
                 autoComplete="email"
                 placeholder="farmer@greenmarket.farm"
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
+                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none focus:-translate-y-px transition-all duration-150"
               />
             </div>
 
@@ -59,7 +60,7 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
                 <label htmlFor="password" className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant">
                   Password
                 </label>
-                <Link href="/farmer/forgot-password" className="text-xs text-secondary hover:text-primary transition-colors font-body">
+                <Link href="/farmer/forgot-password" className="text-xs text-secondary hover:text-primary transition-colors duration-150 font-body">
                   Forgot?
                 </Link>
               </div>
@@ -70,24 +71,26 @@ export default async function FarmerLoginPage({ searchParams }: Props) {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••••••"
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
+                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface placeholder:text-on-surface-variant/50 border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none focus:-translate-y-px transition-all duration-150"
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-primary text-on-primary py-3 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all"
-            >
-              Access Dashboard
-            </button>
+            <SubmitButton label="Access Dashboard" loadingLabel="Signing in..." />
           </form>
 
-          <p className="text-center text-xs text-on-surface-variant font-body">
-            New here?{" "}
-            <Link href="/farmer/register" className="text-primary font-bold hover:underline">
-              Create an account
-            </Link>
-          </p>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-px bg-outline-variant" />
+            <span className="text-xs text-on-surface-variant font-label">or</span>
+            <div className="flex-1 h-px bg-outline-variant" />
+          </div>
+
+          <Link
+            href="/farmer/register"
+            className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-[0.97] transition-all duration-150"
+          >
+            Register New Farm
+          </Link>
+
           <p className="text-center text-xs text-on-surface-variant font-body">
             Looking to shop?{" "}
             <Link href="/customer/login" className="text-primary font-bold hover:underline">

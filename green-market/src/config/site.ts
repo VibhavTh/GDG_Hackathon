@@ -6,7 +6,6 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
     { label: "About", href: "/#about" },
-    { label: "Dashboard", href: "/dashboard" },
   ],
   adminNav: [
     { label: "Overview", href: "/dashboard", icon: "dashboard" },

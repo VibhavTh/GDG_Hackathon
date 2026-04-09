@@ -87,7 +87,7 @@ export function AddToCartButton({
     <button
       onClick={handleAdd}
       className={`w-full py-3 rounded-md font-medium text-sm flex items-center justify-center gap-2
-        transition-all duration-300 active:scale-95
+        transition-colors duration-200 active:scale-[0.97]
         ${added
           ? "bg-primary-fixed text-primary"
           : "bg-gradient-to-r from-primary to-primary-container text-on-primary hover:opacity-90"
@@ -95,7 +95,7 @@ export function AddToCartButton({
     >
       {added ? (
         <>
-          <Icon name="check_circle" size="sm" />
+          <Icon name="check_circle" size="sm" className="animate-check-in" />
           Added to Basket
         </>
       ) : (

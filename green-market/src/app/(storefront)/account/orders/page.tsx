@@ -59,7 +59,7 @@ export default async function OrderHistoryPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
-      <div className="mb-10">
+      <div className="mb-10 animate-slide-up">
         <span className="text-secondary font-label text-xs uppercase tracking-widest mb-2 block">
           Your Account
         </span>
@@ -69,8 +69,8 @@ export default async function OrderHistoryPage() {
       </div>
 
       {orders && orders.length > 0 ? (
-        <div className="space-y-6">
-          {orders.map((order) => {
+        <div className="space-y-6 stagger-children">
+          {orders.map((order, i) => {
             const items = order.order_items ?? [];
             const firstItem = items[0];
             const firstProduct = firstItem?.products as unknown as { id: string; name: string; image_url: string | null } | null;
@@ -79,7 +79,8 @@ export default async function OrderHistoryPage() {
             return (
               <div
                 key={order.id}
-                className="bg-surface-container-low rounded-2xl p-6 space-y-4"
+                className="bg-surface-container-low rounded-2xl p-6 space-y-4 animate-slide-up-fast hover-lift transition-transform"
+                style={{ animationDelay: `${i * 70}ms` }}
               >
                 {/* Header row */}
                 <div className="flex items-start justify-between gap-4">
@@ -96,7 +97,7 @@ export default async function OrderHistoryPage() {
                     </p>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 transition-colors duration-200 ${
                       STATUS_STYLES[order.status] ?? STATUS_STYLES.placed
                     }`}
                   >
@@ -151,8 +152,8 @@ export default async function OrderHistoryPage() {
           })}
         </div>
       ) : (
-        <div className="py-24 text-center">
-          <div className="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center mx-auto mb-6">
+        <div className="py-24 text-center animate-slide-up" style={{ animationDelay: "100ms" }}>
+          <div className="w-20 h-20 rounded-full bg-surface-container-low flex items-center justify-center mx-auto mb-6 animate-float">
             <Icon name="receipt_long" className="text-on-surface-variant text-4xl" />
           </div>
           <h3 className="font-headline italic text-2xl text-tertiary mb-2">
@@ -163,9 +164,10 @@ export default async function OrderHistoryPage() {
           </p>
           <Link
             href="/products"
-            className="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-95 transition-all inline-block"
+            className="bg-primary text-on-primary px-8 py-3 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 inline-flex items-center gap-2"
           >
             Start Shopping
+            <Icon name="arrow_forward" size="sm" />
           </Link>
         </div>
       )}

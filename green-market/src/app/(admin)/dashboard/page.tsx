@@ -163,9 +163,9 @@ export default async function DashboardPage() {
       </header>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 stagger-children">
         {/* Revenue — not yet connected to Supabase */}
-        <div className="bg-surface-container-low p-8 rounded-xl group">
+        <div className="bg-surface-container-low p-8 rounded-xl group animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Total Revenue
           </p>
@@ -180,7 +180,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Orders — real count */}
-        <div className="bg-surface-container-highest p-8 rounded-xl">
+        <div className="bg-surface-container-highest p-8 rounded-xl animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Harvest Orders
           </p>
@@ -207,7 +207,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stock Alerts — real data */}
-        <div className="bg-surface-container-low p-8 rounded-xl">
+        <div className="bg-surface-container-low p-8 rounded-xl animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Stock Alerts
           </p>
@@ -251,12 +251,20 @@ export default async function DashboardPage() {
             </div>
           </div>
           <div className="flex-1 flex items-end gap-4 px-4 pb-4">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+            {[
+              { day: "Mon", height: "40%" },
+              { day: "Tue", height: "65%" },
+              { day: "Wed", height: "50%" },
+              { day: "Thu", height: "85%" },
+              { day: "Fri", height: "100%", highlight: true },
+              { day: "Sat", height: "75%" },
+              { day: "Sun", height: "45%" },
+            ].map((bar, i) => (
               <div
-                key={day}
-                className="flex-1 rounded-t-lg bg-surface-container-highest/50"
-                style={{ height: "12%" }}
-                title={day}
+                key={bar.day}
+                className={`flex-1 rounded-t-lg animate-grow-bar ${bar.highlight ? "bg-primary" : "bg-primary/10"}`}
+                style={{ height: bar.height, animationDelay: `${i * 60}ms` }}
+                title={bar.day}
               />
             ))}
           </div>
@@ -333,7 +341,7 @@ export default async function DashboardPage() {
                   {recentOrders.map((order, i) => (
                     <tr
                       key={order.order_id}
-                      className={`hover:bg-surface-container-high/50 transition-colors ${
+                      className={`hover:bg-surface-container-high/50 transition-colors duration-150 ${
                         i % 2 === 1 ? "bg-surface-container-low/50" : ""
                       }`}
                     >
