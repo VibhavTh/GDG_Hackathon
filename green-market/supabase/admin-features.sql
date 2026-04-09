@@ -63,6 +63,15 @@ ALTER TABLE public.newsletters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_messages ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies before recreating (safe to re-run)
+DROP POLICY IF EXISTS "published events are public" ON public.events;
+DROP POLICY IF EXISTS "admins manage events" ON public.events;
+DROP POLICY IF EXISTS "admins manage newsletters" ON public.newsletters;
+DROP POLICY IF EXISTS "anyone can subscribe" ON public.newsletter_subscribers;
+DROP POLICY IF EXISTS "admins manage subscribers" ON public.newsletter_subscribers;
+DROP POLICY IF EXISTS "anyone can send contact message" ON public.admin_messages;
+DROP POLICY IF EXISTS "admins manage messages" ON public.admin_messages;
+
 -- Events: public read for published events, admin full access
 CREATE POLICY "published events are public" ON public.events
   FOR SELECT USING (is_published = true);
