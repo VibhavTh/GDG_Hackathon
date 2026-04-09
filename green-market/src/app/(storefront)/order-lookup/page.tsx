@@ -274,7 +274,7 @@ export default function OrderLookupPage() {
                       <p className="text-xs text-on-surface-variant">Qty: {item.quantity}</p>
                     </div>
                     <span className="text-sm font-bold text-tertiary">
-                      ${(item.unit_price * item.quantity).toFixed(2)}
+                      ${(item.unit_price * item.quantity / 100).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -286,7 +286,7 @@ export default function OrderLookupPage() {
                   Total
                 </span>
                 <span className="font-headline text-2xl text-primary">
-                  ${order.total_amount.toFixed(2)}
+                  ${(order.total_amount / 100).toFixed(2)}
                 </span>
               </div>
             </div>
