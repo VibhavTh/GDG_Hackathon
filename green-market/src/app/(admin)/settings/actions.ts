@@ -10,14 +10,14 @@ export async function updateFarmSettings(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/farmer/login");
 
-  const name = (formData.get("name") as string).trim();
+  const name = (formData.get("name") as string)?.trim();
   if (!name) {
-    redirect(`/settings?error=${encodeURIComponent("Farm name is required.")}`);
+    return { error: "Farm name is required." };
   }
 
-  const description = (formData.get("description") as string).trim() || null;
-  const location = (formData.get("location") as string).trim() || null;
-  const image_url = (formData.get("image_url") as string).trim() || null;
+  const description = (formData.get("description") as string)?.trim() || null;
+  const location = (formData.get("location") as string)?.trim() || null;
+  const image_url = (formData.get("image_url") as string)?.trim() || null;
   const categories = formData.getAll("categories") as ProductCategory[];
 
   const service = createServiceClient();
@@ -27,10 +27,10 @@ export async function updateFarmSettings(formData: FormData) {
     .eq("owner_id", user.id);
 
   if (error) {
-    redirect(`/settings?error=${encodeURIComponent("Could not save changes. Please try again.")}`);
+    return { error: "Could not save changes. Please try again." };
   }
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
-  redirect("/settings?success=1");
+  return { success: true };
 }

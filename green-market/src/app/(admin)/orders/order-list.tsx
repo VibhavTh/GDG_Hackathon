@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
 import type { OrderStatus } from "@/lib/supabase/types";
@@ -80,14 +80,41 @@ function getRelativeTime(dateStr: string) {
   return `${days} day${days !== 1 ? "s" : ""} ago`;
 }
 
+const FILTER_STATUSES: { value: OrderStatus | "all"; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "placed", label: "Placed" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "preparing", label: "Preparing" },
+  { value: "ready", label: "Ready" },
+  { value: "fulfilled", label: "Fulfilled" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
 export default function OrderList({ orders }: { orders: Order[] }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filteredOrders = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return orders.filter((o) => {
+      const matchesStatus = statusFilter === "all" || o.status === statusFilter;
+      if (!matchesStatus) return false;
+      if (!q) return true;
+      const id = o.order_id.slice(0, 8).toLowerCase();
+      const email = o.guest_email?.toLowerCase() ?? "";
+      const displayName = getDisplayName(o).toLowerCase();
+      return id.includes(q) || email.includes(q) || displayName.includes(q);
+    });
+  }, [orders, searchQuery, statusFilter]);
+
   const [selectedId, setSelectedId] = useState<string>(
     orders[0]?.order_id ?? ""
   );
   const [cancelState, setCancelState] = useState<"idle" | "confirming">("idle");
   const [pending, setPending] = useState(false);
 
-  const selectedOrder = orders.find((o) => o.order_id === selectedId) ?? null;
+  const selectedOrder = filteredOrders.find((o) => o.order_id === selectedId) ?? filteredOrders[0] ?? null;
 
   const selectOrder = useCallback((id: string) => {
     setSelectedId(id);
@@ -149,25 +176,47 @@ export default function OrderList({ orders }: { orders: Order[] }) {
             from the community.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Icon
-              name="search"
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
-            />
-            <input
-              className="bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary/20 text-sm w-full max-w-xs transition-all"
-              placeholder="Search orders..."
-              type="search"
-              aria-label="Search orders"
-            />
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Icon
+                name="search"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+              />
+              <input
+                className="bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary/20 text-sm w-full max-w-xs transition-all"
+                placeholder="Search by email or order ID..."
+                type="search"
+                aria-label="Search orders"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <button
+              onClick={() => setShowFilters((v) => !v)}
+              className={`p-2 rounded-full transition-colors ${showFilters || statusFilter !== "all" ? "bg-primary text-on-primary" : "bg-surface-container-low text-primary hover:bg-surface-container-highest"}`}
+              aria-label="Filter orders"
+            >
+              <Icon name="filter_list" />
+            </button>
           </div>
-          <button
-            className="p-2 bg-surface-container-low text-primary rounded-full hover:bg-surface-container-highest transition-colors"
-            aria-label="Filter orders"
-          >
-            <Icon name="filter_list" />
-          </button>
+          {showFilters && (
+            <div className="flex flex-wrap gap-2 justify-end">
+              {FILTER_STATUSES.map((s) => (
+                <button
+                  key={s.value}
+                  onClick={() => setStatusFilter(s.value)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-colors active:scale-[0.96] ${
+                    statusFilter === s.value
+                      ? "bg-primary text-on-primary"
+                      : "bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </header>
 
@@ -176,10 +225,20 @@ export default function OrderList({ orders }: { orders: Order[] }) {
         {/* Order List */}
         <div className="lg:col-span-7 space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant/60 mb-6">
-            Recent Activity
+            {filteredOrders.length === orders.length
+              ? "Recent Activity"
+              : `${filteredOrders.length} of ${orders.length} orders`}
           </h3>
 
-          {orders.map((order) => {
+          {filteredOrders.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-on-surface-variant">
+              <Icon name="search_off" className="text-3xl mb-3" />
+              <p className="font-headline italic text-xl text-tertiary mb-1">No orders match</p>
+              <p className="text-sm">Try a different search or filter.</p>
+            </div>
+          )}
+
+          {filteredOrders.map((order) => {
             const isSelected = selectedId === order.order_id;
             const itemNames = order.order_items
               .slice(0, 2)

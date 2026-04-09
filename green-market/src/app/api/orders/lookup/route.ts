@@ -15,33 +15,51 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceClient();
 
-  const { data: order, error } = await supabase
-    .from("orders")
-    .select(`
+  const SELECT = `
+    id,
+    order_number,
+    status,
+    total_amount,
+    special_instructions,
+    created_at,
+    updated_at,
+    order_items (
       id,
-      order_number,
-      status,
-      total_amount,
-      special_instructions,
-      created_at,
-      updated_at,
-      order_items (
+      quantity,
+      unit_price,
+      products (
         id,
-        quantity,
-        unit_price,
-        products (
-          id,
-          name,
-          image_url
-        )
+        name,
+        image_url
       )
-    `)
+    )
+  `;
+
+  // Try exact order_number match first
+  let { data: order } = await supabase
+    .from("orders")
+    .select(SELECT)
     .eq("order_number", orderNumber)
     .ilike("guest_email", email)
-    .neq("status", "pending_payment") // don't expose unpaid orders
+    .neq("status", "pending_payment")
     .single();
 
-  if (error || !order) {
+  // Fallback: match on the first 8 chars of the UUID (what we display when order_number is null)
+  if (!order) {
+    const { data: rows } = await supabase
+      .from("orders")
+      .select(SELECT)
+      .ilike("guest_email", email)
+      .neq("status", "pending_payment")
+      .order("created_at", { ascending: false })
+      .limit(200); // scan recent orders for ID-prefix match
+
+    order = (rows ?? []).find(
+      (r) => r.id.slice(0, 8).toUpperCase() === orderNumber
+    ) ?? null;
+  }
+
+  if (!order) {
     return NextResponse.json(
       { error: "No order found with that order number and email" },
       { status: 404 }

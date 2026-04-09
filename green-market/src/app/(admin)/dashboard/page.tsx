@@ -177,7 +177,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <Link
-            href="/farmer/setup"
+            href="/settings"
             className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-primary hover:underline"
           >
             Complete Profile

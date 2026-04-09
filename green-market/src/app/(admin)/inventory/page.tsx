@@ -4,7 +4,7 @@ import Link from "next/link";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/icon";
 import { StockControl } from "@/components/admin/stock-control";
-import { deleteProduct, restoreProduct } from "./actions";
+import { deleteProduct, restoreProduct, toggleProductActive } from "./actions";
 
 const CATEGORY_LABELS: Record<string, string> = {
   produce: "Produce",
@@ -46,7 +46,7 @@ export default async function InventoryPage({ searchParams }: Props) {
 
   const { category, q } = await searchParams;
 
-  // Active products
+  // All non-deleted products (active + paused)
   let query = service
     .from("products")
     .select("*")
@@ -79,7 +79,9 @@ export default async function InventoryPage({ searchParams }: Props) {
     ...new Set((allProducts ?? []).map((p) => p.category)),
   ];
 
-  const lowStockCount = (products ?? []).filter((p) => p.stock <= 5).length;
+  const activeProducts = (products ?? []).filter((p) => p.is_active);
+  const pausedCount = (products ?? []).filter((p) => !p.is_active).length;
+  const lowStockCount = activeProducts.filter((p) => p.stock <= 5).length;
 
   return (
     <>
@@ -120,8 +122,13 @@ export default async function InventoryPage({ searchParams }: Props) {
               Current Stock
             </h3>
             <p className="text-on-surface-variant text-sm mt-1 font-medium">
-              {products?.length ?? 0} active listing
-              {products?.length !== 1 ? "s" : ""}
+              {activeProducts.length} active listing
+              {activeProducts.length !== 1 ? "s" : ""}
+              {pausedCount > 0 && (
+                <span className="ml-2 text-on-surface-variant/50">
+                  · {pausedCount} paused
+                </span>
+              )}
               {lowStockCount > 0 && (
                 <span className="ml-2 text-error font-semibold">
                   · {lowStockCount} low stock
@@ -164,15 +171,24 @@ export default async function InventoryPage({ searchParams }: Props) {
         {products && products.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => {
-              const isLowStock = product.stock <= 5;
+              const isLowStock = product.stock <= 5 && product.is_active;
+              const isPaused = !product.is_active;
               return (
                 <div
                   key={product.id}
                   className={`bg-surface-container-low rounded-xl p-6 transition-all hover:bg-surface-container-high group relative ${
-                    isLowStock ? "opacity-70" : ""
+                    isPaused ? "opacity-60" : isLowStock ? "opacity-70" : ""
                   }`}
                 >
-                  {isLowStock && (
+                  {isPaused && (
+                    <div className="absolute inset-0 flex items-start justify-start pointer-events-none z-10 p-4">
+                      <span className="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs leading-none">pause_circle</span>
+                        Paused
+                      </span>
+                    </div>
+                  )}
+                  {!isPaused && isLowStock && (
                     <div className="absolute inset-0 flex items-start justify-end pointer-events-none z-10 p-4">
                       <span className="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest">
                         Low Stock
@@ -180,7 +196,7 @@ export default async function InventoryPage({ searchParams }: Props) {
                     </div>
                   )}
 
-                  {/* Edit / Delete */}
+                  {/* Edit / Pause / Delete */}
                   <div className="absolute top-4 right-4 flex gap-1">
                     <Link
                       href={`/inventory/${product.id}/edit`}
@@ -189,6 +205,25 @@ export default async function InventoryPage({ searchParams }: Props) {
                     >
                       <Icon name="edit" />
                     </Link>
+                    <form
+                      action={async () => {
+                        "use server";
+                        await toggleProductActive(product.id, !product.is_active);
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className={`p-2 transition-colors focus-visible:outline-2 focus-visible:outline-primary rounded ${
+                          product.is_active
+                            ? "text-on-surface-variant hover:text-secondary"
+                            : "text-primary"
+                        }`}
+                        aria-label={product.is_active ? `Pause ${product.name}` : `Unpause ${product.name}`}
+                        title={product.is_active ? "Pause listing" : "Resume listing"}
+                      >
+                        <Icon name={product.is_active ? "pause_circle" : "play_circle"} />
+                      </button>
+                    </form>
                     <form
                       action={async () => {
                         "use server";

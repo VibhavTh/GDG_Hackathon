@@ -118,6 +118,18 @@ export async function restoreProduct(productId: string) {
   revalidatePath("/inventory");
 }
 
+export async function toggleProductActive(productId: string, isActive: boolean) {
+  const { service, farmId } = await getFarm();
+
+  await service
+    .from("products")
+    .update({ is_active: isActive, updated_at: new Date().toISOString() })
+    .eq("id", productId)
+    .eq("farm_id", farmId);
+
+  revalidatePath("/inventory");
+}
+
 export async function updateStock(productId: string, delta: number) {
   const { service, farmId } = await getFarm();
 

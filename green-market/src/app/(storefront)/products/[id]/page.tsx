@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
+import { QuantityAddToCart } from "./quantity-add-to-cart";
 import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { Icon } from "@/components/ui/icon";
 
@@ -185,7 +186,7 @@ export default async function ProductDetailPage({ params }: Props) {
           )}
 
           {product.stock > 0 && farm ? (
-            <AddToCartButton
+            <QuantityAddToCart
               farmId={farm.id}
               item={{
                 productId: product.id,
