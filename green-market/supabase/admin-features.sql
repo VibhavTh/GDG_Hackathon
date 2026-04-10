@@ -6,6 +6,10 @@
 -- Add is_organic column to products if it doesn't already exist
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS is_organic boolean NOT NULL DEFAULT false;
 
+-- Seasonal availability windows
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS available_from date;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS available_until date;
+
 
 -- Events table (displayed on storefront calendar)
 CREATE TABLE IF NOT EXISTS public.events (

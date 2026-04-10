@@ -63,6 +63,12 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Failed to confirm order" }, { status: 500 });
         }
 
+        // Save customer phone from Stripe metadata so we can SMS on ready
+        const customerPhone = session.metadata?.customer_phone?.trim() || null;
+        if (customerPhone) {
+          await supabase.from("orders").update({ customer_phone: customerPhone }).eq("id", orderId);
+        }
+
         // Send email notification to farmer and customer
         try {
           const { data: orderData } = await supabase

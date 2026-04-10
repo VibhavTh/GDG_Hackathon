@@ -30,6 +30,8 @@ const PRICE_RANGES = [
   { label: "$100 – $500", min: 100, max: 500 },
 ];
 
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
 type Product = {
   id: string;
   name: string;
@@ -40,6 +42,8 @@ type Product = {
   unit: string | null;
   description: string | null;
   is_organic?: boolean | null;
+  available_from?: string | null;
+  available_until?: string | null;
 };
 
 interface Props {
@@ -294,14 +298,23 @@ export function CatalogView({ products, availableCategories, category, q, sort }
           {filtered.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 stagger-children">
               {filtered.map((product) => {
-                const outOfStock = product.stock <= 0;
-                const isLowStock = !outOfStock && product.stock <= LOW_STOCK_THRESHOLD;
+                const today = new Date().toISOString().split("T")[0];
+                const isUpcoming = !!(product.available_from && product.available_from > today);
+                const isLastWeek = !!(product.available_until && !isUpcoming &&
+                  new Date(product.available_until) <= new Date(Date.now() + 7 * 86400000));
+                const outOfStock = !isUpcoming && product.stock <= 0;
+                const isLowStock = !outOfStock && !isUpcoming && product.stock <= LOW_STOCK_THRESHOLD;
+
+                // "Coming in April" -- derive month from available_from
+                const comingMonth = isUpcoming && product.available_from
+                  ? MONTH_NAMES[new Date(product.available_from + "T12:00:00").getMonth()]
+                  : null;
 
                 return (
                   <div
                     key={product.id}
                     className={`group bg-surface-container-low rounded-[var(--radius-lg)] overflow-hidden flex flex-col animate-slide-up-fast hover-lift ${
-                      outOfStock ? "opacity-50" : ""
+                      outOfStock || isUpcoming ? "opacity-60" : ""
                     }`}
                   >
                     {/* Image — hero of the card, 70% of card */}
@@ -332,13 +345,23 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                         )}
                       </div>
 
-                      {/* Stock status — top-left, only when relevant */}
-                      {outOfStock && (
+                      {/* Stock/season status — top-left */}
+                      {isUpcoming && comingMonth && (
+                        <span className="absolute top-3 left-3 bg-primary-container text-on-primary-container text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold">
+                          Coming in {comingMonth}
+                        </span>
+                      )}
+                      {isLastWeek && (
+                        <span className="absolute top-3 left-3 bg-secondary text-on-secondary text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold animate-pulse-soft">
+                          Last Week!
+                        </span>
+                      )}
+                      {!isUpcoming && !isLastWeek && outOfStock && (
                         <span className="absolute top-3 left-3 bg-error text-on-error text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold">
                           Out of Stock
                         </span>
                       )}
-                      {isLowStock && (
+                      {!isUpcoming && !isLastWeek && isLowStock && (
                         <span className="absolute top-3 left-3 bg-secondary text-on-secondary text-[10px] uppercase px-2.5 py-1 rounded-full font-bold animate-pulse-soft">
                           {product.stock} left
                         </span>
@@ -362,7 +385,14 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                       </div>
 
                       <div className="mt-auto">
-                        {outOfStock ? (
+                        {isUpcoming ? (
+                          <button
+                            disabled
+                            className="w-full py-2.5 rounded-[var(--radius-md)] bg-primary-container/50 text-on-primary-container/70 font-bold text-sm cursor-not-allowed"
+                          >
+                            Coming {comingMonth}
+                          </button>
+                        ) : outOfStock ? (
                           <button
                             disabled
                             className="w-full py-2.5 rounded-[var(--radius-md)] bg-surface-container text-on-surface-variant/70 font-bold text-sm cursor-not-allowed"

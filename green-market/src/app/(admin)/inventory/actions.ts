@@ -30,6 +30,9 @@ export async function createProduct(formData: FormData) {
     );
   }
 
+  const available_from = (formData.get("available_from") as string)?.trim() || null;
+  const available_until = (formData.get("available_until") as string)?.trim() || null;
+
   const { error } = await service.from("products").insert({
     name: (formData.get("name") as string).trim(),
     description: (formData.get("description") as string).trim() || null,
@@ -40,6 +43,8 @@ export async function createProduct(formData: FormData) {
     image_url: (formData.get("image_url") as string).trim() || null,
     is_active: true,
     is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
+    available_from,
+    available_until,
   });
 
   if (error) {
@@ -60,6 +65,9 @@ export async function updateProduct(formData: FormData) {
   const priceRaw = parseFloat(formData.get("price") as string);
   const stock = parseInt(formData.get("stock") as string, 10);
 
+  const available_from = (formData.get("available_from") as string)?.trim() || null;
+  const available_until = (formData.get("available_until") as string)?.trim() || null;
+
   const { error } = await service
     .from("products")
     .update({
@@ -71,6 +79,8 @@ export async function updateProduct(formData: FormData) {
       unit: (formData.get("unit") as string | null)?.trim() || "each",
       image_url: (formData.get("image_url") as string).trim() || null,
       is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
+      available_from,
+      available_until,
     })
     .eq("id", productId);
 

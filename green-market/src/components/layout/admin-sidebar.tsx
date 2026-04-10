@@ -37,7 +37,10 @@ export function AdminSidebar({ farmName, userInitial, inboxUnread = 0 }: AdminSi
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-2">
         {siteConfig.adminNav.map((link) => {
-          const isActive = pathname === link.href || (link.href !== "/dashboard" && link.href !== "/admin" && pathname.startsWith(link.href)) || (link.href === "/admin" && pathname === "/admin");
+          const isActive = pathname === link.href ||
+            (link.href !== "/dashboard" && link.href !== "/admin" && link.href !== "/dashboard/analytics" && pathname.startsWith(link.href)) ||
+            (link.href === "/admin" && pathname === "/admin") ||
+            (link.href === "/dashboard/analytics" && pathname === "/dashboard/analytics");
           const badge = link.href === "/admin" ? inboxUnread : 0;
           return (
             <Link

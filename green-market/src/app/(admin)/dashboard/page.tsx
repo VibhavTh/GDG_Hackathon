@@ -112,6 +112,26 @@ export default async function DashboardPage() {
     .order("stock", { ascending: true })
     .limit(5);
 
+  // Upcoming events for the harvest calendar (next 60 days)
+  const sixtyDaysOut = new Date();
+  sixtyDaysOut.setDate(sixtyDaysOut.getDate() + 60);
+  const { data: upcomingEvents } = await service
+    .from("events")
+    .select("id, title, event_date, event_time, location")
+    .eq("is_published", true)
+    .gte("event_date", new Date().toISOString().split("T")[0])
+    .lte("event_date", sixtyDaysOut.toISOString().split("T")[0])
+    .order("event_date", { ascending: true })
+    .limit(20);
+
+  // Seasonal product windows (available_from coming up or active)
+  const { data: seasonalProducts } = await service
+    .from("products")
+    .select("id, name, available_from, available_until")
+    .is("deleted_at", null)
+    .eq("is_active", true)
+    .not("available_from", "is", null);
+
   // Recent active orders for the table
   const { data: recentOrderRows } = await service
     .from("orders")
@@ -268,7 +288,19 @@ export default async function DashboardPage() {
           <SalesChart weeklyBars={weeklyBars} dailyBars={dailyBars} />
         </div>
         <div className="flex-[1] min-w-0">
-          <HarvestCalendar />
+          <HarvestCalendar
+            events={(upcomingEvents ?? []).map((e) => ({
+              id: e.id,
+              title: e.title,
+              date: e.event_date,
+              time: e.event_time ?? undefined,
+            }))}
+            seasonalProducts={(seasonalProducts ?? []).map((p) => ({
+              name: p.name,
+              available_from: p.available_from!,
+              available_until: p.available_until ?? undefined,
+            }))}
+          />
         </div>
       </div>
 

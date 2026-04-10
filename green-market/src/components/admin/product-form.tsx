@@ -57,6 +57,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
   const [formError, setFormError] = useState<string | null>(error ?? null);
   const [selectedCategory, setSelectedCategory] = useState<string>(product?.category ?? "produce");
   const [isOrganic, setIsOrganic] = useState<boolean>((product as (typeof product & { is_organic?: boolean }) | undefined)?.is_organic ?? false);
+  const existingProduct = product as (typeof product & { available_from?: string | null; available_until?: string | null }) | undefined;
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -267,6 +268,36 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
               placeholder="0"
               className={inputClass}
             />
+          </div>
+        </div>
+
+        {/* Seasonal availability */}
+        <div className="space-y-1.5">
+          <p className={labelClass}>Seasonal Availability <span className="font-normal normal-case tracking-normal text-on-surface-variant">(optional)</span></p>
+          <p className="text-xs text-on-surface-variant mb-2">Leave blank to always show. Set dates to auto-show "Coming in [Month]" badges and hide the product when out of season.</p>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <label htmlFor="available_from" className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant">Available From</label>
+              <input
+                id="available_from"
+                name="available_from"
+                type="date"
+                defaultValue={existingProduct?.available_from ?? ""}
+                className={inputClass}
+                style={{ accentColor: "#173809", colorScheme: "light" }}
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="available_until" className="text-[10px] font-label uppercase tracking-wider text-on-surface-variant">Available Until</label>
+              <input
+                id="available_until"
+                name="available_until"
+                type="date"
+                defaultValue={existingProduct?.available_until ?? ""}
+                className={inputClass}
+                style={{ accentColor: "#173809", colorScheme: "light" }}
+              />
+            </div>
           </div>
         </div>
 

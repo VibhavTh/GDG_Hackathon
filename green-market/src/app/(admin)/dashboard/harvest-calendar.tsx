@@ -10,13 +10,25 @@ const MONTH_NAMES = [
 ];
 const DAY_HEADERS = ["S", "M", "T", "W", "T", "F", "S"];
 
-// Demo events -- replace with DB fetch once a farm_events table exists
-const DEMO_EVENTS = [
-  { title: "Farmer's Market Delivery", time: "07:00 AM -- 09:30 AM", accent: "border-secondary" },
-  { title: "Greenhouse Maintenance", time: "02:00 PM -- 04:00 PM", accent: "border-outline-variant" },
-];
+interface CalendarEvent {
+  id: string;
+  title: string;
+  date: string; // YYYY-MM-DD
+  time?: string;
+}
 
-export function HarvestCalendar() {
+interface SeasonalProduct {
+  name: string;
+  available_from: string; // YYYY-MM-DD
+  available_until?: string; // YYYY-MM-DD
+}
+
+interface HarvestCalendarProps {
+  events?: CalendarEvent[];
+  seasonalProducts?: SeasonalProduct[];
+}
+
+export function HarvestCalendar({ events = [], seasonalProducts = [] }: HarvestCalendarProps) {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1)
@@ -25,26 +37,46 @@ export function HarvestCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay(); // 0 = Sun
+  const firstDay = new Date(year, month, 1).getDay();
 
-  const isCurrentMonth =
-    year === today.getFullYear() && month === today.getMonth();
+  const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
 
-  function prevMonth() {
-    setCurrentDate(new Date(year, month - 1, 1));
-  }
-  function nextMonth() {
-    setCurrentDate(new Date(year, month + 1, 1));
-  }
+  function prevMonth() { setCurrentDate(new Date(year, month - 1, 1)); }
+  function nextMonth() { setCurrentDate(new Date(year, month + 1, 1)); }
 
-  // Build grid cells: empty slots + day numbers
   const cells: (number | null)[] = [
     ...Array(firstDay).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-
-  // Pad to complete last row
   while (cells.length % 7 !== 0) cells.push(null);
+
+  // Build a set of day numbers that have events this month
+  const eventDays = new Set<number>();
+  for (const e of events) {
+    const d = new Date(e.date + "T12:00:00");
+    if (d.getFullYear() === year && d.getMonth() === month) {
+      eventDays.add(d.getDate());
+    }
+  }
+
+  // Build a set of day numbers where a product becomes available this month
+  const seasonDays = new Set<number>();
+  for (const p of seasonalProducts) {
+    const d = new Date(p.available_from + "T12:00:00");
+    if (d.getFullYear() === year && d.getMonth() === month) {
+      seasonDays.add(d.getDate());
+    }
+  }
+
+  // Events and seasonal products happening today or in the future (for the agenda below)
+  const todayStr = today.toISOString().split("T")[0];
+  const todayEvents = events.filter((e) => e.date === todayStr);
+
+  // Products coming into season this month
+  const comingThisMonth = seasonalProducts.filter((p) => {
+    const d = new Date(p.available_from + "T12:00:00");
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
 
   return (
     <div className="bg-surface-container-low rounded-xl p-6 flex flex-col h-full">
@@ -79,10 +111,7 @@ export function HarvestCalendar() {
       {/* Day headers */}
       <div className="grid grid-cols-7 mb-1">
         {DAY_HEADERS.map((d, i) => (
-          <span
-            key={i}
-            className="text-[10px] font-label font-semibold text-on-surface-variant/50 text-center py-1"
-          >
+          <span key={i} className="text-[10px] font-label font-semibold text-on-surface-variant/50 text-center py-1">
             {d}
           </span>
         ))}
@@ -92,53 +121,77 @@ export function HarvestCalendar() {
       <div className="grid grid-cols-7 gap-y-1 mb-5">
         {cells.map((day, i) => {
           const isToday = isCurrentMonth && day === today.getDate();
-          const hasEvent = isCurrentMonth && day === today.getDate(); // demo: events only on today
+          const hasEvent = day !== null && eventDays.has(day);
+          const hasSeason = day !== null && seasonDays.has(day);
           return (
             <div key={i} className="flex flex-col items-center">
               <span
                 className={`
                   w-7 h-7 flex items-center justify-center text-xs font-medium rounded-full leading-none transition-colors
-                  ${day === null ? "" : ""}
-                  ${isToday
-                    ? "bg-primary text-on-primary font-bold"
-                    : day !== null
-                    ? "text-on-surface hover:bg-surface-container-high cursor-default"
-                    : ""}
+                  ${isToday ? "bg-primary text-on-primary font-bold" : day !== null ? "text-on-surface hover:bg-surface-container-high cursor-default" : ""}
                 `}
               >
                 {day ?? ""}
               </span>
-              {hasEvent && (
-                <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-0.5" />
+              {/* Indicator dots */}
+              {(hasEvent || hasSeason) && (
+                <div className="flex gap-0.5 mt-0.5">
+                  {hasEvent && <span className="w-1.5 h-1.5 rounded-full bg-secondary" />}
+                  {hasSeason && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                </div>
               )}
             </div>
           );
         })}
       </div>
 
-      {/* Today's Schedule */}
+      {/* Dot legend */}
+      <div className="flex gap-4 mb-4">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-secondary shrink-0" />
+          <span className="text-[10px] text-on-surface-variant">Events</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+          <span className="text-[10px] text-on-surface-variant">In season</span>
+        </div>
+      </div>
+
+      {/* Today's agenda */}
       <div className="mt-auto">
         <p className="text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant/50 mb-3">
-          Today&apos;s Schedule
+          {todayEvents.length > 0 ? "Today" : comingThisMonth.length > 0 ? "Coming this month" : "No events today"}
         </p>
-        <div className="space-y-3 mb-5">
-          {DEMO_EVENTS.map((event, i) => (
-            <div key={i} className={`border-l-2 ${event.accent} pl-3`}>
-              <p className="text-xs font-semibold text-on-surface leading-snug">
-                {event.title}
-              </p>
-              <p className="text-[10px] text-on-surface-variant mt-0.5">
-                {event.time}
-              </p>
-            </div>
-          ))}
-        </div>
+
+        {todayEvents.length > 0 && (
+          <div className="space-y-3 mb-4">
+            {todayEvents.map((e) => (
+              <div key={e.id} className="border-l-2 border-secondary pl-3">
+                <p className="text-xs font-semibold text-on-surface leading-snug">{e.title}</p>
+                {e.time && <p className="text-[10px] text-on-surface-variant mt-0.5">{e.time}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {todayEvents.length === 0 && comingThisMonth.length > 0 && (
+          <div className="space-y-2 mb-4">
+            {comingThisMonth.slice(0, 3).map((p) => (
+              <div key={p.name} className="border-l-2 border-primary pl-3">
+                <p className="text-xs font-semibold text-on-surface leading-snug">{p.name}</p>
+                <p className="text-[10px] text-on-surface-variant mt-0.5">
+                  Available {new Date(p.available_from + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <Link
-          href="/orders"
+          href="/admin/events"
           className="block w-full text-center text-xs font-label font-bold uppercase tracking-wider text-tertiary border border-outline-variant rounded-lg py-2.5 hover:bg-surface-container-high transition-colors"
         >
-          View Full Agenda
+          Manage Events
         </Link>
       </div>
     </div>

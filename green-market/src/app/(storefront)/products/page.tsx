@@ -11,11 +11,15 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { category, q, sort = "newest" } = await searchParams;
 
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
   let query = supabase
     .from("products")
-    .select("*")
+    .select("id, name, price, stock, category, image_url, unit, description, is_organic, available_from, available_until")
     .is("deleted_at", null)
     .eq("is_active", true)
+    // Hide products that are past their season
+    .or(`available_until.is.null,available_until.gte.${today}`)
     .order("stock", { ascending: false });
 
   if (category && category !== "all") query = query.eq("category", category);

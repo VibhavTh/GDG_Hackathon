@@ -15,6 +15,7 @@ export const siteConfig = {
     { label: "Overview", href: "/dashboard", icon: "dashboard" },
     { label: "Inventory", href: "/inventory", icon: "potted_plant" },
     { label: "Orders", href: "/orders", icon: "receipt_long" },
+    { label: "Analytics", href: "/dashboard/analytics", icon: "bar_chart" },
     { label: "Settings", href: "/settings", icon: "settings" },
     { label: "Events", href: "/admin/events", icon: "event" },
     { label: "Newsletter", href: "/admin/newsletter", icon: "mail" },

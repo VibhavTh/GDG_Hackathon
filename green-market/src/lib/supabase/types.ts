@@ -302,6 +302,8 @@ export type Database = {
       }
       products: {
         Row: {
+          available_from: string | null
+          available_until: string | null
           category: Database["public"]["Enums"]["product_category"]
           created_at: string
           deleted_at: string | null
@@ -320,6 +322,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          available_from?: string | null
+          available_until?: string | null
           category?: Database["public"]["Enums"]["product_category"]
           created_at?: string
           deleted_at?: string | null
@@ -338,6 +342,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          available_from?: string | null
+          available_until?: string | null
           category?: Database["public"]["Enums"]["product_category"]
           created_at?: string
           deleted_at?: string | null
