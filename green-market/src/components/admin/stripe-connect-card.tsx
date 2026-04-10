@@ -16,38 +16,42 @@ export function StripeConnectCard({
 }: Props) {
   const [loading, setLoading] = useState(false);
 
-  async function handleConnect() {
+  async function callConnectEndpoint(method: "GET" | "POST", fallback: string) {
     setLoading(true);
+    let res: Response;
     try {
-      const res = await fetch("/api/connect/account", { method: "POST" });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error ?? "Failed to start Stripe onboarding");
-        setLoading(false);
-      }
+      res = await fetch("/api/connect/account", { method });
     } catch {
-      alert("Something went wrong. Please try again.");
+      alert("Network error. Please check your connection and try again.");
       setLoading(false);
+      return;
     }
+
+    let data: { url?: string; error?: string } | null = null;
+    try {
+      data = await res.json();
+    } catch {
+      // Response was not JSON -- likely an unhandled 500 HTML error page
+      alert(`Server error (${res.status}). Check the dev server logs for details.`);
+      setLoading(false);
+      return;
+    }
+
+    if (res.ok && data?.url) {
+      window.location.href = data.url;
+      return;
+    }
+
+    alert(data?.error ?? fallback);
+    setLoading(false);
+  }
+
+  async function handleConnect() {
+    await callConnectEndpoint("POST", "Failed to start Stripe onboarding");
   }
 
   async function handleContinueOnboarding() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/connect/account");
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error ?? "Failed to create onboarding link");
-        setLoading(false);
-      }
-    } catch {
-      alert("Something went wrong. Please try again.");
-      setLoading(false);
-    }
+    await callConnectEndpoint("GET", "Failed to create onboarding link");
   }
 
   // State 1: No Stripe account
