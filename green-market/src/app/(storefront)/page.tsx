@@ -132,6 +132,19 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── UPCOMING EVENT COUNTDOWN ── */}
+      {events.length > 0 && (
+        <section className="content-lazy">
+          <EventCountdown
+            eventDate={events[0].event_date}
+            eventTime={events[0].event_time}
+            eventTitle={events[0].title}
+            eventDescription={events[0].description}
+            eventLocation={events[0].location}
+          />
+        </section>
+      )}
+
       {/* ── FEATURED PRODUCTS — Asymmetric bento ── */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-4 mb-12">
@@ -373,19 +386,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ── UPCOMING EVENT COUNTDOWN ── */}
-      {events.length > 0 && (
-        <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
-          <EventCountdown
-            eventDate={events[0].event_date}
-            eventTime={events[0].event_time}
-            eventTitle={events[0].title}
-            eventDescription={events[0].description}
-            eventLocation={events[0].location}
-          />
-        </section>
-      )}
 
       {/* ── NEWSLETTER — Full bleed, editorial ── */}
       <section className="content-lazy">
