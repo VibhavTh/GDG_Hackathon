@@ -19,7 +19,7 @@ export function SalesChart({ weeklyBars, dailyBars }: Props) {
   const maxBarAmount = Math.max(...bars.map((b) => b.amount), 1);
 
   return (
-    <div className="bg-surface-container-low p-8 rounded-xl h-80 flex flex-col">
+    <div className="bg-surface-container-low p-8 rounded-xl flex flex-col h-full">
       <div className="flex justify-between items-center mb-8">
         <h4 className="font-headline italic text-xl text-tertiary">
           Sales Performance

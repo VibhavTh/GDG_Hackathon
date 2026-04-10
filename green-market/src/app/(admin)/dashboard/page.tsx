@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { OrderStatus } from "@/lib/supabase/types";
 import { SalesChart } from "./sales-chart";
+import { HarvestCalendar } from "./harvest-calendar";
 import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 
@@ -169,7 +170,7 @@ export default async function DashboardPage() {
   });
 
   return (
-    <main className="flex-1 px-8 py-10 max-w-7xl">
+    <main className="flex-1 px-10 py-14 w-full">
       {/* No-farm setup banner */}
       {!farm && (
         <div className="mb-8 bg-primary/8 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
@@ -288,7 +289,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
         <div>
           <h2 className="text-4xl font-headline italic text-tertiary leading-tight">
             {farm?.name ? `Welcome, ${farm.name}.` : "Good morning, Vendor."}
@@ -310,7 +311,7 @@ export default async function DashboardPage() {
       </header>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 stagger-children">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 stagger-children">
         {/* Revenue */}
         <div className="bg-surface-container-low p-8 rounded-xl group animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
@@ -380,13 +381,18 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="mb-12">
-        <SalesChart weeklyBars={weeklyBars} dailyBars={dailyBars} />
+      {/* Chart + Calendar */}
+      <div className="flex flex-col md:flex-row gap-6 mb-16 items-stretch">
+        <div className="flex-[3] min-w-0">
+          <SalesChart weeklyBars={weeklyBars} dailyBars={dailyBars} />
+        </div>
+        <div className="flex-[1] min-w-0">
+          <HarvestCalendar />
+        </div>
       </div>
 
       {/* Active Orders */}
-      <div className="bg-surface-container-low rounded-xl overflow-hidden mb-12">
+      <div className="bg-surface-container-low rounded-xl overflow-hidden">
         <div className="px-6 md:px-8 py-6 flex justify-between items-center">
           <h4 className="font-headline italic text-2xl text-tertiary">
             Active Orders
