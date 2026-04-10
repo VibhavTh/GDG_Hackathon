@@ -55,77 +55,66 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
   const calendarUrl = buildCalendarUrl(eventTitle, eventDate, eventTime, eventLocation, eventDescription);
 
   return (
-    <div className="bg-[#f5f0e8] rounded-3xl px-8 py-10 md:px-14 md:py-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-      {/* Left: title + description */}
-      <div className="flex-1">
-        <p className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-3">
-          Upcoming Event
-        </p>
-        <h2 className="font-headline italic text-3xl md:text-4xl text-tertiary leading-tight mb-3">
-          {eventTitle}
-        </h2>
-        {eventDescription && (
-          <p className="text-on-surface-variant font-body text-sm leading-relaxed max-w-sm">
-            {eventDescription}
-          </p>
-        )}
-        {eventLocation && (
-          <p className="text-on-surface-variant/60 text-xs font-label mt-2 flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm leading-none">location_on</span>
-            {eventLocation}
-          </p>
-        )}
-      </div>
+    <section style={{ backgroundColor: "#F9EFE4" }} className="w-full py-9 md:py-12">
+      <div className="w-full px-10 md:px-20">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
 
-      {/* Center: countdown tiles */}
-      {mounted && (
-        <div className="flex items-end gap-3">
-          {[
-            { value: String(timeLeft.days).padStart(2, "0"), label: "Days" },
-            { value: String(timeLeft.hours).padStart(2, "0"), label: "Hours" },
-            { value: String(timeLeft.minutes).padStart(2, "0"), label: "Minutes" },
-          ].map(({ value, label }) => (
-            <div key={label} className="flex flex-col items-center gap-2">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                <span className="font-headline italic text-4xl md:text-5xl text-primary leading-none">
-                  {value}
-                </span>
-              </div>
-              <span className="text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant/60">
-                {label}
-              </span>
+          {/* Left: label + title + description */}
+          <div className="flex-1 min-w-0">
+            <p className="text-secondary font-label text-[10px] font-bold uppercase tracking-[0.2em] mb-2">
+              Upcoming Event
+            </p>
+            <h2 className="font-headline italic text-3xl md:text-4xl text-tertiary leading-tight mb-2">
+              {eventTitle}
+            </h2>
+            {eventDescription && (
+              <p className="text-on-surface-variant font-body text-sm leading-relaxed max-w-sm">
+                {eventDescription}
+              </p>
+            )}
+            {eventLocation && (
+              <p className="text-on-surface-variant/60 text-xs font-label mt-2 flex items-center gap-1">
+                <span className="material-symbols-outlined text-sm leading-none">location_on</span>
+                {eventLocation}
+              </p>
+            )}
+          </div>
+
+          {/* Center: countdown tiles */}
+          {mounted && (
+            <div className="flex items-start gap-2.5">
+              {[
+                { value: String(timeLeft.days).padStart(2, "0"), label: "DAYS" },
+                { value: String(timeLeft.hours).padStart(2, "0"), label: "HOURS" },
+                { value: String(timeLeft.minutes).padStart(2, "0"), label: "MINUTES" },
+              ].map(({ value, label }) => (
+                <div key={label} className="flex flex-col items-center gap-2">
+                  <div className="w-[72px] h-[72px] md:w-[90px] md:h-[90px] bg-white rounded-xl flex items-center justify-center">
+                    <span className="font-headline italic text-3xl md:text-4xl text-primary leading-none tracking-tight">
+                      {value}
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-label font-bold tracking-[0.18em] text-on-surface-variant/60">
+                    {label}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {/* Right: Calendar tile */}
-      <a
-        href={calendarUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="shrink-0 group flex flex-col items-center w-24 hover:-translate-y-0.5 active:scale-[0.97] transition-all duration-150"
-        aria-label="Add to Google Calendar"
-      >
-        {/* Calendar icon tile */}
-        <div className="w-24 h-24 bg-white rounded-2xl shadow-sm flex flex-col overflow-hidden border border-white/60">
-          {/* Red header strip */}
-          <div className="bg-secondary h-6 flex items-center justify-center">
-            <span className="text-on-secondary font-label font-bold text-[10px] uppercase tracking-widest">
-              {new Date(eventDate + "T12:00:00").toLocaleString("en-US", { month: "short" })}
-            </span>
-          </div>
-          {/* Day number */}
-          <div className="flex-1 flex items-center justify-center">
-            <span className="font-headline italic text-3xl text-primary leading-none">
-              {new Date(eventDate + "T12:00:00").getDate()}
-            </span>
-          </div>
+          {/* Right: Save the Date */}
+          <a
+            href={calendarUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 inline-flex items-center gap-2 bg-primary text-on-primary font-label font-bold text-sm px-5 py-3 rounded-xl hover:bg-primary/90 active:scale-[0.97] transition-all duration-150"
+          >
+            <span className="material-symbols-outlined text-[16px] leading-none">calendar_today</span>
+            Save the Date
+          </a>
+
         </div>
-        <span className="mt-2 text-[10px] font-label font-bold uppercase tracking-widest text-on-surface-variant/60 group-hover:text-primary transition-colors duration-150">
-          Add to Cal
-        </span>
-      </a>
-    </div>
+      </div>
+    </section>
   );
 }
