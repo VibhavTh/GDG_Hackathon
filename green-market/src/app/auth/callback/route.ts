@@ -77,13 +77,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}${next}`);
   }
 
-  // Admin goes straight to admin panel
-  if (userRole === "admin") {
-    return NextResponse.redirect(`${origin}/admin`);
-  }
-
-  // Farmer goes to dashboard
-  if (userRole === "farmer") {
+  // Farmer or admin goes to dashboard
+  if (userRole === "farmer" || userRole === "admin") {
     return NextResponse.redirect(`${origin}/dashboard`);
   }
 

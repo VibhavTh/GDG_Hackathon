@@ -4,16 +4,24 @@ import { revalidatePath } from "next/cache";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { sendNewsletterEmail } from "@/lib/email";
 
-export async function sendNewsletter(formData: FormData) {
+async function requireFarmOwner() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user) return null;
+  const service = createServiceClient();
+  const { data: profile } = await service.from("users").select("role").eq("id", user.id).single();
+  if (profile?.role !== "farmer" && profile?.role !== "admin") return null;
+  return { user, service };
+}
+
+export async function sendNewsletter(formData: FormData) {
+  const auth = await requireFarmOwner();
+  if (!auth) return;
+  const { user, service } = auth;
 
   const subject = (formData.get("subject") as string).trim();
   const body = (formData.get("body") as string).trim();
   if (!subject || !body) return;
-
-  const service = createServiceClient();
 
   // Fetch active subscribers
   const { data: subscribers } = await service

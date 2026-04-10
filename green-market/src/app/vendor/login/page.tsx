@@ -22,7 +22,7 @@ export default async function VendorLoginPage({ searchParams }: Props) {
             <span className="font-headline text-xl text-tertiary font-bold">Green Market</span>
           </Link>
           <h1 className="text-3xl font-headline italic text-tertiary mb-2">
-            Vendor sign in
+            Farm sign in
           </h1>
           <p className="text-on-surface-variant font-body text-sm">
             Access your dashboard to manage listings and orders.
@@ -84,13 +84,6 @@ export default async function VendorLoginPage({ searchParams }: Props) {
             <div className="flex-1 h-px bg-outline-variant" />
           </div>
 
-          <Link
-            href="/vendor/register"
-            className="block w-full text-center bg-surface-container text-primary py-3 rounded-xl font-bold text-sm hover:bg-surface-container-high active:scale-[0.97] transition-all duration-150"
-          >
-            Create a Vendor Account
-          </Link>
-
           <p className="text-center text-xs text-on-surface-variant font-body">
             Looking to shop?{" "}
             <Link href="/customer/login" className="text-primary font-bold hover:underline">
@@ -98,12 +91,6 @@ export default async function VendorLoginPage({ searchParams }: Props) {
             </Link>
           </p>
         </div>
-
-        <p className="text-center mt-6 text-xs text-on-surface-variant/40 font-body">
-          <Link href="/admin/login" className="hover:text-on-surface-variant transition-colors">
-            Admin access
-          </Link>
-        </p>
       </div>
     </div>
   );
