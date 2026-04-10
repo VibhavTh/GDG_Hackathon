@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { AdminMobileNav } from "@/components/layout/admin-mobile-nav";
 import { Footer } from "@/components/layout/footer";
+import { StorefrontNav } from "@/components/layout/storefront-nav";
 
 export default async function AdminLayout({
   children,
@@ -67,19 +68,18 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar farmName={farmName} userInitial={userInitial} />
-      <div className="flex-1 flex flex-col">
-        {/* Mobile top bar */}
-        <div className="md:hidden flex items-center justify-between px-6 py-3 bg-surface-container-low border-b border-outline-variant/20">
-          <span className="font-headline text-sm font-bold text-tertiary">{farmName}</span>
-          <a href="/" className="flex items-center gap-1.5 text-xs font-label font-bold text-primary uppercase tracking-wider">
-            <span className="material-symbols-outlined text-sm leading-none">storefront</span>
-            Storefront
-          </a>
+    <div className="min-h-screen">
+      <StorefrontNav userRole="vendor" />
+      <div className="flex pt-20">
+        <AdminSidebar farmName={farmName} userInitial={userInitial} />
+        <div className="flex-1 flex flex-col">
+          {/* Mobile top bar */}
+          <div className="md:hidden flex items-center justify-between px-6 py-3 bg-surface-container-low border-b border-outline-variant/20">
+            <span className="font-headline text-sm font-bold text-tertiary">{farmName}</span>
+          </div>
+          <main className="flex-1 pb-24 md:pb-0">{children}</main>
+          <Footer variant="admin" />
         </div>
-        <main className="flex-1 pb-24 md:pb-0">{children}</main>
-        <Footer variant="admin" />
       </div>
       <AdminMobileNav />
     </div>

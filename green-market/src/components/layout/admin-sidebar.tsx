@@ -15,7 +15,7 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-64 bg-surface-container-low shadow-ambient sticky top-0 shrink-0 z-40 py-6">
+    <aside className="hidden md:flex flex-col w-64 bg-surface-container-low shadow-ambient sticky top-20 shrink-0 z-40 py-6" style={{ height: "calc(100vh - 5rem)" }}>
       {/* Header */}
       <div className="px-6 mb-10">
         <div className="flex items-center gap-3">
