@@ -59,6 +59,56 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
   const [isOrganic, setIsOrganic] = useState<boolean>((product as (typeof product & { is_organic?: boolean }) | undefined)?.is_organic ?? false);
   const existingProduct = product as (typeof product & { available_from?: string | null; available_until?: string | null }) | undefined;
 
+  // AI prefill state
+  const [analyzing, setAnalyzing] = useState(false);
+  const [aiApplied, setAiApplied] = useState(false);
+  const [nameValue, setNameValue] = useState(product?.name ?? "");
+  const [descValue, setDescValue] = useState(product?.description ?? "");
+  const [unitValue, setUnitValue] = useState(product?.unit ?? "each");
+  const [priceValue, setPriceValue] = useState(product ? (product.price / 100).toFixed(2) : "");
+  const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+
+  function clearAiField(field: string) {
+    setAiFilledFields((prev) => { const n = new Set(prev); n.delete(field); return n; });
+  }
+
+  async function analyzeImage() {
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) return;
+    setAnalyzing(true);
+    setFormError(null);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetch("/api/analyze-product-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64, mimeType: file.type }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setFormError(data.error ?? "Image analysis failed."); return; }
+      const filled = new Set<string>();
+      if (data.summary) setAiSummary(data.summary);
+      if (data.name) { setNameValue(data.name); filled.add("name"); }
+      if (data.description) { setDescValue(data.description); filled.add("description"); }
+      if (data.unit) { setUnitValue(data.unit); filled.add("unit"); }
+      if (data.price) { setPriceValue(String(data.price)); filled.add("price"); }
+      if (data.category) { setSelectedCategory(data.category); filled.add("category"); }
+      if (data.is_organic !== undefined) { setIsOrganic(Boolean(data.is_organic)); filled.add("organic"); }
+      setAiFilledFields(filled);
+      setAiApplied(true);
+    } catch {
+      setFormError("Image analysis failed. Please fill in details manually.");
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -141,6 +191,13 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
         </div>
       )}
 
+      {aiSummary && (
+        <div className="mb-8 bg-primary/8 rounded-xl px-5 py-4 flex items-start gap-3">
+          <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">✨</span>
+          <p className="text-sm font-body text-on-surface leading-relaxed">{aiSummary}</p>
+        </div>
+      )}
+
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
         {isEdit && <input type="hidden" name="product_id" value={product.id} />}
 
@@ -148,13 +205,15 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
         <div className="space-y-1.5">
           <label htmlFor="name" className={labelClass}>
             Product Name <span className="text-error">*</span>
+            {aiFilledFields.has("name") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
           </label>
           <input
             id="name"
             name="name"
             type="text"
             required
-            defaultValue={product?.name ?? ""}
+            value={nameValue}
+            onChange={(e) => { setNameValue(e.target.value); clearAiField("name"); }}
             placeholder="e.g. Rainbow Heirloom Carrots"
             className={inputClass}
           />
@@ -162,12 +221,16 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
 
         {/* Description */}
         <div className="space-y-1.5">
-          <label htmlFor="description" className={labelClass}>Description</label>
+          <label htmlFor="description" className={labelClass}>
+            Description
+            {aiFilledFields.has("description") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
+          </label>
           <textarea
             id="description"
             name="description"
             rows={3}
-            defaultValue={product?.description ?? ""}
+            value={descValue}
+            onChange={(e) => { setDescValue(e.target.value); clearAiField("description"); }}
             placeholder="What makes this product special? Growing method, flavor notes, suggested use..."
             className={`${inputClass} resize-none`}
           />
@@ -178,13 +241,14 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
           <div className="space-y-1.5">
             <label htmlFor="category" className={labelClass}>
               Category <span className="text-error">*</span>
+              {aiFilledFields.has("category") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
             </label>
             <select
               id="category"
               name="category"
               required
-              defaultValue={product?.category ?? "produce"}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              value={selectedCategory}
+              onChange={(e) => { setSelectedCategory(e.target.value); clearAiField("category"); }}
               className={`${inputClass} cursor-pointer`}
             >
               {CATEGORIES.map((cat) => (
@@ -194,11 +258,15 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="unit" className={labelClass}>Unit</label>
+            <label htmlFor="unit" className={labelClass}>
+              Unit
+              {aiFilledFields.has("unit") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
+            </label>
             <select
               id="unit"
               name="unit"
-              defaultValue={product?.unit ?? "each"}
+              value={unitValue}
+              onChange={(e) => { setUnitValue(e.target.value); clearAiField("unit"); }}
               className={`${inputClass} cursor-pointer`}
             >
               {UNITS.map((u) => (
@@ -215,7 +283,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
               type="button"
               role="checkbox"
               aria-checked={isOrganic}
-              onClick={() => setIsOrganic((v) => !v)}
+              onClick={() => { setIsOrganic((v) => !v); clearAiField("organic"); }}
               className={`w-5 h-5 rounded-[var(--radius-sm)] border-2 flex items-center justify-center shrink-0 transition-colors duration-150 cursor-pointer ${
                 isOrganic ? "bg-primary border-primary" : "border-outline-variant bg-surface-container-lowest"
               }`}
@@ -227,7 +295,10 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
               )}
             </button>
             <div>
-              <p className={labelClass}>Certified Organic</p>
+              <p className={labelClass}>
+                Certified Organic
+                {aiFilledFields.has("organic") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
+              </p>
               <p className="text-xs text-on-surface-variant mt-0.5">This produce is grown without synthetic pesticides or fertilizers</p>
             </div>
             <input type="hidden" name="is_organic" value={isOrganic ? "true" : "false"} />
@@ -239,6 +310,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
           <div className="space-y-1.5">
             <label htmlFor="price" className={labelClass}>
               Price (USD) <span className="text-error">*</span>
+              {aiFilledFields.has("price") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
             </label>
             <div className="relative">
               <span className="absolute left-0 top-3 text-on-surface-variant font-body">$</span>
@@ -249,7 +321,8 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
                 required
                 min="0"
                 step="0.01"
-                defaultValue={product ? (product.price / 100).toFixed(2) : ""}
+                value={priceValue}
+                onChange={(e) => { setPriceValue(e.target.value); clearAiField("price"); }}
                 placeholder="0.00"
                 className={`${inputClass} pl-4`}
               />
@@ -320,6 +393,51 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
               >
                 <Icon name="close" size="sm" />
               </button>
+            </div>
+          )}
+
+          {/* AI analysis banner -- only on new product, only when an image is selected */}
+          {!isEdit && imagePreview && (
+            <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-body ${
+              aiApplied
+                ? "bg-primary/8 text-primary"
+                : "bg-surface-container text-on-surface-variant"
+            }`}>
+              {analyzing ? (
+                <span className="flex items-center gap-2">
+                  <Icon name="progress_activity" size="sm" className="animate-spin shrink-0" />
+                  Analyzing image...
+                </span>
+              ) : aiApplied ? (
+                <>
+                  <span className="flex items-center gap-2">
+                    <span aria-hidden="true">✨</span>
+                    AI filled the fields below. Review and edit before saving.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAiApplied(false)}
+                    className="shrink-0 p-1 rounded hover:bg-primary/10 transition-colors"
+                    aria-label="Dismiss"
+                  >
+                    <Icon name="close" size="sm" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="flex items-center gap-2">
+                    <span aria-hidden="true">✨</span>
+                    Want AI to fill in the details?
+                  </span>
+                  <button
+                    type="button"
+                    onClick={analyzeImage}
+                    className="shrink-0 px-4 py-1.5 rounded-full bg-primary text-on-primary text-xs font-label font-bold uppercase tracking-wider hover:bg-primary/90 transition-colors"
+                  >
+                    Analyze Image
+                  </button>
+                </>
+              )}
             </div>
           )}
 
