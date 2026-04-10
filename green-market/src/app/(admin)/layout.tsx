@@ -42,11 +42,17 @@ export default async function AdminLayout({
   const farmName = site?.name ?? "The Green Market Farm";
   const userInitial = (site?.name ?? user.email ?? "V")[0].toUpperCase();
 
+  const { count: inboxUnread } = await service
+    .from("admin_messages")
+    .select("id", { count: "exact", head: true })
+    .eq("is_read", false)
+    .is("archived_at", null);
+
   return (
     <div className="min-h-screen">
       <StorefrontNav userRole="vendor" />
       <div className="flex pt-20">
-        <AdminSidebar farmName={farmName} userInitial={userInitial} />
+        <AdminSidebar farmName={farmName} userInitial={userInitial} inboxUnread={inboxUnread ?? 0} />
         <div className="flex-1 flex flex-col">
           {/* Mobile top bar */}
           <div className="md:hidden flex items-center justify-between px-6 py-3 bg-surface-container-low border-b border-outline-variant/20">

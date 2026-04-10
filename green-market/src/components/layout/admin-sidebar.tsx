@@ -9,9 +9,10 @@ import { logout } from "@/app/vendor/logout/actions";
 interface AdminSidebarProps {
   farmName: string;
   userInitial: string;
+  inboxUnread?: number;
 }
 
-export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
+export function AdminSidebar({ farmName, userInitial, inboxUnread = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -27,7 +28,7 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
               Green Market
             </h1>
             <p className="text-xs text-on-surface-variant/60 italic">
-              Vendor Dashboard
+              Farm Dashboard
             </p>
           </div>
         </div>
@@ -36,7 +37,8 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-2">
         {siteConfig.adminNav.map((link) => {
-          const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+          const isActive = pathname === link.href || (link.href !== "/dashboard" && link.href !== "/admin" && pathname.startsWith(link.href)) || (link.href === "/admin" && pathname === "/admin");
+          const badge = link.href === "/admin" ? inboxUnread : 0;
           return (
             <Link
               key={link.href}
@@ -52,7 +54,12 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
               `}
             >
               <Icon name={link.icon} fill={isActive} />
-              <span className="text-sm font-medium">{link.label}</span>
+              <span className="text-sm font-medium flex-1">{link.label}</span>
+              {badge > 0 && (
+                <span className="bg-secondary text-on-secondary text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {badge}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -83,7 +90,7 @@ export function AdminSidebar({ farmName, userInitial }: AdminSidebarProps) {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-tertiary truncate">{farmName}</p>
-            <p className="text-xs text-on-surface-variant">Vendor</p>
+            <p className="text-xs text-on-surface-variant">Farm Owner</p>
           </div>
           <form action={logout}>
             <button

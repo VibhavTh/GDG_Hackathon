@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { adminLogout as logout } from "@/app/admin/logout/actions";
+import { logout } from "@/app/vendor/logout/actions";
 
 export default async function SiteAdminLayout({
   children,
@@ -10,7 +10,7 @@ export default async function SiteAdminLayout({
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
+  if (!user) redirect("/vendor/login");
 
   const service = createServiceClient();
   const { data: profile } = await service
@@ -19,7 +19,7 @@ export default async function SiteAdminLayout({
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") redirect("/");
+  if (profile?.role !== "admin" && profile?.role !== "farmer") redirect("/");
 
   const unread = await service
     .from("admin_messages")

@@ -72,14 +72,6 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               </Link>
             );
           })}
-          <a
-            href="https://www.blacksburgfarmersmarket.com/vendors"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative pb-0.5 transition-all duration-150 hover:-translate-y-px text-on-primary/70 hover:text-on-primary"
-          >
-            Vendors
-          </a>
         </div>
 
         {/* Right Actions */}
@@ -104,18 +96,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           </Link>
 
           {/* Auth-aware right button */}
-          {userRole === "admin" ? (
-            <>
-              <Link
-                href="/admin"
-                className="px-5 py-2 bg-primary text-on-primary rounded-md font-label font-bold text-sm hover:bg-primary/90 active:scale-[0.97] transition-all duration-150 flex items-center gap-1.5"
-              >
-                <Icon name="admin_panel_settings" size="sm" />
-                Admin
-              </Link>
-              <SignOutButton role="vendor" />
-            </>
-          ) : userRole === "vendor" ? (
+          {(userRole === "admin" || userRole === "vendor") ? (
             <>
               <Link
                 href="/dashboard"
@@ -181,27 +162,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
               {link.label}
             </Link>
           ))}
-          <a
-            href="https://www.blacksburgfarmersmarket.com/vendors"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-3 font-headline italic text-lg text-tertiary/70 hover:text-tertiary transition-colors duration-150"
-          >
-            Vendors
-          </a>
-          {userRole === "admin" ? (
-            <>
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 font-headline italic text-lg text-primary"
-              >
-                Admin Panel
-              </Link>
-              <SignOutButton role="vendor" className="w-full justify-start px-0 py-3" />
-            </>
-          ) : userRole === "vendor" ? (
+          {(userRole === "admin" || userRole === "vendor") ? (
             <>
               <Link
                 href="/dashboard"

@@ -14,7 +14,10 @@ export const siteConfig = {
   adminNav: [
     { label: "Overview", href: "/dashboard", icon: "dashboard" },
     { label: "Inventory", href: "/inventory", icon: "potted_plant" },
-    { label: "Orders", href: "/orders", icon: "inbox" },
+    { label: "Orders", href: "/orders", icon: "receipt_long" },
     { label: "Settings", href: "/settings", icon: "settings" },
+    { label: "Events", href: "/admin/events", icon: "event" },
+    { label: "Newsletter", href: "/admin/newsletter", icon: "mail" },
+    { label: "Inbox", href: "/admin", icon: "inbox" },
   ],
 } as const;
