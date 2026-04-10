@@ -24,7 +24,12 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(sed -i '' 's/{item\\\\.badge > 0 && \\(/{\\(item.badge ?? 0\\) > 0 \\\\&\\\\& \\(/g' \"/Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\(site-admin\\)/layout.tsx\")",
       "Bash(sed -i '' 's/{item\\\\.badge}/{ item.badge ?? 0 }/g' \"/Users/haradeeppuneti/GDG_Hackathon/green-market/src/app/\\(site-admin\\)/layout.tsx\")",
-      "Bash(echo \"EXIT:$?\")"
+      "Bash(echo \"EXIT:$?\")",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "mcp__plugin_supabase_supabase__list_tables",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "mcp__plugin_supabase_supabase__apply_migration",
+      "mcp__plugin_supabase_supabase__generate_typescript_types"
     ]
   }
 }

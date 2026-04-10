@@ -88,7 +88,6 @@ export default function CheckoutPage() {
             quantity: item.quantity,
             unit: item.unit,
             image: item.image ?? "",
-            farmId: item.farmId,
           })),
         }),
       });
@@ -311,53 +310,33 @@ export default function CheckoutPage() {
             </h3>
 
             <div className="space-y-6">
-              {mounted && cart.items.length > 0 && (() => {
-                const grouped: { farmId: string; farmName: string; items: typeof cart.items }[] = [];
-                const seen = new Map<string, number>();
-                for (const item of cart.items) {
-                  if (!seen.has(item.farmId)) {
-                    seen.set(item.farmId, grouped.length);
-                    grouped.push({ farmId: item.farmId, farmName: item.farmName, items: [] });
-                  }
-                  grouped[seen.get(item.farmId)!].items.push(item);
-                }
-                return grouped.map((group) => (
-                  <div key={group.farmId || "unknown"}>
-                    {grouped.length > 1 && (
-                      <p className="text-xs font-label uppercase tracking-widest text-secondary font-bold mb-3">
-                        {group.farmName}
-                      </p>
-                    )}
-                    {group.items.map((item) => (
-                      <div key={item.productId} className="flex gap-4 items-center mb-4">
-                        {item.image ? (
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            width={80}
-                            height={80}
-                            sizes="80px"
-                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-20 h-20 rounded-lg flex-shrink-0 bg-surface-container-highest flex items-center justify-center">
-                            <Icon name="shopping_basket" className="text-on-surface-variant" />
-                          </div>
-                        )}
-                        <div className="flex-grow">
-                          <h4 className="font-bold text-on-surface">{item.name}</h4>
-                          <p className="text-sm text-on-surface-variant italic">
-                            {item.quantity} x {item.unit}
-                          </p>
-                        </div>
-                        <span className="font-headline text-xl text-tertiary">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </span>
-                      </div>
-                    ))}
+              {mounted && cart.items.length > 0 && cart.items.map((item) => (
+                <div key={item.productId} className="flex gap-4 items-center mb-4">
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={80}
+                      height={80}
+                      sizes="80px"
+                      className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-lg flex-shrink-0 bg-surface-container-highest flex items-center justify-center">
+                      <Icon name="shopping_basket" className="text-on-surface-variant" />
+                    </div>
+                  )}
+                  <div className="flex-grow">
+                    <h4 className="font-bold text-on-surface">{item.name}</h4>
+                    <p className="text-sm text-on-surface-variant italic">
+                      {item.quantity} x {item.unit}
+                    </p>
                   </div>
-                ));
-              })()}
+                  <span className="font-headline text-xl text-tertiary">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              ))}
 
               {!mounted && (
                 <div className="space-y-4">

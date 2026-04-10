@@ -50,7 +50,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   const { data: product } = await service
     .from("products")
-    .select("*, farms(id, name, location, description)")
+    .select("*")
     .eq("id", id)
     .eq("is_active", true)
     .is("deleted_at", null)
@@ -58,18 +58,24 @@ export default async function ProductDetailPage({ params }: Props) {
 
   if (!product) notFound();
 
-  const farm = product.farms as {
-    id: string;
-    name: string;
-    location: string | null;
-    description: string | null;
-  } | null;
+  const { data: siteSettings } = await service
+    .from("site_settings")
+    .select("name, location, description")
+    .eq("id", 1)
+    .single();
 
-  // More from this farm
+  const farm = siteSettings
+    ? {
+        name: siteSettings.name,
+        location: siteSettings.location,
+        description: siteSettings.description,
+      }
+    : null;
+
+  // More products
   const { data: moreProducts } = await service
     .from("products")
     .select("id, name, price, image_url, unit")
-    .eq("farm_id", product.farm_id)
     .eq("is_active", true)
     .is("deleted_at", null)
     .gt("stock", 0)
@@ -143,13 +149,10 @@ export default async function ProductDetailPage({ params }: Props) {
               {CATEGORY_LABELS[product.category] ?? product.category}
             </span>
             {farm && (
-              <Link
-                href={`/farms/${farm.id}`}
-                className="text-xs text-on-surface-variant hover:text-primary transition-colors font-label flex items-center gap-1"
-              >
+              <span className="text-xs text-on-surface-variant font-label flex items-center gap-1">
                 <Icon name="storefront" size="sm" />
                 {farm.name}
-              </Link>
+              </span>
             )}
           </div>
 
@@ -187,7 +190,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </p>
           )}
 
-          {product.stock > 0 && farm ? (
+          {product.stock > 0 ? (
             <QuantityAddToCart
               item={{
                 productId: product.id,
@@ -195,8 +198,6 @@ export default async function ProductDetailPage({ params }: Props) {
                 price: product.price / 100,
                 image: product.image_url ?? "",
                 unit: product.unit ?? "each",
-                farmId: farm.id,
-                farmName: farm.name,
               }}
             />
           ) : (
@@ -210,10 +211,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
           {/* Farm card */}
           {farm && (
-            <Link
-              href={`/farms/${farm.id}`}
-              className="mt-8 p-5 bg-surface-container-low rounded-xl flex items-center gap-4 hover:bg-surface-container-high transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] group"
-            >
+            <div className="mt-8 p-5 bg-surface-container-low rounded-xl flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center shrink-0 text-on-primary-container font-bold text-lg">
                 {farm.name[0].toUpperCase()}
               </div>
@@ -230,12 +228,7 @@ export default async function ProductDetailPage({ params }: Props) {
                   </p>
                 )}
               </div>
-              <Icon
-                name="arrow_forward"
-                size="sm"
-                className="text-on-surface-variant group-hover:text-primary group-hover:translate-x-1 transition-all"
-              />
-            </Link>
+            </div>
           )}
         </div>
       </div>
@@ -253,7 +246,7 @@ export default async function ProductDetailPage({ params }: Props) {
               </h2>
             </div>
             <Link
-              href={`/farms/${farm.id}`}
+              href="/products"
               className="text-primary text-sm font-bold hover:underline flex items-center gap-1"
             >
               View All <Icon name="arrow_forward" size="sm" />

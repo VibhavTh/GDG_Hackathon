@@ -31,7 +31,6 @@ export default async function SiteAdminLayout({
 
   const navItems = [
     { href: "/admin", label: "Inbox", icon: "inbox", badge: unreadCount },
-    { href: "/admin/vendors", label: "Vendors", icon: "storefront" },
     { href: "/admin/events", label: "Events", icon: "event" },
     { href: "/admin/newsletter", label: "Newsletter", icon: "mail" },
   ];

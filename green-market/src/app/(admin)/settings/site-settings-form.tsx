@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
 import { createClient } from "@/lib/supabase/client";
-import { updateFarmSettings } from "./actions";
+import { updateSiteSettings } from "./actions";
 
 const CATEGORIES = [
   { value: "produce", label: "Produce", icon: "local_florist" },
@@ -26,18 +26,18 @@ const inputClass =
 const labelClass =
   "font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant";
 
-interface FarmData {
+interface SiteData {
   name: string | null;
   description: string | null;
   location: string | null;
   image_url: string | null;
-  categories: string[];
+  categories: string[] | null;
 }
 
-export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
+export function SiteSettingsForm({ site }: { site: SiteData | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(farm?.image_url ?? null);
-  const [imageUrl, setImageUrl] = useState<string>(farm?.image_url ?? "");
+  const [imagePreview, setImagePreview] = useState<string | null>(site?.image_url ?? null);
+  const [imageUrl, setImageUrl] = useState<string>(site?.image_url ?? "");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -96,7 +96,7 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
       formData.set("image_url", imageUrl);
     }
 
-    const result = await updateFarmSettings(formData);
+    const result = await updateSiteSettings(formData);
     setSubmitting(false);
     if (result?.error) {
       setFormError(result.error);
@@ -135,8 +135,8 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
             name="name"
             type="text"
             required
-            defaultValue={farm?.name ?? ""}
-            placeholder="e.g. Sunrise Valley Farm"
+            defaultValue={site?.name ?? ""}
+            placeholder="The Green Market Farm"
             className={inputClass}
           />
         </div>
@@ -147,8 +147,8 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
             id="location"
             name="location"
             type="text"
-            defaultValue={farm?.location ?? ""}
-            placeholder="e.g. Blacksburg, VA"
+            defaultValue={site?.location ?? ""}
+            placeholder="Blacksburg, VA"
             className={inputClass}
           />
         </div>
@@ -159,7 +159,7 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
             id="description"
             name="description"
             rows={4}
-            defaultValue={farm?.description ?? ""}
+            defaultValue={site?.description ?? ""}
             placeholder="Tell customers about your farm, your growing practices, and what makes your products special..."
             className={`${inputClass} resize-none`}
           />
@@ -217,7 +217,7 @@ export function FarmSettingsForm({ farm }: { farm: FarmData | null }) {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {CATEGORIES.map((cat) => {
-            const isChecked = (farm?.categories ?? []).includes(cat.value);
+            const isChecked = (site?.categories ?? []).includes(cat.value);
             return (
               <label key={cat.value} className="relative cursor-pointer">
                 <input

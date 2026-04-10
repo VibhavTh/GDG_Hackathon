@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { ProductCategory } from "@/lib/supabase/types";
 
-export async function updateFarmSettings(formData: FormData) {
+export async function updateSiteSettings(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/vendor/login");
@@ -22,9 +22,9 @@ export async function updateFarmSettings(formData: FormData) {
 
   const service = createServiceClient();
   const { error } = await service
-    .from("farms")
+    .from("site_settings")
     .update({ name, description, location, image_url, categories, updated_at: new Date().toISOString() })
-    .eq("owner_id", user.id);
+    .eq("id", 1);
 
   if (error) {
     return { error: "Could not save changes. Please try again." };
@@ -32,5 +32,6 @@ export async function updateFarmSettings(formData: FormData) {
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
+  revalidatePath("/");
   return { success: true };
 }

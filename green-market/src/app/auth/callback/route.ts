@@ -82,18 +82,8 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/admin`);
   }
 
-  // Route based on role + farm status
+  // Farmer goes to dashboard
   if (userRole === "farmer") {
-    const { data: farm } = await service
-      .from("farms")
-      .select("id, name")
-      .eq("owner_id", user.id)
-      .single();
-
-    if (!farm) {
-      return NextResponse.redirect(`${origin}/vendor/setup`);
-    }
-
     return NextResponse.redirect(`${origin}/dashboard`);
   }
 

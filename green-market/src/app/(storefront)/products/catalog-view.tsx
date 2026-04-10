@@ -40,7 +40,6 @@ type Product = {
   unit: string | null;
   description: string | null;
   is_organic?: boolean | null;
-  farms: { id: string; name: string; location: string | null } | null;
 };
 
 interface Props {
@@ -104,20 +103,10 @@ export function CatalogView({ products, availableCategories, category, q, sort }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<Set<number>>(new Set());
-  const [selectedFarms, setSelectedFarms] = useState<Set<string>>(new Set());
   const [organicFilter, setOrganicFilter] = useState<"all" | "organic" | "non-organic">("all");
 
-  // Derive unique farms from loaded products
-  const availableFarms = useMemo(() => {
-    const seen = new Map<string, string>();
-    for (const p of products) {
-      if (p.farms && !seen.has(p.farms.id)) seen.set(p.farms.id, p.farms.name);
-    }
-    return [...seen.entries()].map(([id, name]) => ({ id, name }));
-  }, [products]);
-
   const hasUrlFilters = !!q || (!!category && category !== "all");
-  const anyClientFilter = selectedCategories.size > 0 || selectedPriceRanges.size > 0 || selectedFarms.size > 0 || organicFilter !== "all";
+  const anyClientFilter = selectedCategories.size > 0 || selectedPriceRanges.size > 0 || organicFilter !== "all";
 
   function toggleCategory(cat: string, checked: boolean) {
     setSelectedCategories((prev) => {
@@ -135,18 +124,9 @@ export function CatalogView({ products, availableCategories, category, q, sort }
     });
   }
 
-  function toggleFarm(id: string, checked: boolean) {
-    setSelectedFarms((prev) => {
-      const next = new Set(prev);
-      checked ? next.add(id) : next.delete(id);
-      return next;
-    });
-  }
-
   function clearAllFilters() {
     setSelectedCategories(new Set());
     setSelectedPriceRanges(new Set());
-    setSelectedFarms(new Set());
     setOrganicFilter("all");
   }
 
@@ -164,19 +144,16 @@ export function CatalogView({ products, availableCategories, category, q, sort }
         });
       });
     }
-    if (selectedFarms.size > 0) {
-      list = list.filter((p) => p.farms && selectedFarms.has(p.farms.id));
-    }
     if (organicFilter !== "all") {
       list = list.filter((p) =>
         organicFilter === "organic" ? p.is_organic === true : !p.is_organic
       );
     }
     return list;
-  }, [products, selectedCategories, selectedPriceRanges, selectedFarms, organicFilter]);
+  }, [products, selectedCategories, selectedPriceRanges, organicFilter]);
 
   const activeFilterCount =
-    selectedCategories.size + selectedPriceRanges.size + selectedFarms.size + (organicFilter !== "all" ? 1 : 0);
+    selectedCategories.size + selectedPriceRanges.size + (organicFilter !== "all" ? 1 : 0);
 
   const sidebar = (
     <aside className="space-y-5">
@@ -219,19 +196,6 @@ export function CatalogView({ products, availableCategories, category, q, sort }
           />
         ))}
       </SidebarSection>
-
-      {availableFarms.length > 0 && (
-        <SidebarSection title="Vendor">
-          {availableFarms.map((farm) => (
-            <FilterCheckbox
-              key={farm.id}
-              label={farm.name}
-              checked={selectedFarms.has(farm.id)}
-              onChange={(v) => toggleFarm(farm.id, v)}
-            />
-          ))}
-        </SidebarSection>
-      )}
 
       <SidebarSection title="Organic">
         {(["all", "organic", "non-organic"] as const).map((val) => (
@@ -330,7 +294,6 @@ export function CatalogView({ products, availableCategories, category, q, sort }
           {filtered.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 stagger-children">
               {filtered.map((product) => {
-                const farm = product.farms;
                 const outOfStock = product.stock <= 0;
                 const isLowStock = !outOfStock && product.stock <= LOW_STOCK_THRESHOLD;
 
@@ -398,15 +361,6 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                         </span>
                       </div>
 
-                      {farm && (
-                        <Link
-                          href={`/farms/${farm.id}`}
-                          className="text-xs text-on-surface-variant hover:text-secondary transition-colors duration-150 mb-4"
-                        >
-                          {farm.name}{farm.location ? ` · ${farm.location}` : ""}
-                        </Link>
-                      )}
-
                       <div className="mt-auto">
                         {outOfStock ? (
                           <button
@@ -423,8 +377,6 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                               price: product.price / 100,
                               image: product.image_url ?? "",
                               unit: product.unit ?? "each",
-                              farmId: farm?.id ?? "",
-                              farmName: farm?.name ?? "",
                             }}
                           />
                         )}

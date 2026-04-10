@@ -13,7 +13,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
 
   let query = supabase
     .from("products")
-    .select("*, farms(id, name, location)")
+    .select("*")
     .is("deleted_at", null)
     .eq("is_active", true)
     .order("stock", { ascending: false });

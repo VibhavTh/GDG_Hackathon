@@ -30,16 +30,6 @@ export default async function EditProductPage({ params, searchParams }: Props) {
   if (!productData) notFound();
   const product = productData as ProductRow;
 
-  // Verify ownership via farm
-  const { data: farm } = await service
-    .from("farms")
-    .select("id")
-    .eq("id", product.farm_id as string)
-    .eq("owner_id", user.id)
-    .single();
-
-  if (!farm) notFound();
-
   return (
     <main className="flex-1">
       <ProductForm action={updateProduct} product={product} error={error} />

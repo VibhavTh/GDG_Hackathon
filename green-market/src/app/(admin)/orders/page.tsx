@@ -11,65 +11,44 @@ export default async function OrdersPage() {
 
   const service = createServiceClient();
 
-  const { data: farmData } = await service
-    .from("farms")
-    .select("id")
-    .eq("owner_id", user.id)
-    .single();
-  if (!farmData) redirect("/vendor/setup");
-  const farm = farmData as { id: string };
+  const { data: rows } = await service
+    .from("orders")
+    .select(
+      "id, customer_id, guest_email, status, total_amount, created_at, special_instructions, order_items(id, quantity, unit_price, products(name, image_url))"
+    )
+    .order("created_at", { ascending: false });
 
-  const { data: summaries } = await service
-    .from("farm_order_summary")
-    .select("*")
-    .eq("farm_id", farm.id)
-    .order("order_date", { ascending: false });
-
-  const orderIds = (summaries ?? []).map((s) => s.order_id);
-
-  const { data: details } =
-    orderIds.length > 0
-      ? await service
-          .from("orders")
-          .select(
-            "id, special_instructions, order_items(id, quantity, unit_price, products(name, image_url))"
-          )
-          .in("id", orderIds)
-      : { data: [] };
-
-  const detailMap = new Map((details ?? []).map((d) => [d.id, d]));
-
-  type OrderItem = {
+  type Row = {
     id: string;
-    quantity: number;
-    unit_price: number;
-    products: { name: string; image_url: string | null } | null;
+    customer_id: string | null;
+    guest_email: string | null;
+    status: string;
+    total_amount: number;
+    created_at: string;
+    special_instructions: string | null;
+    order_items: {
+      id: string;
+      quantity: number;
+      unit_price: number;
+      products: { name: string; image_url: string | null } | null;
+    }[];
   };
 
-  const orders = (summaries ?? []).map((s) => {
-    const detail = detailMap.get(s.order_id);
-    const rawItems = detail?.order_items ?? [];
-    const items = rawItems.map((item) => {
-      const prod = item.products as unknown as { name: string; image_url: string | null } | null;
-      return {
-        id: item.id,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        products: prod ? { name: prod.name, image_url: prod.image_url } : null,
-      };
-    }) as OrderItem[];
-
-    return {
-      order_id: s.order_id,
-      customer_id: s.customer_id,
-      guest_email: s.guest_email,
-      status: s.status,
-      order_date: s.order_date,
-      farm_subtotal: s.farm_subtotal,
-      special_instructions: detail?.special_instructions ?? null,
-      order_items: items,
-    };
-  });
+  const orders = ((rows ?? []) as unknown as Row[]).map((o) => ({
+    order_id: o.id,
+    customer_id: o.customer_id,
+    guest_email: o.guest_email,
+    status: o.status as import("@/lib/supabase/types").OrderStatus,
+    order_date: o.created_at,
+    total_amount: o.total_amount,
+    special_instructions: o.special_instructions,
+    order_items: o.order_items.map((i) => ({
+      id: i.id,
+      quantity: i.quantity,
+      unit_price: i.unit_price,
+      products: i.products ? { name: i.products.name, image_url: i.products.image_url } : null,
+    })),
+  }));
 
   return <OrderList orders={orders} />;
 }

@@ -20,7 +20,6 @@ export interface OrderItem {
 export interface Order {
   id: string;
   orderNumber: string;
-  farmId: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;

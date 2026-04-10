@@ -7,29 +7,19 @@ import type { ProductCategory } from "@/lib/supabase/types";
 
 // ---- helpers ----
 
-async function getFarm() {
+async function requireAuth() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/vendor/login");
-
-  const service = createServiceClient();
-  const { data: farmData } = await service
-    .from("farms")
-    .select("id")
-    .eq("owner_id", user.id)
-    .single();
-
-  if (!farmData) redirect("/vendor/setup");
-  const farm = farmData as { id: string };
-  return { service, farmId: farm.id };
+  return { service: createServiceClient() };
 }
 
 // ---- product CRUD ----
 
 export async function createProduct(formData: FormData) {
-  const { service, farmId } = await getFarm();
+  const { service } = await requireAuth();
 
   const priceRaw = parseFloat(formData.get("price") as string);
   const stock = parseInt(formData.get("stock") as string, 10);
@@ -41,7 +31,6 @@ export async function createProduct(formData: FormData) {
   }
 
   const { error } = await service.from("products").insert({
-    farm_id: farmId,
     name: (formData.get("name") as string).trim(),
     description: (formData.get("description") as string).trim() || null,
     category: formData.get("category") as ProductCategory,
@@ -65,7 +54,7 @@ export async function createProduct(formData: FormData) {
 }
 
 export async function updateProduct(formData: FormData) {
-  const { service, farmId } = await getFarm();
+  const { service } = await requireAuth();
 
   const productId = formData.get("product_id") as string;
   const priceRaw = parseFloat(formData.get("price") as string);
@@ -83,8 +72,7 @@ export async function updateProduct(formData: FormData) {
       image_url: (formData.get("image_url") as string).trim() || null,
       is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
     })
-    .eq("id", productId)
-    .eq("farm_id", farmId);
+    .eq("id", productId);
 
   if (error) {
     redirect(
@@ -97,49 +85,45 @@ export async function updateProduct(formData: FormData) {
 }
 
 export async function deleteProduct(productId: string) {
-  const { service, farmId } = await getFarm();
+  const { service } = await requireAuth();
 
   await service
     .from("products")
     .update({ deleted_at: new Date().toISOString(), is_active: false })
-    .eq("id", productId)
-    .eq("farm_id", farmId);
+    .eq("id", productId);
 
   revalidatePath("/inventory");
 }
 
 export async function restoreProduct(productId: string) {
-  const { service, farmId } = await getFarm();
+  const { service } = await requireAuth();
 
   await service
     .from("products")
     .update({ deleted_at: null, is_active: true })
-    .eq("id", productId)
-    .eq("farm_id", farmId);
+    .eq("id", productId);
 
   revalidatePath("/inventory");
 }
 
 export async function toggleProductActive(productId: string, isActive: boolean) {
-  const { service, farmId } = await getFarm();
+  const { service } = await requireAuth();
 
   await service
     .from("products")
     .update({ is_active: isActive, updated_at: new Date().toISOString() })
-    .eq("id", productId)
-    .eq("farm_id", farmId);
+    .eq("id", productId);
 
   revalidatePath("/inventory");
 }
 
 export async function updateStock(productId: string, delta: number): Promise<boolean> {
-  const { service, farmId } = await getFarm();
+  const { service } = await requireAuth();
 
   const { data: product } = await service
     .from("products")
     .select("stock")
     .eq("id", productId)
-    .eq("farm_id", farmId)
     .single();
 
   if (!product) return false;
@@ -148,8 +132,7 @@ export async function updateStock(productId: string, delta: number): Promise<boo
   const { error } = await service
     .from("products")
     .update({ stock: newStock })
-    .eq("id", productId)
-    .eq("farm_id", farmId);
+    .eq("id", productId);
 
   if (error) {
     console.error("[updateStock] DB error:", error);

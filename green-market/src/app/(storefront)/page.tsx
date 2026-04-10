@@ -11,16 +11,12 @@ export default async function HomePage() {
 
   const { data: featuredProducts } = await service
     .from("products")
-    .select("id, name, price, description, image_url, unit, farm_id, farms(id, name, location)")
+    .select("id, name, price, description, image_url, unit")
     .eq("is_active", true)
     .is("deleted_at", null)
     .gt("stock", 0)
     .order("created_at", { ascending: false })
     .limit(4);
-
-  const { data: farmCount } = await service
-    .from("farms")
-    .select("id", { count: "exact", head: true });
 
   const { data: productCount } = await service
     .from("products")
@@ -48,17 +44,17 @@ export default async function HomePage() {
           <div className="max-w-lg">
             <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-8 animate-slide-up" style={{ animationDelay: "0ms" }}>
               <span className="w-6 h-px bg-secondary inline-block" />
-              Farm to Table Marketplace
+              Farm to Table. Blacksburg.
             </span>
 
             <h1 className="font-headline italic text-tertiary leading-[1.05] tracking-tight mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
-              <span className="block text-5xl md:text-6xl lg:text-7xl">Where local</span>
-              <span className="block text-5xl md:text-6xl lg:text-7xl text-primary">growers meet</span>
-              <span className="block text-5xl md:text-6xl lg:text-7xl">your table.</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl">Fresh</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl text-primary">from our</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl">family farm.</span>
             </h1>
 
             <p className="text-on-surface-variant font-body text-lg leading-relaxed max-w-[52ch] mb-10 animate-slide-up" style={{ animationDelay: "160ms" }}>
-              Discover seasonal produce, small-batch goods, and locally made staples from real vendors in your community. No middlemen. No mystery.
+              Seasonal produce grown on our Blacksburg farm and brought straight to your table. No middlemen. No mystery.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 animate-slide-up" style={{ animationDelay: "240ms" }}>
@@ -80,9 +76,9 @@ export default async function HomePage() {
             {/* Stats row */}
             <div className="mt-16 pt-10 border-t border-outline-variant/40 grid grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: "320ms" }}>
               {[
-                { value: `${farmCount ?? "20"}+`, label: "Local Farms" },
+                { value: "100%", label: "Family Run" },
                 { value: `${productCount ?? "100"}+`, label: "Listings" },
-                { value: "100%", label: "Locally Sourced" },
+                { value: "Seasonal", label: "Always Fresh" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <p className="font-headline italic text-2xl text-secondary mb-1">{stat.value}</p>
@@ -167,7 +163,6 @@ export default async function HomePage() {
             {/* Large hero card — col-span-7 */}
             {featured[0] && (() => {
               const p = featured[0];
-              const farm = p.farms as unknown as { id: string; name: string; location?: string | null } | null;
               return (
                 <div className="md:col-span-7 group relative overflow-hidden rounded-2xl bg-surface-container-highest min-h-[420px] animate-slide-up-fast">
                   {p.image_url ? (
@@ -183,14 +178,6 @@ export default async function HomePage() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-tertiary/90 via-tertiary/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <div className="flex items-center gap-2 mb-3">
-                      {farm && (
-                        <Link href={`/farms/${farm.id}`} className="text-[10px] font-label font-bold uppercase tracking-widest text-on-tertiary/70 hover:text-on-tertiary transition-colors duration-150">
-                          {farm.name}
-                          {farm.location ? ` · ${farm.location}` : ""}
-                        </Link>
-                      )}
-                    </div>
                     <Link href={`/products/${p.id}`}>
                       <h3 className="font-headline italic text-3xl md:text-4xl text-on-tertiary leading-tight mb-2 hover:text-on-tertiary/80 transition-colors duration-150">
                         {p.name}
@@ -206,12 +193,10 @@ export default async function HomePage() {
                         ${(p.price / 100).toFixed(2)}
                         {p.unit && <span className="text-sm font-body opacity-60 ml-1">/ {p.unit}</span>}
                       </p>
-                      {farm && (
-                        <AddToCartButton
-                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each", farmId: farm.id, farmName: farm.name }}
-                          className="w-auto px-6"
-                        />
-                      )}
+                      <AddToCartButton
+                        item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                        className="w-auto px-6"
+                      />
                     </div>
                   </div>
                 </div>
@@ -221,7 +206,6 @@ export default async function HomePage() {
             {/* Right column — stacked smaller cards — col-span-5 */}
             <div className="md:col-span-5 flex flex-col gap-4">
               {featured.slice(1, 3).map((p, i) => {
-                const farm = p.farms as unknown as { id: string; name: string } | null;
                 return (
                   <div key={p.id} className="group bg-surface-container-low rounded-2xl p-6 flex gap-5 items-center hover:bg-surface-container transition-colors duration-150 animate-slide-up-fast" style={{ animationDelay: `${(i + 1) * 80}ms` }}>
                     <div className="w-24 h-24 rounded-xl overflow-hidden bg-surface-container-highest shrink-0 relative">
@@ -240,9 +224,6 @@ export default async function HomePage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      {farm && (
-                        <p className="text-[10px] font-label font-bold uppercase tracking-widest text-secondary mb-1">{farm.name}</p>
-                      )}
                       <Link href={`/products/${p.id}`} className="hover:underline">
                         <h4 className="font-headline italic text-xl text-tertiary leading-tight mb-1">{p.name}</h4>
                       </Link>
@@ -254,12 +235,10 @@ export default async function HomePage() {
                           ${(p.price / 100).toFixed(2)}
                           {p.unit && <span className="text-xs font-body text-on-surface-variant ml-1">/ {p.unit}</span>}
                         </span>
-                        {farm && (
-                          <AddToCartButton
-                            variant="underline"
-                            item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each", farmId: farm.id, farmName: farm.name }}
-                          />
-                        )}
+                        <AddToCartButton
+                          variant="underline"
+                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -269,7 +248,6 @@ export default async function HomePage() {
               {/* 4th product or CTA card */}
               {featured[3] ? (() => {
                 const p = featured[3];
-                const farm = p.farms as unknown as { id: string; name: string } | null;
                 return (
                   <div className="group bg-surface-container rounded-2xl overflow-hidden flex-1 flex items-end relative min-h-[160px] animate-slide-up-fast" style={{ animationDelay: "240ms" }}>
                     {p.image_url && (
@@ -280,18 +258,15 @@ export default async function HomePage() {
                     )}
                     <div className="relative z-10 p-6 flex items-end justify-between w-full">
                       <div>
-                        {farm && <p className="text-[10px] font-label font-bold uppercase tracking-widest text-on-tertiary/60 mb-1">{farm.name}</p>}
                         <Link href={`/products/${p.id}`}>
                           <h4 className="font-headline italic text-xl text-on-tertiary hover:text-on-tertiary/80 transition-colors duration-150">{p.name}</h4>
                         </Link>
                         <p className="font-headline text-lg text-on-tertiary mt-1">${(p.price / 100).toFixed(2)}</p>
                       </div>
-                      {farm && (
-                        <AddToCartButton
-                          item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each", farmId: farm.id, farmName: farm.name }}
-                          className="w-auto px-5 shrink-0"
-                        />
-                      )}
+                      <AddToCartButton
+                        item={{ productId: p.id, name: p.name, price: p.price / 100, image: p.image_url ?? "", unit: p.unit ?? "each" }}
+                        className="w-auto px-5 shrink-0"
+                      />
                     </div>
                   </div>
                 );
@@ -334,15 +309,15 @@ export default async function HomePage() {
             </h2>
             <div className="space-y-5 text-on-surface-variant font-body leading-relaxed">
               <p>
-                Green Market connects small farms, family orchards, and artisan producers with customers who care where their food comes from.
+                The Green Market Farm is a family run farm in Blacksburg, bringing fresh seasonal produce direct from our fields to your table.
               </p>
               <p>
-                Every listing represents a real farm with a real story — people tending soil, raising animals, and nurturing harvests with patience and pride.
+                Every product comes from our own soil, tended by hand with patience and pride. What you see is what we grew this week.
               </p>
             </div>
             <div className="mt-10 pt-8 border-t border-outline-variant/30 flex gap-10">
               {[
-                { value: "No intermediaries", label: "Direct from vendor" },
+                { value: "No intermediaries", label: "Direct from our farm" },
                 { value: "Seasonal", label: "What's fresh now" },
               ].map((item) => (
                 <div key={item.label}>
@@ -384,7 +359,7 @@ export default async function HomePage() {
             <span className="inline-block font-headline italic text-6xl text-primary/30 mb-4">02</span>
             <h3 className="font-headline italic text-xl text-tertiary mb-3">Add to your basket</h3>
             <p className="text-on-surface-variant font-body text-sm leading-relaxed">
-              Your cart holds items from one farm at a time — keeping your order fresh and traceable.
+              Browse fresh items from our farm and add them to your basket.
             </p>
           </div>
 
@@ -437,7 +412,7 @@ export default async function HomePage() {
                 Grow with the season.
               </h2>
               <p className="text-on-primary/70 font-body leading-relaxed">
-                Weekly updates, seasonal recipes, and first access to small-batch releases — direct from local vendors.
+                Weekly updates, seasonal recipes, and first access to small batch releases, direct from our farm.
               </p>
             </div>
 

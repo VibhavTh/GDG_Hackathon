@@ -19,12 +19,13 @@ type Order = {
   guest_email: string | null;
   status: OrderStatus;
   order_date: string;
-  farm_subtotal: number;
+  total_amount: number;
   special_instructions: string | null;
   order_items: OrderItem[];
 };
 
 const STATUS_STYLE: Record<OrderStatus, string> = {
+  pending_payment: "bg-surface-container text-on-surface-variant",
   placed: "bg-surface-container-highest text-on-surface-variant",
   confirmed: "bg-primary-fixed text-on-primary-fixed",
   preparing: "bg-secondary-fixed text-on-secondary-fixed",
@@ -36,6 +37,7 @@ const STATUS_STYLE: Record<OrderStatus, string> = {
 };
 
 const AVATAR_BG: Record<OrderStatus, string> = {
+  pending_payment: "bg-surface-container",
   placed: "bg-tertiary-fixed",
   confirmed: "bg-primary-fixed",
   preparing: "bg-secondary-fixed",
@@ -300,7 +302,7 @@ export default function OrderList({ orders }: { orders: Order[] }) {
 
                 <div className="flex justify-between items-center pt-4 bg-surface-container-low/30 -mx-6 px-6 -mb-6 pb-6 rounded-b-xl">
                   <p className="font-headline text-xl font-bold text-tertiary">
-                    {formatCents(order.farm_subtotal)}
+                    {formatCents(order.total_amount)}
                   </p>
                   <button className="text-primary text-sm font-semibold flex items-center gap-1 group">
                     View Details
@@ -463,7 +465,7 @@ export default function OrderList({ orders }: { orders: Order[] }) {
                         Total Value
                       </p>
                       <p className="text-2xl font-headline font-bold text-tertiary">
-                        {formatCents(selectedOrder.farm_subtotal)}
+                        {formatCents(selectedOrder.total_amount)}
                       </p>
                     </div>
                   </div>

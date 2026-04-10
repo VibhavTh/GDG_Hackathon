@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/server";
-import { calculatePlatformFeeCents } from "@/lib/stripe/config";
 
 interface CheckoutItem {
   productId: string;
@@ -10,7 +9,6 @@ interface CheckoutItem {
   quantity: number;
   unit: string;
   image: string;
-  farmId?: string; // optional -- server derives from DB as source of truth
 }
 
 interface CheckoutBody {
@@ -55,11 +53,11 @@ export async function POST(request: NextRequest) {
 
   const supabase = createServiceClient();
 
-  // Verify stock + prices against DB; also fetch farm_id as source of truth
+  // Verify stock + prices against DB
   const productIds = items.map((i) => i.productId);
   const { data: dbProducts, error: productsError } = await supabase
     .from("products")
-    .select("id, name, price, stock, is_active, deleted_at, farm_id")
+    .select("id, name, price, stock, is_active, deleted_at")
     .in("id", productIds);
 
   if (productsError || !dbProducts) {
@@ -99,49 +97,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Derive farm IDs from DB products (not client-sent farmId)
-  const uniqueFarmIds = [...new Set(dbProducts.map((p) => p.farm_id))];
-
-  // Fetch farms for Connect status
-  const { data: farms, error: farmsError } = await supabase
-    .from("farms")
-    .select("*")
-    .in("id", uniqueFarmIds);
-
-  if (farmsError || !farms) {
-    console.error("Farms query error:", farmsError, "farmIds:", uniqueFarmIds);
-    return NextResponse.json({ error: "Failed to verify farms" }, { status: 500 });
-  }
-
-  const farmMap = new Map(farms.map((f) => [f.id, f]));
-
   // Pre-build validated items with DB prices -- every item is guaranteed in the map
   // because the unavailable check above returned early for any missing/inactive product.
   const validatedItems = items.map((item) => {
     const dbProduct = productMap.get(item.productId);
     if (!dbProduct) throw new Error(`Product ${item.productId} missing after validation`);
-    return { ...item, dbPrice: dbProduct.price, farmId: dbProduct.farm_id };
+    return { ...item, dbPrice: dbProduct.price };
   });
 
   // Calculate totals from DB prices (dbPrice is already in cents)
   const subtotalCents = validatedItems.reduce((sum, item) => sum + item.dbPrice * item.quantity, 0);
   const fulfillmentFeeCents = fulfillmentType === "delivery" ? Math.round(FULFILLMENT_FEE * 100) : 0;
   const totalCents = subtotalCents + fulfillmentFeeCents;
-
-  // Calculate per-farm subtotals and platform fees (using DB farm_id)
-  const farmBreakdown = new Map<string, { subtotalCents: number; platformFeeCents: number }>();
-  for (const item of validatedItems) {
-    const itemTotal = item.dbPrice * item.quantity;
-    const existing = farmBreakdown.get(item.farmId) ?? { subtotalCents: 0, platformFeeCents: 0 };
-    existing.subtotalCents += itemTotal;
-    farmBreakdown.set(item.farmId, existing);
-  }
-
-  let totalPlatformFeeCents = 0;
-  for (const [, breakdown] of farmBreakdown) {
-    breakdown.platformFeeCents = calculatePlatformFeeCents(breakdown.subtotalCents);
-    totalPlatformFeeCents += breakdown.platformFeeCents;
-  }
 
   // Create order row
   const { data: order, error: orderError } = await supabase
@@ -150,7 +117,6 @@ export async function POST(request: NextRequest) {
       customer_id: customerId ?? null,
       guest_email: customerEmail.toLowerCase().trim(),
       total_amount: totalCents,
-      platform_fee_cents: totalPlatformFeeCents,
       status: "placed",
       special_instructions: specialInstructions?.trim() || null,
     })
@@ -162,11 +128,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
   }
 
-  // Insert order_items (farm_id and price from DB, not client)
+  // Insert order_items (price from DB, not client)
   const orderItems = validatedItems.map((item) => ({
     order_id: order.id,
     product_id: item.productId,
-    farm_id: item.farmId,
     quantity: item.quantity,
     unit_price: item.dbPrice,
   }));
@@ -177,31 +142,6 @@ export async function POST(request: NextRequest) {
     console.error("Order items insert error:", itemsError);
     await supabase.from("orders").update({ status: "failed" }).eq("id", order.id);
     return NextResponse.json({ error: "Failed to save order items" }, { status: 500 });
-  }
-
-  // Insert farm_transfers rows (one per connected farm) with status 'pending'
-  const farmTransferRows = [];
-  for (const [farmId, breakdown] of farmBreakdown) {
-    const farm = farmMap.get(farmId);
-    if (!farm || !farm.stripe_account_id || !farm.payouts_enabled) continue;
-
-    const transferAmount = breakdown.subtotalCents - breakdown.platformFeeCents;
-    farmTransferRows.push({
-      order_id: order.id,
-      farm_id: farmId,
-      stripe_account_id: farm.stripe_account_id,
-      amount_cents: transferAmount,
-      platform_fee_cents: breakdown.platformFeeCents,
-      status: "pending" as const,
-    });
-  }
-
-  if (farmTransferRows.length > 0) {
-    const { error: transferError } = await supabase.from("farm_transfers").insert(farmTransferRows);
-    if (transferError) {
-      console.error("Farm transfers insert error:", transferError);
-      // Non-fatal: transfers can be retried via webhook
-    }
   }
 
   // Create Stripe Checkout Session (plain charge -- no transfer_data)
@@ -235,7 +175,6 @@ export async function POST(request: NextRequest) {
       line_items: lineItems,
       metadata: {
         order_id: order.id,
-        farm_ids: uniqueFarmIds.join(","),
         customer_name: customerName.trim(),
         customer_phone: customerPhone?.trim() || "",
         fulfillment_type: fulfillmentType,

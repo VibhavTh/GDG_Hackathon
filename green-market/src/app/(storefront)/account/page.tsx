@@ -3,7 +3,6 @@ import Link from "next/link";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/icon";
 import { SignOutButton } from "@/components/ui/sign-out-button";
-import { upgradeToFarmer } from "./actions";
 
 interface Props {
   searchParams: Promise<{ error?: string }>;
@@ -70,12 +69,6 @@ export default async function AccountPage({ searchParams }: Props) {
               <p className="text-[10px] font-label text-on-surface-variant uppercase tracking-widest">Orders</p>
             </div>
           </div>
-          <div className="p-1 bg-surface-container ring-1 ring-outline-variant/20 rounded-[0.875rem] flex-1">
-            <div className="bg-surface-container-low px-5 py-4 rounded-xl text-center">
-              <p className="text-2xl font-headline text-primary leading-none mb-1 capitalize">{profile?.role === "farmer" ? "Farmer" : "Customer"}</p>
-              <p className="text-[10px] font-label text-on-surface-variant uppercase tracking-widest">Account Type</p>
-            </div>
-          </div>
         </div>
 
         {/* Quick links */}
@@ -103,37 +96,6 @@ export default async function AccountPage({ searchParams }: Props) {
           </Link>
         </div>
       </div>
-
-      {/* Become a farmer section -- shown to anyone who isn't already a farmer */}
-      {profile?.role !== "farmer" && (
-        <div className="bg-surface-container-low rounded-2xl p-8 mb-6 animate-slide-up" style={{ animationDelay: "160ms" }}>
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center shrink-0">
-              <Icon name="agriculture" className="text-secondary" />
-            </div>
-            <div>
-              <h2 className="font-headline italic text-xl text-tertiary mb-1">Sell on Green Market</h2>
-              <p className="text-sm text-on-surface-variant font-body">
-                Turn your account into a farmer account and start listing products. Your order history stays intact.
-              </p>
-            </div>
-          </div>
-
-          <form action={upgradeToFarmer}>
-            <button
-              type="submit"
-              className="w-full bg-secondary text-on-secondary font-label font-bold py-3 rounded-xl hover:bg-secondary/90 active:scale-[0.97] transition-all duration-150 text-sm uppercase tracking-widest flex items-center justify-center gap-2"
-            >
-              <Icon name="storefront" size="sm" />
-              Become a Farmer
-            </button>
-          </form>
-
-          <p className="text-xs text-on-surface-variant/60 font-body text-center mt-3">
-            You can still shop as a customer after upgrading.
-          </p>
-        </div>
-      )}
 
       {/* Sign out */}
       <div className="flex justify-end animate-slide-up" style={{ animationDelay: "200ms" }}>

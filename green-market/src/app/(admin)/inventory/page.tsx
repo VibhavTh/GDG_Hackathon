@@ -35,16 +35,8 @@ export default async function InventoryPage({ searchParams }: Props) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/vendor/login");
 
-  // Use service client for all table queries — RLS policies may not be applied yet
+  // Use service client for all table queries
   const service = createServiceClient();
-
-  const { data: farm } = await service
-    .from("farms")
-    .select("id")
-    .eq("owner_id", user.id)
-    .single();
-
-  if (!farm) redirect("/vendor/setup");
 
   const { category, q } = await searchParams;
 
@@ -52,7 +44,6 @@ export default async function InventoryPage({ searchParams }: Props) {
   let query = service
     .from("products")
     .select("*")
-    .eq("farm_id", farm.id)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
@@ -65,7 +56,6 @@ export default async function InventoryPage({ searchParams }: Props) {
   const { data: removedProducts } = await service
     .from("products")
     .select("*")
-    .eq("farm_id", farm.id)
     .not("deleted_at", "is", null)
     .order("deleted_at", { ascending: false })
     .limit(10);
@@ -74,7 +64,6 @@ export default async function InventoryPage({ searchParams }: Props) {
   const { data: allProducts } = await service
     .from("products")
     .select("category")
-    .eq("farm_id", farm.id)
     .is("deleted_at", null);
 
   const usedCategories = [
@@ -301,7 +290,7 @@ export default async function InventoryPage({ searchParams }: Props) {
               No products yet
             </h3>
             <p className="text-on-surface-variant font-body mb-8">
-              Add your first product to start selling on the marketplace.
+              Add your first product to start listing on your storefront.
             </p>
             <Link
               href="/inventory/new"

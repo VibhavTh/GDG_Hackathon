@@ -7,15 +7,15 @@ NEVER USE EM DASHES
 
 ## Project Description
 
-The Green Market Farm greatly struggles to advertise their products and manage orders due to limited technical knowledge. They rely on word-of-mouth or other outdated methods, causing them to lose potential customers and revenue.
-Build a simple, accessible system/website that allows farm owners to easily showcase their products, manage incoming orders, and track inventory without requiring advanced technical skills. The system should include a clean, visually appealing interface for customers to browse available goods, place orders, and view farm information. On the backend, it should allow farmers to quickly add or update products (name, category, price, availability, and maintain basic record. After the order is put through it could be saved in a database or a spreadsheet for the owner.
+The Green Market Farm is a single family-run farm at the Blacksburg farmers market. They struggle to advertise their products and manage orders because of limited technical knowledge, relying on word of mouth and losing customers as a result.
+Build a simple, accessible storefront for this ONE farm so they can showcase their products, manage incoming orders, and track inventory without advanced technical skills. The site has a clean interface for customers to browse available goods, place orders, and view farm information. On the backend, the farmer (and staff) can quickly add or update products and fulfill orders. This is NOT a multi-vendor marketplace.
 
 ## Project Overview
 
-**Green Market** — a farm-to-table marketplace where farmers list products and customers pay.
+**Green Market** is a single-vendor farm-to-table storefront. One farm, one admin, direct-to-customer orders.
 
-**Stack:** Next.js · Supabase (PostgreSQL + pgvector) · Stripe Connect · Supabase Auth · Vercel  
-**Planned services:** Inngest (jobs) · Cloudinary (images) · Resend (email) · Twilio (SMS)
+**Stack:** Next.js · Supabase (PostgreSQL) · Stripe Checkout (platform account, no Connect) · Supabase Auth · Vercel
+**Planned services:** Cloudinary (images) · Resend (email)
 
 This is a **shared repository**. Confirm before pushing, force-pushing, or deleting branches.
 

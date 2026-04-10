@@ -24,50 +24,31 @@ function formatCents(cents: number) {
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  await supabase.auth.getUser();
 
   const service = createServiceClient();
-  const { data: farm } = user
-    ? await service
-        .from("farms")
-        .select("id, name, description, location, stripe_account_id, stripe_onboarding_complete, payouts_enabled")
-        .eq("owner_id", user.id)
-        .single()
-    : {
-        data: null as {
-          id: string;
-          name: string;
-          description: string | null;
-          location: string | null;
-          stripe_account_id: string | null;
-          stripe_onboarding_complete: boolean;
-          payouts_enabled: boolean;
-        } | null,
-      };
 
-  const profileIncomplete = farm && (!farm.description || !farm.location);
+  const { data: site } = await service
+    .from("site_settings")
+    .select("name, description, location")
+    .eq("id", 1)
+    .single();
+
+  const profileIncomplete = site && (!site.description || !site.location);
 
   // Active order count
-  const { count: activeOrderCount } = farm
-    ? await service
-        .from("farm_order_summary")
-        .select("*", { count: "exact", head: true })
-        .eq("farm_id", farm.id)
-        .in("status", ["placed", "confirmed", "preparing", "ready"])
-    : { count: 0 };
+  const { count: activeOrderCount } = await service
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .in("status", ["placed", "confirmed", "preparing", "ready"]);
 
   // Total revenue from fulfilled orders
-  const { data: revenueRows } = farm
-    ? await service
-        .from("farm_order_summary")
-        .select("farm_subtotal")
-        .eq("farm_id", farm.id)
-        .eq("status", "fulfilled")
-    : { data: [] };
+  const { data: revenueRows } = await service
+    .from("orders")
+    .select("total_amount")
+    .eq("status", "fulfilled");
   const totalRevenue = (revenueRows ?? []).reduce(
-    (sum, r) => sum + (r.farm_subtotal as number),
+    (sum, r) => sum + (r.total_amount as number),
     0
   );
 
@@ -76,20 +57,17 @@ export default async function DashboardPage() {
   weekAgo.setDate(weekAgo.getDate() - 6);
   weekAgo.setHours(0, 0, 0, 0);
 
-  const { data: weeklyRows } = farm
-    ? await service
-        .from("farm_order_summary")
-        .select("order_date, farm_subtotal")
-        .eq("farm_id", farm.id)
-        .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
-        .gte("order_date", weekAgo.toISOString())
-    : { data: [] };
+  const { data: weeklyRows } = await service
+    .from("orders")
+    .select("created_at, total_amount")
+    .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
+    .gte("created_at", weekAgo.toISOString());
 
   const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const dailyTotals: Record<number, number> = {};
   for (const row of weeklyRows ?? []) {
-    const day = new Date(row.order_date).getDay();
-    dailyTotals[day] = (dailyTotals[day] ?? 0) + (row.farm_subtotal as number);
+    const day = new Date(row.created_at).getDay();
+    dailyTotals[day] = (dailyTotals[day] ?? 0) + (row.total_amount as number);
   }
   const weeklyBars = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -102,23 +80,20 @@ export default async function DashboardPage() {
     };
   });
 
-  // Today hourly data (last 24 hours in 4-hour buckets)
+  // Today hourly data in 4-hour buckets
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
-  const { data: todayRows } = farm
-    ? await service
-        .from("farm_order_summary")
-        .select("order_date, farm_subtotal")
-        .eq("farm_id", farm.id)
-        .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
-        .gte("order_date", todayStart.toISOString())
-    : { data: [] };
+  const { data: todayRows } = await service
+    .from("orders")
+    .select("created_at, total_amount")
+    .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
+    .gte("created_at", todayStart.toISOString());
 
   const HOUR_BUCKETS = ["12a", "4a", "8a", "12p", "4p", "8p"];
   const hourlyTotals: Record<number, number> = {};
   for (const row of todayRows ?? []) {
-    const bucket = Math.floor(new Date(row.order_date).getHours() / 4);
-    hourlyTotals[bucket] = (hourlyTotals[bucket] ?? 0) + (row.farm_subtotal as number);
+    const bucket = Math.floor(new Date(row.created_at).getHours() / 4);
+    hourlyTotals[bucket] = (hourlyTotals[bucket] ?? 0) + (row.total_amount as number);
   }
   const currentBucket = Math.floor(new Date().getHours() / 4);
   const dailyBars = HOUR_BUCKETS.map((label, i) => ({
@@ -128,74 +103,53 @@ export default async function DashboardPage() {
   }));
 
   // Low stock products
-  const { data: lowStockProducts } = farm
-    ? await service
-        .from("products")
-        .select("id, name, stock")
-        .eq("farm_id", farm.id)
-        .lte("stock", LOW_STOCK_THRESHOLD)
-        .is("deleted_at", null)
-        .eq("is_active", true)
-        .order("stock", { ascending: true })
-        .limit(5)
-    : { data: [] as { id: string; name: string; stock: number }[] };
+  const { data: lowStockProducts } = await service
+    .from("products")
+    .select("id, name, stock")
+    .lte("stock", LOW_STOCK_THRESHOLD)
+    .is("deleted_at", null)
+    .eq("is_active", true)
+    .order("stock", { ascending: true })
+    .limit(5);
 
   // Recent active orders for the table
-  const { data: recentSummaries } = farm
-    ? await service
-        .from("farm_order_summary")
-        .select("order_id, guest_email, customer_id, status, farm_subtotal, items")
-        .eq("farm_id", farm.id)
-        .in("status", ["placed", "confirmed", "preparing", "ready"])
-        .order("order_date", { ascending: false })
-        .limit(5)
-    : { data: [] };
+  const { data: recentOrderRows } = await service
+    .from("orders")
+    .select("id, guest_email, customer_id, status, total_amount, order_items(id, quantity, products(name))")
+    .in("status", ["placed", "confirmed", "preparing", "ready"])
+    .order("created_at", { ascending: false })
+    .limit(5);
 
-  const recentOrders = (recentSummaries ?? []).map((s) => {
-    const items = Array.isArray(s.items)
-      ? (s.items as { name: string }[]).map((i) => i.name).join(", ")
-      : "";
-    const displayName = s.guest_email
-      ? s.guest_email.split("@")[0]
+  type RecentRow = {
+    id: string;
+    guest_email: string | null;
+    customer_id: string | null;
+    status: OrderStatus;
+    total_amount: number;
+    order_items: { id: string; quantity: number; products: { name: string } | null }[];
+  };
+
+  const recentOrders = ((recentOrderRows ?? []) as unknown as RecentRow[]).map((o) => {
+    const items = o.order_items
+      .map((i) => i.products?.name)
+      .filter((n): n is string => Boolean(n))
+      .join(", ");
+    const displayName = o.guest_email
+      ? o.guest_email.split("@")[0]
       : "Customer";
     const initials = displayName.slice(0, 2).toUpperCase();
     return {
-      order_id: s.order_id,
+      order_id: o.id,
       initials,
       name: displayName,
-      status: s.status as OrderStatus,
+      status: o.status,
       items,
-      farm_subtotal: s.farm_subtotal,
+      total_amount: o.total_amount,
     };
   });
 
   return (
     <main className="flex-1 px-10 py-14 w-full">
-      {/* No-farm setup banner */}
-      {!farm && (
-        <div className="mb-8 bg-primary/8 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-              <Icon name="storefront" className="text-primary" size="sm" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold font-body text-on-surface">
-                You haven&apos;t set up your farm yet.
-              </p>
-              <p className="text-xs text-on-surface-variant font-body mt-0.5">
-                Create your farm profile to start listing products and reaching customers.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/vendor/setup"
-            className="shrink-0 bg-primary text-on-primary font-label font-bold py-2.5 px-6 rounded-lg hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-xs"
-          >
-            Create Your Farm
-          </Link>
-        </div>
-      )}
-
       {/* Incomplete profile banner */}
       {profileIncomplete && (
         <div className="mb-8 bg-secondary-fixed/30 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
@@ -215,87 +169,14 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Stripe Connect banners */}
-      {farm && !farm.stripe_account_id && (
-        <div className="mb-8 bg-primary/8 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
-              <Icon name="account_balance" className="text-primary" size="sm" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold font-body text-on-surface">
-                Set up payments to receive customer orders.
-              </p>
-              <p className="text-xs text-on-surface-variant font-body mt-0.5">
-                Connect your Stripe account so customers can pay and you receive payouts.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/settings"
-            className="shrink-0 bg-primary text-on-primary font-label font-bold py-2.5 px-6 rounded-lg hover:bg-primary/90 active:scale-95 transition-all duration-200 uppercase tracking-widest text-xs"
-          >
-            Set Up Payments
-          </Link>
-        </div>
-      )}
-
-      {farm?.stripe_account_id && !farm.stripe_onboarding_complete && (
-        <div className="mb-8 bg-amber-50 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-              <Icon name="pending" className="text-amber-600" size="sm" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold font-body text-on-surface">
-                Stripe setup is incomplete.
-              </p>
-              <p className="text-xs text-on-surface-variant font-body mt-0.5">
-                Complete your Stripe onboarding to start receiving payments.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/settings"
-            className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-amber-600 hover:underline"
-          >
-            Complete Setup
-          </Link>
-        </div>
-      )}
-
-      {farm?.stripe_onboarding_complete && !farm.payouts_enabled && (
-        <div className="mb-8 bg-red-50 rounded-xl px-6 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-              <Icon name="warning" className="text-error" size="sm" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold font-body text-on-surface">
-                Payouts paused by Stripe.
-              </p>
-              <p className="text-xs text-on-surface-variant font-body mt-0.5">
-                Stripe needs additional information to keep your payouts active.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/settings"
-            className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-error hover:underline"
-          >
-            Update Details
-          </Link>
-        </div>
-      )}
-
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
         <div>
           <h2 className="text-4xl font-headline italic text-tertiary leading-tight">
-            {farm?.name ? `Welcome, ${farm.name}.` : "Good morning, Vendor."}
+            {site?.name ? `Welcome, ${site.name}.` : "Good morning."}
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
-            {farm ? "Your listings are live and orders are coming in." : "Set up your farm to get started."}
+            Your listings are live and orders are coming in.
           </p>
         </div>
         <div className="bg-surface-container-low px-4 py-2 rounded-lg flex items-center gap-2">
@@ -327,7 +208,7 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        {/* Orders — real count */}
+        {/* Orders real count */}
         <div className="bg-surface-container-highest p-8 rounded-xl animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Active Orders
@@ -354,7 +235,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Stock Alerts — real data */}
+        {/* Stock Alerts */}
         <div className="bg-surface-container-low p-8 rounded-xl animate-slide-up-fast">
           <p className="text-sm font-label text-on-surface-variant mb-4 uppercase tracking-wider">
             Stock Alerts
@@ -432,7 +313,7 @@ export default async function DashboardPage() {
                     {order.items}
                   </p>
                   <p className="text-right font-bold text-tertiary text-sm">
-                    {formatCents(order.farm_subtotal)}
+                    {formatCents(order.total_amount)}
                   </p>
                 </div>
               ))}
@@ -484,7 +365,7 @@ export default async function DashboardPage() {
                         </span>
                       </td>
                       <td className="px-8 py-6 text-right font-bold text-tertiary">
-                        {formatCents(order.farm_subtotal)}
+                        {formatCents(order.total_amount)}
                       </td>
                     </tr>
                   ))}

@@ -33,39 +33,14 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  const { data: farm } = await service
-    .from("farms")
-    .select("name, is_approved")
-    .eq("owner_id", user.id)
+  const { data: site } = await service
+    .from("site_settings")
+    .select("name")
+    .eq("id", 1)
     .single();
 
-  const farmName = farm?.name ?? "My Shop";
-  const userInitial = (farm?.name ?? user.email ?? "V")[0].toUpperCase();
-
-  // Vendor is pending approval -- show waiting screen
-  if (farm && !farm.is_approved) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center animate-slide-up">
-          <div className="w-20 h-20 rounded-full bg-primary-container flex items-center justify-center mx-auto mb-6">
-            <span className="material-symbols-outlined text-4xl text-on-primary-container">pending</span>
-          </div>
-          <h1 className="font-headline italic text-3xl text-tertiary mb-3">
-            Pending Approval
-          </h1>
-          <p className="text-on-surface-variant font-body leading-relaxed mb-8">
-            Your vendor account is under review. You will receive an email at <strong>{user.email}</strong> once the admin approves your shop.
-          </p>
-          <p className="text-xs text-on-surface-variant/60 font-body">
-            Questions? Email us at{" "}
-            <a href="mailto:greenmarketfarms1@gmail.com" className="text-primary hover:underline">
-              greenmarketfarms1@gmail.com
-            </a>
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const farmName = site?.name ?? "The Green Market Farm";
+  const userInitial = (site?.name ?? user.email ?? "V")[0].toUpperCase();
 
   return (
     <div className="min-h-screen">

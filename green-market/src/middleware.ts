@@ -6,7 +6,6 @@ const VENDOR_PROTECTED_PREFIXES = [
   "/orders",
   "/inventory",
   "/settings",
-  "/vendor/setup",
 ];
 
 const ADMIN_PROTECTED_PREFIXES = ["/admin"];

@@ -74,46 +74,37 @@ export async function POST(request: NextRequest) {
               order_items (
                 quantity,
                 unit_price,
-                products ( name ),
-                farm_id
+                products ( name )
               )
             `)
             .eq("id", orderId)
             .single();
 
           if (orderData && orderData.order_items.length > 0) {
-            const farmId = (orderData.order_items[0] as { farm_id: string }).farm_id;
-            const { data: farmData, error: farmFetchError } = await supabase
-              .from("farms")
-              .select("name, users!farms_owner_id_fkey(email)")
-              .eq("id", farmId)
+            const { data: site } = await supabase
+              .from("site_settings")
+              .select("name")
+              .eq("id", 1)
               .single();
 
-            if (farmFetchError || !farmData) {
-              console.error(`Failed to fetch farm ${farmId} for email notification:`, farmFetchError);
-            } else {
-              // Supabase FK join returns either an object or array depending on the relation type.
-              // farms_owner_id_fkey is a many-to-one join so it returns a single object.
-              const usersRelation = farmData.users as unknown as { email: string } | { email: string }[] | null;
-              const farmerEmail = Array.isArray(usersRelation)
-                ? usersRelation[0]?.email
-                : usersRelation?.email;
-              if (farmerEmail) {
-                await sendNewOrderEmail({
-                  farmerEmail,
-                  farmName: farmData.name as string,
-                  orderId: orderData.id,
-                  customerEmail: orderData.guest_email ?? "Guest",
-                  totalCents: orderData.total_amount,
-                  items: orderData.order_items.map((i) => ({
-                    name: (i.products as unknown as { name: string } | null)?.name ?? "Product",
-                    quantity: i.quantity,
-                    unitPriceCents: i.unit_price,
-                  })),
-                });
-              } else {
-                console.error(`No farmer email found for farm ${farmId}`);
-              }
+            const siteName = site?.name ?? "The Green Market Farm";
+            const notifyEmail = process.env.FARM_NOTIFY_EMAIL;
+
+            const items = orderData.order_items.map((i) => ({
+              name: (i.products as unknown as { name: string } | null)?.name ?? "Product",
+              quantity: i.quantity,
+              unitPriceCents: i.unit_price,
+            }));
+
+            if (notifyEmail) {
+              await sendNewOrderEmail({
+                farmerEmail: notifyEmail,
+                farmName: siteName,
+                orderId: orderData.id,
+                customerEmail: orderData.guest_email ?? "Guest",
+                totalCents: orderData.total_amount,
+                items,
+              });
             }
 
             // Customer confirmation email
@@ -121,76 +112,15 @@ export async function POST(request: NextRequest) {
               await sendCustomerConfirmationEmail({
                 customerEmail: orderData.guest_email,
                 orderId: orderData.id,
-                farmName: (farmData?.name as string | null) ?? "the farm",
+                farmName: siteName,
                 totalCents: orderData.total_amount,
-                items: orderData.order_items.map((i) => ({
-                  name: (i.products as unknown as { name: string } | null)?.name ?? "Product",
-                  quantity: i.quantity,
-                  unitPriceCents: i.unit_price,
-                })),
+                items,
               });
             }
           }
         } catch (emailErr) {
           // Non-fatal -- order is confirmed, just log the email failure
           console.error("Failed to send email notification:", emailErr);
-        }
-
-        // Execute per-farm transfers (separate charges and transfers pattern)
-        if (paymentIntentId) {
-          try {
-            const pi = await stripe.paymentIntents.retrieve(paymentIntentId, {
-              expand: ["latest_charge"],
-            });
-            const charge = pi.latest_charge;
-            const chargeId = typeof charge === "object" ? charge?.id : charge;
-
-            if (chargeId) {
-              const { data: pendingTransfers } = await supabase
-                .from("farm_transfers")
-                .select("*")
-                .eq("order_id", orderId)
-                .eq("status", "pending");
-
-              if (pendingTransfers && pendingTransfers.length > 0) {
-                for (const row of pendingTransfers) {
-                  try {
-                    const transfer = await stripe.transfers.create({
-                      amount: row.amount_cents,
-                      currency: "usd",
-                      destination: row.stripe_account_id,
-                      source_transaction: chargeId,
-                      metadata: {
-                        order_id: orderId,
-                        farm_id: row.farm_id,
-                      },
-                    });
-
-                    await supabase
-                      .from("farm_transfers")
-                      .update({
-                        stripe_transfer_id: transfer.id,
-                        status: "completed",
-                        updated_at: new Date().toISOString(),
-                      })
-                      .eq("id", row.id);
-                  } catch (transferErr) {
-                    console.error(`Transfer failed for farm ${row.farm_id}:`, transferErr);
-                    await supabase
-                      .from("farm_transfers")
-                      .update({
-                        status: "failed",
-                        error_message: transferErr instanceof Error ? transferErr.message : "Unknown error",
-                        updated_at: new Date().toISOString(),
-                      })
-                      .eq("id", row.id);
-                  }
-                }
-              }
-            }
-          } catch (err) {
-            console.error("Failed to process farm transfers:", err);
-          }
         }
 
         break;
@@ -231,25 +161,6 @@ export async function POST(request: NextRequest) {
             .update({ status: "failed", updated_at: new Date().toISOString() })
             .eq("id", order.id);
         }
-
-        await supabase
-          .from("processed_webhooks")
-          .insert({ stripe_event_id: event.id });
-
-        break;
-      }
-
-      case "account.updated": {
-        const account = event.data.object as { id: string; payouts_enabled?: boolean; details_submitted?: boolean };
-
-        await supabase
-          .from("farms")
-          .update({
-            payouts_enabled: account.payouts_enabled ?? false,
-            stripe_onboarding_complete: account.details_submitted ?? false,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("stripe_account_id", account.id);
 
         await supabase
           .from("processed_webhooks")
