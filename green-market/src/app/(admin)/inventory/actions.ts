@@ -19,7 +19,7 @@ async function getFarm() {
     .from("farms")
     .select("id")
     .eq("owner_id", user.id)
-    .single();
+    .maybeSingle();
 
   if (!farmData) redirect("/vendor/setup");
   const farm = farmData as { id: string };

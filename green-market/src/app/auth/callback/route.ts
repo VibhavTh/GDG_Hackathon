@@ -88,7 +88,7 @@ export async function GET(request: Request) {
       .from("farms")
       .select("id, name")
       .eq("owner_id", user.id)
-      .single();
+      .maybeSingle();
 
     if (!farm) {
       return NextResponse.redirect(`${origin}/vendor/setup`);

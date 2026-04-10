@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 
-export async function upgradeToFarmer() {
+export async function upgradeToVendor() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -11,7 +11,7 @@ export async function upgradeToFarmer() {
 
   const service = createServiceClient();
 
-  // Upsert users row with farmer role (handles both existing customers and magic-link users with no row)
+  // Upsert users row with vendor role (handles both existing customers and magic-link users with no row)
   const { error: roleError } = await service
     .from("users")
     .upsert({ id: user.id, email: user.email!, role: "farmer" }, { onConflict: "id" });
