@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { createClient, createServiceClient } from "@/lib/supabase/server";

@@ -4,6 +4,7 @@ import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { AdminMobileNav } from "@/components/layout/admin-mobile-nav";
 import { Footer } from "@/components/layout/footer";
 import { StorefrontNav } from "@/components/layout/storefront-nav";
+import { VoiceAssistantWidget } from "@/components/admin/voice-assistant/widget";
 
 export default async function AdminLayout({
   children,
@@ -63,6 +64,7 @@ export default async function AdminLayout({
         </div>
       </div>
       <AdminMobileNav />
+      <VoiceAssistantWidget />
     </div>
   );
 }
