@@ -124,6 +124,7 @@ export interface Database {
           embedding_updated_at: string | null;
           unit: string | null;
           is_active: boolean;
+          is_organic: boolean;
           deleted_at: string | null;
           created_at: string;
           updated_at: string;
@@ -142,6 +143,7 @@ export interface Database {
           embedding?: number[] | null;
           embedding_updated_at?: string | null;
           is_active?: boolean;
+          is_organic?: boolean;
           deleted_at?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -158,6 +160,7 @@ export interface Database {
           embedding?: number[] | null;
           embedding_updated_at?: string | null;
           is_active?: boolean;
+          is_organic?: boolean;
           deleted_at?: string | null;
           updated_at?: string;
         };

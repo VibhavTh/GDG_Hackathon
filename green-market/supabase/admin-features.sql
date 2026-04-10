@@ -3,6 +3,10 @@
 -- Run in Supabase SQL Editor
 -- ============================================================
 
+-- Add is_organic column to products if it doesn't already exist
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS is_organic boolean NOT NULL DEFAULT false;
+
+
 -- Events table (displayed on storefront calendar)
 CREATE TABLE IF NOT EXISTS public.events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
