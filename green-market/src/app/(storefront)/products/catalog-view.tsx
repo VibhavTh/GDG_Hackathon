@@ -24,10 +24,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const PRICE_RANGES = [
-  { label: "$0 – $10", min: 0, max: 10 },
-  { label: "$10 – $50", min: 10, max: 50 },
-  { label: "$50 – $100", min: 50, max: 100 },
-  { label: "$100 – $500", min: 100, max: 500 },
+  { label: "Under $5", min: 0, max: 5 },
+  { label: "$5 – $15", min: 5, max: 15 },
+  { label: "$15 – $30", min: 15, max: 30 },
+  { label: "$30 – $100", min: 30, max: 100 },
 ];
 
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];

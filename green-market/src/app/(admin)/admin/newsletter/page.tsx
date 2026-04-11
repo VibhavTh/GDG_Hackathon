@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendNewsletter } from "./actions";
-import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { NewsletterHistory } from "./newsletter-history";
 
 export default function AdminNewsletterPage() {
   return (
@@ -18,7 +18,7 @@ async function AdminNewsletterContent() {
   const [{ data: newsletters }, { count: subscriberCount }] = await Promise.all([
     service
       .from("newsletters")
-      .select("*")
+      .select("id, subject, body_html, sent_at, recipient_count")
       .order("created_at", { ascending: false })
       .limit(10),
     service
@@ -78,34 +78,7 @@ async function AdminNewsletterContent() {
         <h2 className="font-label text-xs uppercase tracking-widest text-secondary font-bold mb-4">
           Sent History
         </h2>
-        {(newsletters ?? []).length === 0 ? (
-          <div className="py-12 text-center text-on-surface-variant">
-            <Icon name="mail" className="text-4xl mb-3" />
-            <p className="font-headline italic text-xl text-tertiary mb-1">No newsletters sent yet</p>
-          </div>
-        ) : (
-          <div className="bg-surface-container-low rounded-xl overflow-hidden">
-            {(newsletters ?? []).map((nl, i) => (
-              <div
-                key={nl.id}
-                className={`px-6 py-4 flex items-center justify-between ${i % 2 === 1 ? "bg-surface-container/30" : ""}`}
-              >
-                <div>
-                  <p className="text-sm font-bold text-tertiary">{nl.subject}</p>
-                  <p className="text-xs text-on-surface-variant">
-                    {nl.sent_at
-                      ? new Date(nl.sent_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                      : "Draft"}{" "}
-                    &middot; {nl.recipient_count} recipients
-                  </p>
-                </div>
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${nl.sent_at ? "bg-primary-fixed text-on-primary-fixed" : "bg-surface-container text-on-surface-variant"}`}>
-                  {nl.sent_at ? "Sent" : "Draft"}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        <NewsletterHistory newsletters={newsletters ?? []} />
       </section>
     </div>
   );

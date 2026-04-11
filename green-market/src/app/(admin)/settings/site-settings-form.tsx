@@ -32,6 +32,7 @@ interface SiteData {
   location: string | null;
   image_url: string | null;
   categories: string[] | null;
+  farmer_phone: string | null;
 }
 
 export function SiteSettingsForm({ site }: { site: SiteData | null }) {
@@ -206,6 +207,28 @@ export function SiteSettingsForm({ site }: { site: SiteData | null }) {
           </label>
 
           <input type="hidden" name="image_url" value={imageUrl} readOnly />
+        </div>
+      </section>
+
+      {/* Notifications */}
+      <section className="bg-surface-container-low p-8 rounded-xl space-y-6">
+        <div>
+          <h2 className="font-headline text-2xl text-tertiary mb-1">SMS Notifications</h2>
+          <p className="text-xs text-on-surface-variant/60 font-body">Receive a text message when a new order comes in.</p>
+        </div>
+        <div className="space-y-1.5">
+          <label htmlFor="farmer_phone" className={labelClass}>Your Phone Number</label>
+          <input
+            id="farmer_phone"
+            name="farmer_phone"
+            type="tel"
+            defaultValue={site?.farmer_phone ?? ""}
+            placeholder="+1 (540) 555-0100"
+            className={inputClass}
+          />
+          <p className="text-xs text-on-surface-variant/50 font-body pt-1">
+            Include country code (e.g. +1 for US). Leave blank to disable SMS alerts.
+          </p>
         </div>
       </section>
 
