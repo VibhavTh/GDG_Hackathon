@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyrightYear } from "./copyright-year";
 
 interface FooterProps {
   variant?: "storefront" | "admin";
@@ -29,7 +30,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
           ))}
         </div>
         <p className="text-[10px] font-body uppercase tracking-widest text-surface/40">
-          &copy; {new Date().getFullYear()} The Green Market Farm. Cultivated with care.
+          &copy; <CopyrightYear /> The Green Market Farm. Cultivated with care.
         </p>
       </footer>
     );
@@ -43,7 +44,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             The Green Market Farm
           </div>
           <p className="font-body text-xs uppercase tracking-widest text-surface/40">
-            &copy; {new Date().getFullYear()} The Green Market Farm. Grown with soul.
+            &copy; <CopyrightYear /> The Green Market Farm. Grown with soul.
           </p>
         </div>
 
