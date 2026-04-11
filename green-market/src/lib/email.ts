@@ -253,7 +253,7 @@ export async function sendVendorApprovalEmail({
     replyTo: REPLY_TO,
     to: vendorEmail,
     subject: approved
-      ? `Welcome to Green Market, ${shopName} -- You're approved!`
+      ? `Welcome to Green Market, ${shopName}. You're approved!`
       : `Green Market vendor application update`,
     html,
   });

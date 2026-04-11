@@ -78,14 +78,6 @@ export function AdminSidebar({ farmName, userInitial, inboxUnread = 0 }: AdminSi
           New Listing
         </Link>
 
-        <Link
-          href="/"
-          className="w-full text-on-surface-variant/60 py-2 rounded-lg flex items-center justify-center gap-2 hover:text-tertiary hover:bg-surface-container-highest/50 transition-all text-sm"
-        >
-          <Icon name="storefront" size="sm" />
-          View Storefront
-        </Link>
-
         {/* User card + sign out */}
         <div className="flex items-center gap-3 p-2 pt-4">
           <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-sm shrink-0">
