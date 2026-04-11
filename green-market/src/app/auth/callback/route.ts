@@ -56,16 +56,23 @@ export async function GET(request: Request) {
     .eq("id", user.id)
     .maybeSingle();
 
+  const FARM_OWNER_EMAIL = process.env.FARM_OWNER_EMAIL;
+  const isFarmOwner = FARM_OWNER_EMAIL
+    ? user.email?.toLowerCase() === FARM_OWNER_EMAIL.toLowerCase()
+    : false;
+
   if (!profile) {
-    // New user via OAuth or magic link -- default to customer
     await service.from("users").insert({
       id: user.id,
       email: user.email!,
-      role: "customer",
+      role: isFarmOwner ? "farmer" : "customer",
     });
+  } else if (isFarmOwner && profile.role !== "farmer" && profile.role !== "admin") {
+    // Upgrade farm owner if they somehow got a customer role
+    await service.from("users").update({ role: "farmer" }).eq("id", user.id);
   }
 
-  const userRole = profile?.role ?? "customer";
+  const userRole = isFarmOwner ? (profile?.role ?? "farmer") : (profile?.role ?? "customer");
 
   // Explicit customer flow (Google OAuth, magic link)
   if (role === "customer") {

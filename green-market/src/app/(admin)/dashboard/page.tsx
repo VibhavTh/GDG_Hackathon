@@ -78,7 +78,7 @@ async function DashboardContent() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
         <div>
           <h2 className="text-4xl font-headline italic text-tertiary leading-tight">
-            {site?.name ? `Welcome, ${site.name}.` : "Good morning."}
+            Welcome
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
             Manage your produce, flowers, and nursery listings.

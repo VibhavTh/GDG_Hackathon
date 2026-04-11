@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { GalleryGrid } from "@/components/gallery/gallery-grid";
 import { GalleryHeader } from "./gallery-header";
@@ -8,7 +9,15 @@ export const metadata = {
     "Photos from The Green Market Farm. Harvests, market days, and life on the farm.",
 };
 
-export default async function GalleryPage() {
+export default function GalleryPage() {
+  return (
+    <Suspense fallback={null}>
+      <GalleryContent />
+    </Suspense>
+  );
+}
+
+async function GalleryContent() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,7 +38,6 @@ export default async function GalleryPage() {
     else if (profile?.role === "admin") userRole = "admin";
   }
 
-  // Fetch all gallery photos
   const service = createServiceClient();
   const { data: photos } = await service
     .from("gallery_photos")

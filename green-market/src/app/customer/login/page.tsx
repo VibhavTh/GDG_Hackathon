@@ -85,9 +85,9 @@ async function CustomerLoginContent({ searchParams }: Props) {
         </div>
 
         <p className="text-center mt-6 text-sm text-on-surface-variant font-body">
-          Are you a vendor?{" "}
+          Are you the farmer?{" "}
           <Link href="/vendor/login" className="text-primary font-bold hover:underline">
-            Vendor sign in
+            Farmer sign in
           </Link>
         </p>
 
