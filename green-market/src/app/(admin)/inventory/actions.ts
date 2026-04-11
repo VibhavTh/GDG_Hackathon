@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { ProductCategory } from "@/lib/supabase/types";
@@ -70,6 +70,8 @@ export async function createProduct(formData: FormData) {
     }
   }
 
+  updateTag("products");
+  updateTag("dashboard");
   revalidatePath("/inventory");
   redirect("/inventory");
 }
@@ -118,6 +120,8 @@ export async function updateProduct(formData: FormData) {
       .eq("id", productId);
   }
 
+  updateTag("products");
+  updateTag("dashboard");
   revalidatePath("/inventory");
   redirect("/inventory");
 }
@@ -130,6 +134,8 @@ export async function deleteProduct(productId: string) {
     .update({ deleted_at: new Date().toISOString(), is_active: false })
     .eq("id", productId);
 
+  updateTag("products");
+  updateTag("dashboard");
   revalidatePath("/inventory");
 }
 
@@ -141,6 +147,8 @@ export async function restoreProduct(productId: string) {
     .update({ deleted_at: null, is_active: true })
     .eq("id", productId);
 
+  updateTag("products");
+  updateTag("dashboard");
   revalidatePath("/inventory");
 }
 
@@ -152,6 +160,8 @@ export async function toggleProductActive(productId: string, isActive: boolean) 
     .update({ is_active: isActive, updated_at: new Date().toISOString() })
     .eq("id", productId);
 
+  updateTag("products");
+  updateTag("dashboard");
   revalidatePath("/inventory");
 }
 
@@ -177,6 +187,8 @@ export async function updateStock(productId: string, delta: number): Promise<boo
     return false;
   }
 
+  updateTag("products");
+  updateTag("dashboard");
   revalidatePath("/inventory");
   return true;
 }

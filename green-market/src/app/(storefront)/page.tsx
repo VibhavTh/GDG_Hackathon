@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
@@ -5,35 +6,28 @@ import { AddToCartButton } from "@/components/ui/add-to-cart-button";
 import { NewsletterForm } from "@/components/ui/newsletter-form";
 import { EventCountdown } from "@/components/ui/event-countdown";
 import { createServiceClient } from "@/lib/supabase/server";
+import { getFeaturedProducts, getUpcomingEvents } from "@/lib/queries/products";
 
-export default async function HomePage() {
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <HomePageContent />
+    </Suspense>
+  );
+}
+
+async function HomePageContent() {
   const service = createServiceClient();
 
-  const { data: featuredProducts } = await service
-    .from("products")
-    .select("id, name, price, description, image_url, unit")
-    .eq("is_active", true)
-    .is("deleted_at", null)
-    .gt("stock", 0)
-    .order("created_at", { ascending: false })
-    .limit(4);
-
-  const { data: productCount } = await service
-    .from("products")
-    .select("id", { count: "exact", head: true })
-    .eq("is_active", true)
-    .is("deleted_at", null);
-
-  const { data: upcomingEvents } = await service
-    .from("events")
-    .select("id, title, description, event_date, event_time, location")
-    .eq("is_published", true)
-    .gte("event_date", new Date().toISOString().slice(0, 10))
-    .order("event_date", { ascending: true })
-    .limit(20);
-
-  const featured = featuredProducts ?? [];
-  const events = upcomingEvents ?? [];
+  const [featured, events, { count: productCount }] = await Promise.all([
+    getFeaturedProducts(),
+    getUpcomingEvents(),
+    service
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("is_active", true)
+      .is("deleted_at", null),
+  ]);
 
   // Group additional dates for the same event title as the soonest event
   const nextEvent = events[0] ?? null;

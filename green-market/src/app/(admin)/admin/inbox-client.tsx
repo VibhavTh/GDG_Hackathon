@@ -110,7 +110,7 @@ function MessageCard({ msg }: { msg: Message }) {
 }
 
 export function InboxClient({ messages }: { messages: Message[] }) {
-  const contactMessages = messages.filter((m) => m.type === undefined || true); // all passed messages
+  const contactMessages = messages; // already filtered by type=contact on the server
   const unread = messages.filter((m) => !m.is_read).length;
 
   return (

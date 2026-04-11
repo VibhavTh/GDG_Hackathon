@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -35,7 +34,15 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function OrderDetailPage({ params }: Props) {
+export default function OrderDetailPage({ params }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <OrderDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function OrderDetailContent({ params }: Props) {
   const { id } = await params;
 
   const supabase = await createClient();

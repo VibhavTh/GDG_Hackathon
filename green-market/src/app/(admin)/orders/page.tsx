@@ -1,8 +1,17 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import OrderList from "./order-list";
 
-export default async function OrdersPage() {
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={null}>
+      <OrdersContent />
+    </Suspense>
+  );
+}
+
+async function OrdersContent() {
   const supabase = await createClient();
   const {
     data: { user },

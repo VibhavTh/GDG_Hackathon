@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -14,7 +15,19 @@ function pct(value: number, max: number) {
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default async function AnalyticsPage() {
+export default function AnalyticsPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex-1 px-6 md:px-10 py-12 max-w-5xl">
+        <p className="text-on-surface-variant font-body animate-pulse">Loading analytics...</p>
+      </main>
+    }>
+      <AnalyticsContent />
+    </Suspense>
+  );
+}
+
+async function AnalyticsContent() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/vendor/login");

@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { createServiceClient } from "@/lib/supabase/server";
+import { getSiteSettings } from "@/lib/queries/site-settings";
 import { QuantityAddToCart } from "./quantity-add-to-cart";
 import { Icon } from "@/components/ui/icon";
 import { LOW_STOCK_THRESHOLD } from "@/config/site";
@@ -44,7 +46,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductDetailPage({ params }: Props) {
+export default function ProductDetailPage({ params }: Props) {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <p className="text-on-surface-variant font-body animate-pulse">Loading product...</p>
+      </div>
+    }>
+      <ProductDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ProductDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const service = createServiceClient();
 
@@ -58,11 +72,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   if (!product) notFound();
 
-  const { data: siteSettings } = await service
-    .from("site_settings")
-    .select("name, location, description")
-    .eq("id", 1)
-    .single();
+  const siteSettings = await getSiteSettings();
 
   const farm = siteSettings
     ? {

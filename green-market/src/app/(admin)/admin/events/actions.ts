@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 async function requireFarmOwner() {
@@ -35,6 +35,8 @@ export async function createEvent(formData: FormData) {
 
   await service.from("events").insert(rows);
 
+  updateTag("events");
+  updateTag("dashboard");
   revalidatePath("/admin/events");
   revalidatePath("/");
 }
@@ -42,6 +44,8 @@ export async function createEvent(formData: FormData) {
 export async function deleteEvent(id: string) {
   const service = createServiceClient();
   await service.from("events").delete().eq("id", id);
+  updateTag("events");
+  updateTag("dashboard");
   revalidatePath("/admin/events");
   revalidatePath("/");
 }
@@ -49,6 +53,8 @@ export async function deleteEvent(id: string) {
 export async function toggleEventPublished(id: string, publish: boolean) {
   const service = createServiceClient();
   await service.from("events").update({ is_published: publish }).eq("id", id);
+  updateTag("events");
+  updateTag("dashboard");
   revalidatePath("/admin/events");
   revalidatePath("/");
 }

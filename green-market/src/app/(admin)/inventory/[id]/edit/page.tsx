@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { ProductForm } from "@/components/admin/product-form";
@@ -9,7 +10,15 @@ interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
-export default async function EditProductPage({ params, searchParams }: Props) {
+export default function EditProductPage({ params, searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <EditProductContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function EditProductContent({ params, searchParams }: Props) {
   const supabase = await createClient();
   const {
     data: { user },

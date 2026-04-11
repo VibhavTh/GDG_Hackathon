@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -9,7 +10,15 @@ interface Props {
   searchParams: Promise<{ error?: string; next?: string }>;
 }
 
-export default async function CustomerLoginPage({ searchParams }: Props) {
+export default function CustomerLoginPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <CustomerLoginContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function CustomerLoginContent({ searchParams }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

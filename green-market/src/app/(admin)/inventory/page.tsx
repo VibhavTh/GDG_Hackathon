@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,7 +28,15 @@ interface Props {
   searchParams: Promise<{ category?: string; q?: string }>;
 }
 
-export default async function InventoryPage({ searchParams }: Props) {
+export default function InventoryPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <InventoryContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function InventoryContent({ searchParams }: Props) {
   const supabase = await createClient();
 
   const {

@@ -1,19 +1,23 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { getSiteSettings } from "@/lib/queries/site-settings";
 import { SiteSettingsForm } from "./site-settings-form";
 
-export default async function SettingsPage() {
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={null}>
+      <SettingsContent />
+    </Suspense>
+  );
+}
+
+async function SettingsContent() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/vendor/login");
 
-  const service = createServiceClient();
-
-  const { data: site } = await service
-    .from("site_settings")
-    .select("name, description, location, image_url, categories")
-    .eq("id", 1)
-    .single();
+  const site = await getSiteSettings();
 
   return (
     <div className="p-6 md:p-12 max-w-3xl">

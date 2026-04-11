@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getProductCategories } from "@/lib/queries/products";
 import { CatalogView } from "./catalog-view";
 import { generateEmbedding } from "@/lib/embeddings";
 
@@ -8,7 +10,15 @@ interface Props {
   searchParams: Promise<{ category?: string; q?: string; sort?: SortOption }>;
 }
 
-export default async function ProductCatalogPage({ searchParams }: Props) {
+export default function ProductCatalogPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <ProductCatalogContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ProductCatalogContent({ searchParams }: Props) {
   const supabase = await createClient();
   const { category, q, sort = "newest" } = await searchParams;
 
@@ -93,14 +103,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
     products = data ?? [];
   }
 
-  // Get distinct categories that have active products (for sidebar checkboxes)
-  const { data: categoryRows } = await supabase
-    .from("products")
-    .select("category")
-    .is("deleted_at", null)
-    .eq("is_active", true);
-
-  const availableCategories = [...new Set((categoryRows ?? []).map((r) => r.category))];
+  const availableCategories = await getProductCategories();
 
   return (
     <>

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createServiceClient } from "@/lib/supabase/server";
 import { ConfirmationContent, type Order } from "./confirmation-content";
 import Link from "next/link";
@@ -7,7 +8,15 @@ interface Props {
   searchParams: Promise<{ session_id?: string }>;
 }
 
-export default async function OrderConfirmationPage({ searchParams }: Props) {
+export default function OrderConfirmationPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <OrderConfirmationContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function OrderConfirmationContent({ searchParams }: Props) {
   const { session_id } = await searchParams;
 
   if (!session_id) {

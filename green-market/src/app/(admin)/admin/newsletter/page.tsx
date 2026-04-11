@@ -1,9 +1,18 @@
+import { Suspense } from "react";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendNewsletter } from "./actions";
 import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
 
-export default async function AdminNewsletterPage() {
+export default function AdminNewsletterPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminNewsletterContent />
+    </Suspense>
+  );
+}
+
+async function AdminNewsletterContent() {
   const service = createServiceClient();
 
   const [{ data: newsletters }, { count: subscriberCount }] = await Promise.all([

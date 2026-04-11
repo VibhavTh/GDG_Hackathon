@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { submitContact } from "./actions";
@@ -6,7 +7,15 @@ interface Props {
   searchParams: Promise<{ sent?: string; error?: string }>;
 }
 
-export default async function ContactPage({ searchParams }: Props) {
+export default function ContactPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <ContactPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ContactPageContent({ searchParams }: Props) {
   const { sent, error } = await searchParams;
 
   return (

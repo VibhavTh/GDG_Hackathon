@@ -1,10 +1,17 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { InboxClient } from "./inbox-client";
 
-export const dynamic = "force-dynamic";
+export default function AdminInboxPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminInboxContent />
+    </Suspense>
+  );
+}
 
-export default async function AdminInboxPage() {
+async function AdminInboxContent() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/vendor/login");
