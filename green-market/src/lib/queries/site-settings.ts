@@ -9,7 +9,7 @@ export async function getSiteSettings() {
   const service = createServiceClient();
   const { data } = await service
     .from("site_settings")
-    .select("name, description, location, image_url, categories")
+    .select("name, description, location, image_url, categories, farmer_phone")
     .eq("id", 1)
     .single();
   return data;

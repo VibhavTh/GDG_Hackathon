@@ -3,6 +3,7 @@ import { revalidateTag } from "next/cache";
 import { stripe } from "@/lib/stripe/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendNewOrderEmail, sendCustomerConfirmationEmail } from "@/lib/email";
+import { sendSms } from "@/lib/twilio";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
           if (orderData && orderData.order_items.length > 0) {
             const { data: site } = await supabase
               .from("site_settings")
-              .select("name")
+              .select("name, farmer_phone")
               .eq("id", 1)
               .single();
 
@@ -123,6 +124,19 @@ export async function POST(request: NextRequest) {
                 totalCents: orderData.total_amount,
                 items,
               });
+            }
+          }
+          // SMS notification to farmer
+          if (site?.farmer_phone) {
+            const itemSummary = items.map((i) => `${i.quantity}x ${i.name}`).join(", ");
+            const total = `$${(orderData.total_amount / 100).toFixed(2)}`;
+            try {
+              await sendSms({
+                to: site.farmer_phone,
+                body: `New order on Green Market! ${total} -- ${itemSummary}. Open your dashboard to confirm.`,
+              });
+            } catch (smsErr) {
+              console.error("Failed to send farmer SMS:", smsErr);
             }
           }
         } catch (emailErr) {

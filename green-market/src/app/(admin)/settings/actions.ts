@@ -19,11 +19,12 @@ export async function updateSiteSettings(formData: FormData) {
   const location = (formData.get("location") as string)?.trim() || null;
   const image_url = (formData.get("image_url") as string)?.trim() || null;
   const categories = formData.getAll("categories") as ProductCategory[];
+  const farmer_phone = (formData.get("farmer_phone") as string)?.trim() || null;
 
   const service = createServiceClient();
   const { error } = await service
     .from("site_settings")
-    .update({ name, description, location, image_url, categories, updated_at: new Date().toISOString() })
+    .update({ name, description, location, image_url, categories, farmer_phone, updated_at: new Date().toISOString() })
     .eq("id", 1);
 
   if (error) {
