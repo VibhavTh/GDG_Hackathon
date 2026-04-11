@@ -113,7 +113,7 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
             The Season&rsquo;s<br className="hidden md:block" /> Bounty.
           </h1>
           <p className="max-w-xl text-lg text-on-surface-variant font-body leading-relaxed">
-            Hand-picked, organically grown, and delivered from local farms to
+            Hand-picked, organically grown, and delivered from our local farm to
             your table. Experience the tactile beauty of slow-grown produce.
           </p>
         </div>

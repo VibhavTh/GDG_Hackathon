@@ -173,21 +173,20 @@ export default async function InventoryPage({ searchParams }: Props) {
                     isPaused ? "opacity-60" : isLowStock ? "opacity-70" : ""
                   }`}
                 >
-                  {isPaused && (
-                    <div className="absolute inset-0 flex items-start justify-start pointer-events-none z-10 p-4">
+                  {/* Status badge — top left, never overlaps action buttons */}
+                  <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                    {isPaused && (
                       <span className="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest flex items-center gap-1">
                         <span className="material-symbols-outlined text-xs leading-none">pause_circle</span>
                         Paused
                       </span>
-                    </div>
-                  )}
-                  {!isPaused && isLowStock && (
-                    <div className="absolute inset-0 flex items-start justify-end pointer-events-none z-10 p-4">
+                    )}
+                    {!isPaused && isLowStock && (
                       <span className="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest">
                         Low Stock
                       </span>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   {/* Edit / Pause / Delete */}
                   <div className="absolute top-4 right-4 flex gap-1 z-20">

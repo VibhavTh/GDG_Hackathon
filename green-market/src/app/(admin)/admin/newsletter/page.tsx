@@ -39,7 +39,7 @@ export default async function AdminNewsletterPage() {
             <input
               name="subject"
               required
-              placeholder="e.g. The Weekly Harvest -- April Edition"
+              placeholder="e.g. The Weekly Harvest, April Edition"
               className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
             />
           </div>
@@ -51,12 +51,9 @@ export default async function AdminNewsletterPage() {
               name="body"
               required
               rows={10}
-              placeholder="Write your newsletter content here. HTML is supported for bold, links, etc."
-              className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all resize-none font-mono"
+              placeholder="Write your newsletter content here."
+              className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all resize-none"
             />
-            <p className="text-xs text-on-surface-variant/60 mt-2">
-              You can use HTML: &lt;b&gt;bold&lt;/b&gt;, &lt;a href=&quot;...&quot;&gt;links&lt;/a&gt;, &lt;br&gt; for line breaks.
-            </p>
           </div>
           <div className="flex items-center justify-between pt-2">
             <p className="text-xs text-on-surface-variant">

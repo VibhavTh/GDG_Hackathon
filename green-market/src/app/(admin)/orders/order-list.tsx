@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import type { OrderStatus } from "@/lib/supabase/types";
 import { advanceOrderStatus, cancelOrder } from "./actions";
@@ -304,14 +305,17 @@ export default function OrderList({ orders }: { orders: Order[] }) {
                   <p className="font-headline text-xl font-bold text-tertiary">
                     {formatCents(order.total_amount)}
                   </p>
-                  <button className="text-primary text-sm font-semibold flex items-center gap-1 group">
+                  <Link
+                    href={`/orders/${order.order_id}`}
+                    className="text-primary text-sm font-semibold flex items-center gap-1 group"
+                  >
                     View Details
                     <Icon
                       name="arrow_forward"
                       size="sm"
                       className="group-hover:translate-x-1 transition-transform"
                     />
-                  </button>
+                  </Link>
                 </div>
               </div>
             );

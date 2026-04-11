@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendContactNotificationEmail } from "@/lib/email";
 
 export async function submitContact(formData: FormData) {
   const name = (formData.get("name") as string | null)?.trim() || null;
@@ -24,6 +25,22 @@ export async function submitContact(formData: FormData) {
 
   if (error) {
     redirect("/contact?error=Something went wrong. Please try again.");
+  }
+
+  // Notify farmer
+  const notifyEmail = process.env.FARM_NOTIFY_EMAIL;
+  if (notifyEmail) {
+    try {
+      await sendContactNotificationEmail({
+        farmerEmail: notifyEmail,
+        fromName: name,
+        fromEmail: email,
+        subject,
+        body: message,
+      });
+    } catch {
+      // Non-fatal
+    }
   }
 
   redirect("/contact?sent=1");

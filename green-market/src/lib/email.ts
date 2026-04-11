@@ -259,6 +259,100 @@ export async function sendVendorApprovalEmail({
   });
 }
 
+export async function sendContactNotificationEmail({
+  farmerEmail,
+  fromName,
+  fromEmail,
+  subject,
+  body,
+}: {
+  farmerEmail: string;
+  fromName: string | null;
+  fromEmail: string;
+  subject: string;
+  body: string;
+}) {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fcf9f0;font-family:'Plus Jakarta Sans',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+    <div style="background:#173809;border-radius:12px 12px 0 0;padding:32px;text-align:center;">
+      <p style="margin:0;color:#d4eeaa;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Green Market</p>
+      <h1 style="margin:8px 0 0;color:#fcf9f0;font-size:24px;font-weight:700;">New Customer Message</h1>
+    </div>
+    <div style="background:#ffffff;border-radius:0 0 12px 12px;padding:32px;">
+      <p style="margin:0 0 4px;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.12em;">From</p>
+      <p style="margin:0 0 20px;font-size:15px;color:#1c1c17;font-weight:600;">${fromName ? `${fromName} (${fromEmail})` : fromEmail}</p>
+      <p style="margin:0 0 4px;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.12em;">Subject</p>
+      <p style="margin:0 0 20px;font-size:15px;color:#1c1c17;font-weight:600;">${subject}</p>
+      <p style="margin:0 0 4px;font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.12em;">Message</p>
+      <div style="background:#f7f4eb;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+        <p style="margin:0;font-size:14px;color:#1c1c17;line-height:1.6;white-space:pre-wrap;">${body}</p>
+      </div>
+      <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? "https://greenmarket.farm"}/dashboard/admin" style="display:block;background:#173809;color:#fcf9f0;text-align:center;padding:14px 24px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">
+        Reply in Dashboard
+      </a>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  await resend.emails.send({
+    from: FROM,
+    replyTo: fromEmail,
+    to: farmerEmail,
+    subject: `New message: ${subject}`,
+    html,
+  });
+}
+
+export async function sendReplyEmail({
+  toEmail,
+  toName,
+  originalSubject,
+  replyBody,
+  farmName,
+}: {
+  toEmail: string;
+  toName: string | null;
+  originalSubject: string;
+  replyBody: string;
+  farmName: string;
+}) {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fcf9f0;font-family:'Plus Jakarta Sans',Arial,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+    <div style="background:#173809;border-radius:12px 12px 0 0;padding:32px;text-align:center;">
+      <p style="margin:0;color:#d4eeaa;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Green Market</p>
+      <h1 style="margin:8px 0 0;color:#fcf9f0;font-size:24px;font-weight:700;">${farmName}</h1>
+    </div>
+    <div style="background:#ffffff;border-radius:0 0 12px 12px;padding:32px;">
+      <p style="margin:0 0 20px;font-size:14px;color:#555;">Hi${toName ? ` ${toName}` : ""},</p>
+      <div style="background:#f7f4eb;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+        <p style="margin:0;font-size:14px;color:#1c1c17;line-height:1.6;white-space:pre-wrap;">${replyBody}</p>
+      </div>
+      <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
+        This is a reply to your message: "${originalSubject}"
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  await resend.emails.send({
+    from: FROM,
+    replyTo: REPLY_TO,
+    to: toEmail,
+    subject: `Re: ${originalSubject}`,
+    html,
+  });
+}
+
 export async function sendNewsletterEmail({
   to,
   subject,

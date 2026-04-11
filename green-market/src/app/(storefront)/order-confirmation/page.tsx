@@ -55,7 +55,7 @@ function NotFound() {
       </div>
       <h1 className="font-headline text-3xl text-tertiary mb-3">Order Not Found</h1>
       <p className="text-on-surface-variant max-w-sm mb-8">
-        We couldn&rsquo;t find your order. It may still be processing — check your email for a confirmation.
+        We couldn&rsquo;t find your order. It may still be processing. Check your email for a confirmation.
       </p>
       <Link
         href="/order-lookup"

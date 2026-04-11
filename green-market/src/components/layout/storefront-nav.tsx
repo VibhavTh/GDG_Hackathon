@@ -46,7 +46,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
         {/* Logo */}
         <Link
           href="/"
-          className="text-2xl font-headline font-bold text-on-primary transition-opacity duration-150 hover:opacity-70"
+          className={`text-2xl font-headline font-bold transition-all duration-300 hover:opacity-70 ${scrolled ? "text-on-surface" : "text-on-primary"}`}
         >
           {siteConfig.name}
         </Link>
@@ -55,6 +55,9 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
         <div className="hidden md:flex gap-8 items-center font-headline italic text-lg tracking-tight">
           {siteConfig.storefrontNav.map((link) => {
             const isActive = pathname === link.href;
+            const activeColor = scrolled ? "text-on-surface" : "text-on-primary";
+            const inactiveColor = scrolled ? "text-on-surface/60 hover:text-on-surface" : "text-on-primary/70 hover:text-on-primary";
+            const underlineColor = scrolled ? "after:bg-on-surface" : "after:bg-on-primary";
             return (
               <Link
                 key={link.href}
@@ -63,8 +66,8 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
                   relative pb-0.5 transition-all duration-150
                   hover:-translate-y-px
                   ${isActive
-                    ? "text-on-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-on-primary after:rounded-full"
-                    : "text-on-primary/70 hover:text-on-primary"
+                    ? `${activeColor} after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 ${underlineColor} after:rounded-full`
+                    : inactiveColor
                   }
                 `}
               >
@@ -79,7 +82,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
           {/* Cart */}
           <Link
             href="/cart"
-            className="relative flex items-center gap-2 px-4 py-2 text-on-primary hover:bg-on-primary/10 rounded-lg transition-colors duration-150 active:scale-[0.97]"
+            className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-150 active:scale-[0.97] ${scrolled ? "text-on-surface hover:bg-on-surface/10" : "text-on-primary hover:bg-on-primary/10"}`}
           >
             <Icon name="shopping_basket" />
             {mounted && itemCount > 0 && (
@@ -100,28 +103,28 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
             <>
               <Link
                 href="/dashboard"
-                className="px-5 py-2 bg-on-primary/15 text-on-primary rounded-md font-label font-bold text-sm hover:bg-on-primary/25 active:scale-[0.97] transition-all duration-150 flex items-center gap-1.5"
+                className={`px-5 py-2 rounded-md font-label font-bold text-sm active:scale-[0.97] transition-all duration-150 flex items-center gap-1.5 ${scrolled ? "bg-on-surface/10 text-on-surface hover:bg-on-surface/20" : "bg-on-primary/15 text-on-primary hover:bg-on-primary/25"}`}
               >
                 <Icon name="dashboard" size="sm" />
                 Dashboard
               </Link>
-              <SignOutButton role="vendor" />
+              <SignOutButton role="vendor" className={scrolled ? "text-on-surface/60 hover:text-error" : "text-on-primary/70 hover:text-on-primary hover:bg-on-primary/10"} />
             </>
           ) : userRole === "customer" ? (
             <>
               <Link
                 href="/account"
-                className="px-5 py-2 border border-on-primary/30 text-on-primary rounded-md hover:bg-on-primary/10 active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm flex items-center gap-1.5"
+                className={`px-5 py-2 rounded-md active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm flex items-center gap-1.5 ${scrolled ? "border border-on-surface/30 text-on-surface hover:bg-on-surface/10" : "border border-on-primary/30 text-on-primary hover:bg-on-primary/10"}`}
               >
                 <Icon name="person" size="sm" />
                 My Account
               </Link>
-              <SignOutButton role="customer" />
+              <SignOutButton role="customer" className={scrolled ? "text-on-surface/60 hover:text-error" : "text-on-primary/70 hover:text-on-primary hover:bg-on-primary/10"} />
             </>
           ) : (
             <Link
               href="/customer/login"
-              className="px-5 py-2 border border-primary/30 text-primary rounded-md hover:bg-surface-container-low active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm hidden sm:inline-flex items-center gap-1.5"
+              className={`px-5 py-2 rounded-md active:scale-[0.97] transition-all duration-150 font-label font-medium text-sm inline-flex items-center gap-1.5 ${scrolled ? "border border-on-surface/30 text-on-surface hover:bg-on-surface/10" : "border border-on-primary/30 text-on-primary hover:bg-on-primary/10"}`}
             >
               <Icon name="person" size="sm" />
               Sign In
@@ -130,7 +133,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 text-on-primary focus-visible:outline-2 focus-visible:outline-on-primary rounded active:scale-[0.97] transition-transform duration-150"
+            className={`md:hidden p-2 rounded active:scale-[0.97] transition-all duration-150 ${scrolled ? "text-on-surface focus-visible:outline-on-surface" : "text-on-primary focus-visible:outline-on-primary"}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}

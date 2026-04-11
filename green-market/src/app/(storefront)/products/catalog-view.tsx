@@ -426,7 +426,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                   ? `No products matched "${q}".`
                   : anyClientFilter
                   ? "No products match the selected filters."
-                  : "Check back soon — local farmers are adding listings."}
+                  : "Check back soon. We are adding new listings regularly."}
               </p>
               <div className="flex items-center justify-center gap-3">
                 {hasUrlFilters && (
@@ -457,7 +457,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                 Join the Harvest Circle
               </h2>
               <p className="text-on-surface-variant text-sm leading-relaxed">
-                Weekly field notes — what&rsquo;s ready now, what&rsquo;s coming,
+                Weekly field notes: what&rsquo;s ready now, what&rsquo;s coming,
                 and first access to small-batch releases.
               </p>
             </div>
