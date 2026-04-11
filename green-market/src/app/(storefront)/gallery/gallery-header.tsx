@@ -10,7 +10,7 @@ interface GalleryHeaderProps {
 
 export function GalleryHeader({ userRole }: GalleryHeaderProps) {
   const [uploadOpen, setUploadOpen] = useState(false);
-  const isFarmer = userRole === "vendor";
+  const isAdmin = userRole === "admin";
 
   return (
     <>
@@ -28,7 +28,7 @@ export function GalleryHeader({ userRole }: GalleryHeaderProps) {
           </p>
         </div>
 
-        {isFarmer && (
+        {isAdmin && (
           <button
             onClick={() => setUploadOpen(true)}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-primary-container text-on-primary px-6 py-3 rounded-xl font-label font-bold text-xs uppercase tracking-widest hover:opacity-90 active:scale-[0.97] transition-all duration-150 mb-2"
