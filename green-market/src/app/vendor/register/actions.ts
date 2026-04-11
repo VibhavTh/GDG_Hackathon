@@ -10,6 +10,11 @@ export async function register(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
+  const FARM_OWNER_EMAIL = process.env.FARM_OWNER_EMAIL;
+  if (FARM_OWNER_EMAIL && email.toLowerCase() !== FARM_OWNER_EMAIL.toLowerCase()) {
+    redirect(`/vendor/register?error=${encodeURIComponent("Access restricted. Farm registration is not open to the public.")}`);
+  }
+
   const { data, error: signUpError } = await supabase.auth.signUp({
     email,
     password,

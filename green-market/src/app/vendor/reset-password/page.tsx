@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Icon } from "@/components/ui/icon";
+import { PasswordInput } from "@/components/ui/password-input";
 import { resetPassword } from "./actions";
 
 interface Props {
@@ -42,10 +43,9 @@ async function ResetPasswordContent({ searchParams }: Props) {
             >
               New Password
             </label>
-            <input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               required
               minLength={8}
               autoComplete="new-password"
@@ -61,10 +61,9 @@ async function ResetPasswordContent({ searchParams }: Props) {
             >
               Confirm Password
             </label>
-            <input
+            <PasswordInput
               id="confirm_password"
               name="confirm_password"
-              type="password"
               required
               minLength={8}
               autoComplete="new-password"
