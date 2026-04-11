@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { PasswordInput } from "@/components/ui/password-input";
 import { login } from "./actions";
 
 interface Props {
@@ -73,10 +74,9 @@ async function VendorLoginContent({ searchParams }: Props) {
                   Forgot?
                 </Link>
               </div>
-              <input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 required
                 autoComplete="current-password"
                 placeholder="••••••••••••"
