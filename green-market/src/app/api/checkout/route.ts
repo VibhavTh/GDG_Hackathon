@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { stripe } from "@/lib/stripe/server";
 
 interface CheckoutItem {
   productId: string;
@@ -144,47 +143,64 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save order items" }, { status: 500 });
   }
 
-  // Create Stripe Checkout Session (plain charge -- no transfer_data)
+  // Create Stripe Checkout Session via REST API (works in both edge and Node.js runtimes)
   try {
-    const lineItems: { price_data: { currency: string; product_data: { name: string; images?: string[] }; unit_amount: number }; quantity: number }[] = validatedItems.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: `${item.name} (per ${item.unit})`,
-          ...(item.image ? { images: [item.image] } : {}),
-        },
-        unit_amount: item.dbPrice, // already in cents, from DB
-      },
-      quantity: item.quantity,
-    }));
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!.trim().replace(/\/$/, "");
+    // Build the success URL with the Stripe template variable -- must NOT be URL-encoded
+    const successUrl = `${siteUrl}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${siteUrl}/checkout`;
 
-    if (fulfillmentFeeCents > 0) {
-      lineItems.push({
-        price_data: {
-          currency: "usd",
-          product_data: { name: "Home Delivery Fee" },
-          unit_amount: fulfillmentFeeCents,
-        },
-        quantity: 1,
-      });
+    const params = new URLSearchParams();
+    params.set("mode", "payment");
+    params.set("customer_email", customerEmail.toLowerCase().trim());
+    params.set("cancel_url", cancelUrl);
+    params.set("expires_at", String(Math.floor(Date.now() / 1000) + 30 * 60));
+    params.set("metadata[order_id]", order.id);
+    params.set("metadata[customer_name]", customerName.trim());
+    params.set("metadata[customer_phone]", customerPhone?.trim() || "");
+    params.set("metadata[fulfillment_type]", fulfillmentType);
+
+    const allLineItems = [
+      ...validatedItems.map((item) => ({
+        name: `${item.name} (per ${item.unit})`,
+        amount: item.dbPrice,
+        quantity: item.quantity,
+        image: item.image || null,
+      })),
+      ...(fulfillmentFeeCents > 0
+        ? [{ name: "Home Delivery Fee", amount: fulfillmentFeeCents, quantity: 1, image: null }]
+        : []),
+    ];
+
+    allLineItems.forEach((item, i) => {
+      params.set(`line_items[${i}][price_data][currency]`, "usd");
+      params.set(`line_items[${i}][price_data][product_data][name]`, item.name);
+      params.set(`line_items[${i}][price_data][unit_amount]`, String(item.amount));
+      params.set(`line_items[${i}][quantity]`, String(item.quantity));
+    });
+
+    // success_url contains {CHECKOUT_SESSION_ID} which URLSearchParams would encode --
+    // append it raw to the body string so Stripe receives the literal braces
+    const body = params.toString() + `&success_url=${encodeURIComponent(successUrl).replace("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}")}`;
+
+    const stripeRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": "2026-03-25.dahlia",
+      },
+      body,
+    });
+
+    const session = await stripeRes.json() as { id?: string; url?: string; error?: { message: string } };
+
+    if (!stripeRes.ok || !session.url) {
+      const msg = session.error?.message ?? "Unknown Stripe error";
+      console.error("Stripe session error:", msg);
+      await supabase.from("orders").update({ status: "failed" }).eq("id", order.id);
+      return NextResponse.json({ error: `Stripe error: ${msg}` }, { status: 500 });
     }
-
-    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      mode: "payment",
-      customer_email: customerEmail.toLowerCase().trim(),
-      line_items: lineItems,
-      metadata: {
-        order_id: order.id,
-        customer_name: customerName.trim(),
-        customer_phone: customerPhone?.trim() || "",
-        fulfillment_type: fulfillmentType,
-      },
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
-      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes
-    };
-
-    const session = await stripe.checkout.sessions.create(sessionParams);
 
     // Update order with stripe_session_id
     await supabase
@@ -194,8 +210,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (stripeError) {
-    console.error("Stripe session error:", stripeError);
+    const msg = stripeError instanceof Error ? stripeError.message : String(stripeError);
+    console.error("Stripe session error:", msg);
     await supabase.from("orders").update({ status: "failed" }).eq("id", order.id);
-    return NextResponse.json({ error: "Failed to create payment session" }, { status: 500 });
+    return NextResponse.json({ error: `Stripe error: ${msg}` }, { status: 500 });
   }
 }
