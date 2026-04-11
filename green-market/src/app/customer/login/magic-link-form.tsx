@@ -43,7 +43,7 @@ export function MagicLinkForm({ next }: Props) {
     return (
       <div className="bg-primary/10 text-primary text-sm px-4 py-3 rounded-lg font-body flex items-start gap-2 animate-slide-down">
         <Icon name="check_circle" size="sm" className="shrink-0 mt-0.5" />
-        <span>Check your inbox -- we sent a sign-in link to {email}</span>
+        <span>Check your inbox. We sent a sign-in link to {email}</span>
       </div>
     );
   }

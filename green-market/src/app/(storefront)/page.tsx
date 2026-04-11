@@ -47,7 +47,7 @@ async function HomePageContent() {
           <div className="max-w-lg">
             <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-8 animate-slide-up" style={{ animationDelay: "0ms" }}>
               <span className="w-6 h-px bg-secondary inline-block" />
-              Giles Co, VA -- Blacksburg Farmers Market
+              Giles Co, VA · Blacksburg Farmers Market
             </span>
 
             <h1 className="font-headline italic text-tertiary leading-[1.05] tracking-tight mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
@@ -295,7 +295,7 @@ async function HomePageContent() {
             </h2>
             <div className="space-y-5 text-on-surface-variant font-body leading-relaxed">
               <p>
-                We grow fresh produce, cut flowers, and nursery plants in Giles County, Virginia. Everything is grown locally and sustainably -- no shortcuts, no middlemen.
+                We grow fresh produce, cut flowers, and nursery plants in Giles County, Virginia. Everything is grown locally and sustainably: no shortcuts, no middlemen.
               </p>
               <p>
                 You can find us each week at the Blacksburg Farmers Market, or order here for pickup directly from the farm.
@@ -333,7 +333,7 @@ async function HomePageContent() {
             <span className="inline-block font-headline italic text-6xl text-primary/20 mb-4">01</span>
             <h3 className="font-headline italic text-2xl text-tertiary mb-3">Browse the shop</h3>
             <p className="text-on-surface-variant font-body leading-relaxed">
-              Browse our current harvest -- produce, flowers, and nursery plants grown right here in Giles County. Filter by category or search for what you need.
+              Browse our current harvest: produce, flowers, and nursery plants grown right here in Giles County. Filter by category or search for what you need.
             </p>
             <Link href="/products" className="inline-flex items-center gap-2 mt-6 text-sm font-label font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all duration-150">
               Shop now <Icon name="arrow_forward" size="sm" />
