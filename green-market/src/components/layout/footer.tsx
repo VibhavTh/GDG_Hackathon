@@ -44,7 +44,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             The Green Market Farm
           </div>
           <p className="font-body text-xs uppercase tracking-widest text-surface/40">
-            &copy; <CopyrightYear /> The Green Market Farm. Grown with soul.
+            &copy; 2025 The Green Market Farm. Grown with soul.
           </p>
         </div>
 

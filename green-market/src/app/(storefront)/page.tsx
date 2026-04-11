@@ -48,6 +48,7 @@ async function HomePageContent() {
           src="/greenmarketfarm.png"
           alt="Green Market Farms stand at the Blacksburg Farmers Market"
           className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: "center -20px" }}
         />
 
         {/* Dark gradient overlay for text legibility */}
