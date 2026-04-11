@@ -125,18 +125,19 @@ export async function POST(request: NextRequest) {
                 items,
               });
             }
-          }
-          // SMS notification to farmer
-          if (site?.farmer_phone) {
-            const itemSummary = items.map((i) => `${i.quantity}x ${i.name}`).join(", ");
-            const total = `$${(orderData.total_amount / 100).toFixed(2)}`;
-            try {
-              await sendSms({
-                to: site.farmer_phone,
-                body: `New order on Green Market! ${total} -- ${itemSummary}. Open your dashboard to confirm.`,
-              });
-            } catch (smsErr) {
-              console.error("Failed to send farmer SMS:", smsErr);
+
+            // SMS notification to farmer
+            if (site?.farmer_phone) {
+              const itemSummary = items.map((i) => `${i.quantity}x ${i.name}`).join(", ");
+              const total = `$${(orderData.total_amount / 100).toFixed(2)}`;
+              try {
+                await sendSms({
+                  to: site.farmer_phone,
+                  body: `New order on Green Market! ${total} - ${itemSummary}. Open your dashboard to confirm.`,
+                });
+              } catch (smsErr) {
+                console.error("Failed to send farmer SMS:", smsErr);
+              }
             }
           }
         } catch (emailErr) {
