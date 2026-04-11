@@ -447,14 +447,18 @@ export type Database = {
           query_embedding: string
         }
         Returns: {
+          available_from: string | null
+          available_until: string | null
           category: Database["public"]["Enums"]["product_category"]
-          description: string
+          description: string | null
           id: string
-          image_url: string
+          image_url: string | null
+          is_organic: boolean | null
           name: string
           price: number
           similarity: number
           stock: number
+          unit: string | null
         }[]
       }
     }

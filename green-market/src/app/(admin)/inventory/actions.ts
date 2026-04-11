@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { ProductCategory } from "@/lib/supabase/types";
+import { enrichProductText, generateEmbedding } from "@/lib/embeddings";
 
 // ---- helpers ----
 
@@ -33,10 +34,14 @@ export async function createProduct(formData: FormData) {
   const available_from = (formData.get("available_from") as string)?.trim() || null;
   const available_until = (formData.get("available_until") as string)?.trim() || null;
 
-  const { error } = await service.from("products").insert({
-    name: (formData.get("name") as string).trim(),
-    description: (formData.get("description") as string).trim() || null,
-    category: formData.get("category") as ProductCategory,
+  const name = (formData.get("name") as string).trim();
+  const description = (formData.get("description") as string).trim() || null;
+  const category = formData.get("category") as ProductCategory;
+
+  const { data: created, error } = await service.from("products").insert({
+    name,
+    description,
+    category,
     price: Math.round(priceRaw * 100),
     stock: isNaN(stock) ? 0 : stock,
     unit: (formData.get("unit") as string | null)?.trim() || "each",
@@ -45,13 +50,24 @@ export async function createProduct(formData: FormData) {
     is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
     available_from,
     available_until,
-  });
+  }).select("id").single();
 
   if (error) {
     console.error("[createProduct] Supabase error:", JSON.stringify(error));
     redirect(
       `/inventory/new?error=${encodeURIComponent("Could not create product. Please try again.")}`
     );
+  }
+
+  // Generate and store embedding (non-blocking on failure -- product is already saved)
+  if (created) {
+    const embedding = await generateEmbedding(await enrichProductText(name, description, category));
+    if (embedding) {
+      await service
+        .from("products")
+        .update({ embedding: JSON.stringify(embedding), embedding_updated_at: new Date().toISOString() })
+        .eq("id", created.id);
+    }
   }
 
   revalidatePath("/inventory");
@@ -64,6 +80,9 @@ export async function updateProduct(formData: FormData) {
   const productId = formData.get("product_id") as string;
   const priceRaw = parseFloat(formData.get("price") as string);
   const stock = parseInt(formData.get("stock") as string, 10);
+  const name = (formData.get("name") as string).trim();
+  const description = (formData.get("description") as string).trim() || null;
+  const category = formData.get("category") as ProductCategory;
 
   const available_from = (formData.get("available_from") as string)?.trim() || null;
   const available_until = (formData.get("available_until") as string)?.trim() || null;
@@ -71,9 +90,9 @@ export async function updateProduct(formData: FormData) {
   const { error } = await service
     .from("products")
     .update({
-      name: (formData.get("name") as string).trim(),
-      description: (formData.get("description") as string).trim() || null,
-      category: formData.get("category") as ProductCategory,
+      name,
+      description,
+      category,
       price: Math.round(priceRaw * 100),
       stock: isNaN(stock) ? 0 : stock,
       unit: (formData.get("unit") as string | null)?.trim() || "each",
@@ -88,6 +107,15 @@ export async function updateProduct(formData: FormData) {
     redirect(
       `/inventory/${productId}/edit?error=${encodeURIComponent("Could not update product. Please try again.")}`
     );
+  }
+
+  // Regenerate embedding to reflect any name/description/category changes
+  const embedding = await generateEmbedding(await enrichProductText(name, description, category));
+  if (embedding) {
+    await service
+      .from("products")
+      .update({ embedding: JSON.stringify(embedding), embedding_updated_at: new Date().toISOString() })
+      .eq("id", productId);
   }
 
   revalidatePath("/inventory");
