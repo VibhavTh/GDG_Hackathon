@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -7,7 +8,15 @@ interface Props {
   searchParams: Promise<{ error?: string; next?: string }>;
 }
 
-export default async function VendorLoginPage({ searchParams }: Props) {
+export default function VendorLoginPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <VendorLoginContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function VendorLoginContent({ searchParams }: Props) {
   const { error, next } = await searchParams;
 
   return (

@@ -62,7 +62,7 @@ export function VoiceAssistantWidget() {
                 className="w-7 h-7 rounded-full flex items-center justify-center"
                 style={{ background: "var(--color-primary)" }}
               >
-                <Icon name="mic" size="sm" className="text-white" style={{ fontSize: "14px" }} />
+                <Icon name="mic" size="sm" className="text-white text-[14px]" />
               </div>
               <span className="font-headline text-sm font-semibold" style={{ color: "var(--color-on-surface)" }}>
                 Farm Assistant
@@ -97,7 +97,7 @@ export function VoiceAssistantWidget() {
                 aria-label="Close"
                 style={{ color: "var(--color-on-surface-variant)" }}
               >
-                <Icon name="close" size="sm" style={{ fontSize: "16px" }} />
+                <Icon name="close" size="sm" className="text-[16px]" />
               </button>
             </div>
           </div>
@@ -272,8 +272,7 @@ export function VoiceAssistantWidget() {
         <Icon
           name={isOpen ? "keyboard_arrow_down" : "mic"}
           size="md"
-          className="transition-transform duration-200"
-          style={{ transform: isOpen ? "rotate(0deg)" : undefined }}
+          className={`transition-transform duration-200 ${isOpen ? "rotate-0" : ""}`}
         />
       </button>
     </>

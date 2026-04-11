@@ -17,7 +17,7 @@ begin
   values (
     new.id,
     new.email,
-    'customer'   -- default; register action upserts to 'farmer' immediately after
+    'customer'   -- default; admin must manually set role to 'farmer' or 'admin'
   )
   on conflict (id) do nothing;  -- Server Action may have already created the row
   return new;

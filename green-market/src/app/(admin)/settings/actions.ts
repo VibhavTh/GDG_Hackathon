@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import type { ProductCategory } from "@/lib/supabase/types";
@@ -30,6 +30,8 @@ export async function updateSiteSettings(formData: FormData) {
     return { error: "Could not save changes. Please try again." };
   }
 
+  updateTag("site-settings");
+  updateTag("dashboard");
   revalidatePath("/settings");
   revalidatePath("/dashboard");
   revalidatePath("/");

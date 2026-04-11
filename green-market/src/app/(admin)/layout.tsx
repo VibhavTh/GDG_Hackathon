@@ -1,18 +1,34 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { getSiteSettings } from "@/lib/queries/site-settings";
 import { AdminSidebar } from "@/components/layout/admin-sidebar";
 import { AdminMobileNav } from "@/components/layout/admin-mobile-nav";
 import { Footer } from "@/components/layout/footer";
 import { StorefrontNav } from "@/components/layout/storefront-nav";
 import { VoiceAssistantWidget } from "@/components/admin/voice-assistant/widget";
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Use anon client only to verify the session — it calls the Supabase Auth server
-  // directly so it's not affected by RLS.
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-on-surface-variant font-body animate-pulse">Loading...</p>
+      </div>
+    }>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </Suspense>
+  );
+}
+
+async function AdminLayoutContent({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,8 +36,6 @@ export default async function AdminLayout({
 
   if (!user) redirect("/vendor/login");
 
-  // Use service client for table queries so RLS never blocks the dashboard layout.
-  // This is safe — we already confirmed the user's identity above.
   const service = createServiceClient();
 
   const { data: profile } = await service
@@ -34,11 +48,7 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  const { data: site } = await service
-    .from("site_settings")
-    .select("name")
-    .eq("id", 1)
-    .single();
+  const site = await getSiteSettings();
 
   const farmName = site?.name ?? "The Green Market Farm";
   const userInitial = (site?.name ?? user.email ?? "V")[0].toUpperCase();

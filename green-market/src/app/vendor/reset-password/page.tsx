@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Icon } from "@/components/ui/icon";
 import { resetPassword } from "./actions";
 
@@ -5,7 +6,15 @@ interface Props {
   searchParams: Promise<{ error?: string }>;
 }
 
-export default async function ResetPasswordPage({ searchParams }: Props) {
+export default function ResetPasswordPage({ searchParams }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ResetPasswordContent({ searchParams }: Props) {
   const { error } = await searchParams;
 
   return (

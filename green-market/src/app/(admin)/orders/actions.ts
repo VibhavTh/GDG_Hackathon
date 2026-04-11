@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe/server";
@@ -59,6 +59,8 @@ export async function advanceOrderStatus(
     }
   }
 
+  updateTag("dashboard");
+  updateTag("orders");
   revalidatePath("/orders");
   revalidatePath("/dashboard");
 }
@@ -93,6 +95,8 @@ export async function cancelOrder(orderId: string) {
     }
   }
 
+  updateTag("dashboard");
+  updateTag("orders");
   revalidatePath("/orders");
   revalidatePath("/dashboard");
 }

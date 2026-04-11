@@ -1,9 +1,18 @@
+import { Suspense } from "react";
 import { createServiceClient } from "@/lib/supabase/server";
 import { deleteEvent, toggleEventPublished } from "./actions";
 import { Icon } from "@/components/ui/icon";
 import { EventForm } from "./event-form";
 
-export default async function AdminEventsPage() {
+export default function AdminEventsPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminEventsContent />
+    </Suspense>
+  );
+}
+
+async function AdminEventsContent() {
   const service = createServiceClient();
 
   const { data: events } = await service

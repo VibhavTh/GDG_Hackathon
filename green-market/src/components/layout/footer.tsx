@@ -43,7 +43,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             The Green Market Farm
           </div>
           <p className="font-body text-xs uppercase tracking-widest text-tertiary/50">
-            &copy; {new Date().getFullYear()} The Green Market Farm. Grown with soul.
+            &copy; 2026 The Green Market Farm. Grown with soul.
           </p>
         </div>
 

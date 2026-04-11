@@ -1,39 +1,36 @@
 -- ============================================================
--- RLS Policies — run in Supabase SQL Editor
+-- RLS Policies -- run in Supabase SQL Editor
+-- Single-vendor: no farms table. Admin = farmer or admin role.
 -- ============================================================
 
 -- ---- users ----
 alter table public.users enable row level security;
 
--- Users can read their own row
 create policy "users: read own row"
   on public.users for select
   using (auth.uid() = id);
 
--- Users can update their own row (name, avatar, etc.)
 create policy "users: update own row"
   on public.users for update
   using (auth.uid() = id);
 
--- Service role handles inserts (register action + trigger)
--- No insert policy needed for anon/authenticated — service role bypasses RLS
 
+-- ---- site_settings ----
+alter table public.site_settings enable row level security;
 
--- ---- farms ----
-alter table public.farms enable row level security;
-
--- Anyone (including guests) can read farms — needed for storefront
-create policy "farms: public read"
-  on public.farms for select
+create policy "site_settings: public read"
+  on public.site_settings for select
   using (true);
 
--- Only the farm owner can update their farm
-create policy "farms: owner update"
-  on public.farms for update
-  using (auth.uid() = owner_id);
-
--- Service role handles inserts
--- No insert policy needed for anon/authenticated
+create policy "site_settings: admin update"
+  on public.site_settings for update
+  using (
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
+    )
+  );
 
 
 -- ---- products ----
@@ -47,40 +44,47 @@ create policy "products: public read active"
     and deleted_at is null
   );
 
--- Farm owners can read ALL their products (including inactive/deleted — for inventory)
-create policy "products: owner read all"
+-- Admins can read ALL products (including inactive/deleted -- for inventory)
+create policy "products: admin read all"
   on public.products for select
   using (
-    farm_id in (
-      select id from public.farms where owner_id = auth.uid()
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
--- Farm owners can insert products for their farm
-create policy "products: owner insert"
+-- Admins can insert products
+create policy "products: admin insert"
   on public.products for insert
   with check (
-    farm_id in (
-      select id from public.farms where owner_id = auth.uid()
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
--- Farm owners can update their own products
-create policy "products: owner update"
+-- Admins can update products
+create policy "products: admin update"
   on public.products for update
   using (
-    farm_id in (
-      select id from public.farms where owner_id = auth.uid()
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
--- Farm owners can delete (hard delete) their own products
--- Soft delete is handled via update (deleted_at), so this is a safety net
-create policy "products: owner delete"
+-- Admins can delete products
+create policy "products: admin delete"
   on public.products for delete
   using (
-    farm_id in (
-      select id from public.farms where owner_id = auth.uid()
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
@@ -95,70 +99,63 @@ create policy "orders: customer read own"
     customer_id = auth.uid()
   );
 
--- Farm owners can read orders that contain their products
-create policy "orders: farm owner read"
+-- Admins can read all orders
+create policy "orders: admin read all"
   on public.orders for select
   using (
-    id in (
-      select oi.order_id
-      from public.order_items oi
-      join public.products p on p.id = oi.product_id
-      join public.farms f on f.id = p.farm_id
-      where f.owner_id = auth.uid()
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
--- Farm owners can update status on orders that contain their products
-create policy "orders: farm owner update"
+-- Admins can update orders (status changes)
+create policy "orders: admin update"
   on public.orders for update
   using (
-    id in (
-      select oi.order_id
-      from public.order_items oi
-      join public.products p on p.id = oi.product_id
-      join public.farms f on f.id = p.farm_id
-      where f.owner_id = auth.uid()
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
--- Authenticated customers can place orders; guests handled via service role
-create policy "orders: authenticated insert"
+-- Anyone can place orders (authenticated customers + guests via service role)
+create policy "orders: insert"
   on public.orders for insert
-  with check (
-    customer_id = auth.uid()
-    or customer_id is null
-  );
+  with check (true);
 
 
 -- ---- order_items ----
 alter table public.order_items enable row level security;
 
--- Readable if you own the order or the product belongs to your farm
-create policy "order_items: readable with order"
+-- Customers can read items from their own orders
+create policy "order_items: customer read"
   on public.order_items for select
   using (
     order_id in (
       select id from public.orders where customer_id = auth.uid()
     )
-    or product_id in (
-      select p.id from public.products p
-      join public.farms f on f.id = p.farm_id
-      where f.owner_id = auth.uid()
+  );
+
+-- Admins can read all order items
+create policy "order_items: admin read"
+  on public.order_items for select
+  using (
+    exists (
+      select 1 from public.users
+      where id = auth.uid()
+        and role in ('farmer', 'admin')
     )
   );
 
--- Insert allowed when placing an order you own
-create policy "order_items: insert with order"
+-- Anyone can insert order items (paired with order insert)
+create policy "order_items: insert"
   on public.order_items for insert
-  with check (
-    order_id in (
-      select id from public.orders
-      where customer_id = auth.uid()
-         or customer_id is null
-    )
-  );
+  with check (true);
 
 
 -- ---- processed_webhooks ----
 alter table public.processed_webhooks enable row level security;
--- Only service role can touch this table — no policies needed for anon/authenticated
+-- Only service role can touch this table -- no policies needed for anon/authenticated

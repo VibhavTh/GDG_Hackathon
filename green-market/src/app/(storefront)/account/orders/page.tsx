@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,7 +29,19 @@ const STATUS_STYLES: Record<string, string> = {
   abandoned: "bg-surface-container-highest text-on-surface-variant",
 };
 
-export default async function OrderHistoryPage() {
+export default function OrderHistoryPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        <p className="text-on-surface-variant font-body animate-pulse">Loading orders...</p>
+      </div>
+    }>
+      <OrderHistoryContent />
+    </Suspense>
+  );
+}
+
+async function OrderHistoryContent() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 

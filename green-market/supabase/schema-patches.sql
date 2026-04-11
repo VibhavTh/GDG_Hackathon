@@ -1,5 +1,6 @@
 -- ============================================================
 -- Schema patches -- run in Supabase SQL Editor
+-- Single-vendor: no farms table, no farm_transfers, no Connect.
 -- ============================================================
 
 -- Add missing columns to products
@@ -8,10 +9,35 @@ alter table public.products add column if not exists unit text default 'each';
 -- Add missing columns to orders
 alter table public.orders add column if not exists stripe_session_id text;
 alter table public.orders add column if not exists stripe_payment_intent text;
+alter table public.orders add column if not exists customer_phone text;
 
--- Make sure order status enum includes all needed values
--- (placed is the initial status now, not pending_payment)
--- No change needed if the enum already has: placed, confirmed, preparing, ready, fulfilled, cancelled, failed, abandoned
+-- Order number (human-readable, generated from id prefix)
+alter table public.orders add column if not exists order_number text;
+
+
+-- ============================================================
+-- site_settings -- single row for farm identity
+-- ============================================================
+create table if not exists public.site_settings (
+  id int primary key check (id = 1),
+  name text not null,
+  description text,
+  location text,
+  image_url text,
+  categories public.product_category[] default '{}',
+  instagram_url text,
+  updated_at timestamptz default now()
+);
+
+-- Seed default row
+insert into public.site_settings (id, name, description, location)
+values (
+  1,
+  'The Green Market Farm',
+  'Fresh, seasonal produce grown on our Blacksburg farm and delivered straight to your table.',
+  'Blacksburg, VA'
+)
+on conflict (id) do nothing;
 
 
 -- ============================================================
@@ -45,7 +71,6 @@ begin
     and status = 'placed';
 
   if not found then
-    -- Order already confirmed, cancelled, or doesn't exist
     return;
   end if;
 
@@ -67,44 +92,3 @@ begin
   on conflict do nothing;
 end;
 $$;
-
-
--- ============================================================
--- Phase 2: Stripe Connect columns
--- ============================================================
-
--- Farms: Connect onboarding state
-alter table public.farms
-  add column if not exists stripe_onboarding_complete boolean not null default false;
-
-alter table public.farms
-  add column if not exists payouts_enabled boolean not null default false;
-
--- Orders: platform fee (transfer tracking moved to farm_transfers table)
-alter table public.orders
-  drop column if exists stripe_transfer_id;
-
-alter table public.orders
-  add column if not exists platform_fee_cents integer not null default 0;
-
--- ============================================================
--- Phase 2b: Multi-farm transfer tracking
--- ============================================================
-
-create table if not exists public.farm_transfers (
-  id uuid primary key default gen_random_uuid(),
-  order_id uuid not null references public.orders(id),
-  farm_id uuid not null references public.farms(id),
-  stripe_account_id text not null,
-  amount_cents integer not null,
-  platform_fee_cents integer not null default 0,
-  stripe_transfer_id text,
-  status text not null default 'pending'
-    check (status in ('pending', 'completed', 'failed', 'reversed')),
-  error_message text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create index if not exists idx_farm_transfers_order on public.farm_transfers(order_id);
-create index if not exists idx_farm_transfers_farm on public.farm_transfers(farm_id);

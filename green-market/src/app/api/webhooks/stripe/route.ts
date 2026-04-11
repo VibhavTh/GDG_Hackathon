@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { stripe } from "@/lib/stripe/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendNewOrderEmail, sendCustomerConfirmationEmail } from "@/lib/email";
@@ -128,6 +129,10 @@ export async function POST(request: NextRequest) {
           // Non-fatal -- order is confirmed, just log the email failure
           console.error("Failed to send email notification:", emailErr);
         }
+
+        revalidateTag("dashboard", "max");
+        revalidateTag("orders", "max");
+        revalidateTag("products", "max");
 
         break;
       }

@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
   unsubscribed_at timestamptz
 );
 
--- Admin inbox messages (contact form + vendor notifications)
+-- Admin inbox messages (contact form)
 CREATE TABLE IF NOT EXISTS public.admin_messages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  type text NOT NULL CHECK (type IN ('contact', 'vendor_request')),
+  type text NOT NULL CHECK (type IN ('contact')),
   from_name text,
   from_email text NOT NULL,
   subject text NOT NULL,

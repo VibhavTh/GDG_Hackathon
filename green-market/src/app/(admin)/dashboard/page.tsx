@@ -1,12 +1,12 @@
-export const dynamic = "force-dynamic";
-
+import { Suspense } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
+import { getSiteSettings } from "@/lib/queries/site-settings";
+import { getDashboardStats, getRecentActiveOrders } from "@/lib/queries/dashboard-stats";
 import type { OrderStatus } from "@/lib/supabase/types";
 import { SalesChart } from "./sales-chart";
 import { HarvestCalendar } from "./harvest-calendar";
-import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 
 const STATUS_STYLE: Partial<Record<OrderStatus, string>> = {
@@ -24,151 +24,34 @@ function formatCents(cents: number) {
   });
 }
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+async function DashboardContent() {
   const supabase = await createClient();
   await supabase.auth.getUser();
 
-  const service = createServiceClient();
-
-  const { data: site } = await service
-    .from("site_settings")
-    .select("name, description, location")
-    .eq("id", 1)
-    .single();
+  const [site, stats, recentOrders] = await Promise.all([
+    getSiteSettings(),
+    getDashboardStats(),
+    getRecentActiveOrders(),
+  ]);
 
   const profileIncomplete = site && (!site.description || !site.location);
-
-  // Active order count
-  const { count: activeOrderCount } = await service
-    .from("orders")
-    .select("*", { count: "exact", head: true })
-    .in("status", ["placed", "confirmed", "preparing", "ready"]);
-
-  // Total revenue from fulfilled orders
-  const { data: revenueRows } = await service
-    .from("orders")
-    .select("total_amount")
-    .eq("status", "fulfilled");
-  const totalRevenue = (revenueRows ?? []).reduce(
-    (sum, r) => sum + (r.total_amount as number),
-    0
-  );
-
-  // Weekly chart data (last 7 days)
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 6);
-  weekAgo.setHours(0, 0, 0, 0);
-
-  const { data: weeklyRows } = await service
-    .from("orders")
-    .select("created_at, total_amount")
-    .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
-    .gte("created_at", weekAgo.toISOString());
-
-  const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const dailyTotals: Record<number, number> = {};
-  for (const row of weeklyRows ?? []) {
-    const day = new Date(row.created_at).getDay();
-    dailyTotals[day] = (dailyTotals[day] ?? 0) + (row.total_amount as number);
-  }
-  const weeklyBars = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    const dayIndex = d.getDay();
-    return {
-      label: DAY_LABELS[dayIndex],
-      amount: dailyTotals[dayIndex] ?? 0,
-      isHighlight: i === 6,
-    };
-  });
-
-  // Today hourly data in 4-hour buckets
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const { data: todayRows } = await service
-    .from("orders")
-    .select("created_at, total_amount")
-    .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
-    .gte("created_at", todayStart.toISOString());
-
-  const HOUR_BUCKETS = ["12a", "4a", "8a", "12p", "4p", "8p"];
-  const hourlyTotals: Record<number, number> = {};
-  for (const row of todayRows ?? []) {
-    const bucket = Math.floor(new Date(row.created_at).getHours() / 4);
-    hourlyTotals[bucket] = (hourlyTotals[bucket] ?? 0) + (row.total_amount as number);
-  }
-  const currentBucket = Math.floor(new Date().getHours() / 4);
-  const dailyBars = HOUR_BUCKETS.map((label, i) => ({
-    label,
-    amount: hourlyTotals[i] ?? 0,
-    isHighlight: i === currentBucket,
-  }));
-
-  // Low stock products
-  const { data: lowStockProducts } = await service
-    .from("products")
-    .select("id, name, stock")
-    .lte("stock", LOW_STOCK_THRESHOLD)
-    .is("deleted_at", null)
-    .eq("is_active", true)
-    .order("stock", { ascending: true })
-    .limit(5);
-
-  // Upcoming events for the harvest calendar (next 60 days)
-  const sixtyDaysOut = new Date();
-  sixtyDaysOut.setDate(sixtyDaysOut.getDate() + 60);
-  const { data: upcomingEvents } = await service
-    .from("events")
-    .select("id, title, event_date, event_time, location")
-    .eq("is_published", true)
-    .gte("event_date", new Date().toISOString().split("T")[0])
-    .lte("event_date", sixtyDaysOut.toISOString().split("T")[0])
-    .order("event_date", { ascending: true })
-    .limit(20);
-
-  // Seasonal product windows (available_from coming up or active)
-  const { data: seasonalProducts } = await service
-    .from("products")
-    .select("id, name, available_from, available_until")
-    .is("deleted_at", null)
-    .eq("is_active", true)
-    .not("available_from", "is", null);
-
-  // Recent active orders for the table
-  const { data: recentOrderRows } = await service
-    .from("orders")
-    .select("id, guest_email, customer_id, status, total_amount, order_items(id, quantity, products(name))")
-    .in("status", ["placed", "confirmed", "preparing", "ready"])
-    .order("created_at", { ascending: false })
-    .limit(5);
-
-  type RecentRow = {
-    id: string;
-    guest_email: string | null;
-    customer_id: string | null;
-    status: OrderStatus;
-    total_amount: number;
-    order_items: { id: string; quantity: number; products: { name: string } | null }[];
-  };
-
-  const recentOrders = ((recentOrderRows ?? []) as unknown as RecentRow[]).map((o) => {
-    const items = o.order_items
-      .map((i) => i.products?.name)
-      .filter((n): n is string => Boolean(n))
-      .join(", ");
-    const displayName = o.guest_email
-      ? o.guest_email.split("@")[0]
-      : "Customer";
-    const initials = displayName.slice(0, 2).toUpperCase();
-    return {
-      order_id: o.id,
-      initials,
-      name: displayName,
-      status: o.status,
-      items,
-      total_amount: o.total_amount,
-    };
-  });
+  const {
+    activeOrderCount,
+    totalRevenue,
+    weeklyBars,
+    dailyBars,
+    lowStockProducts,
+    upcomingEvents,
+    seasonalProducts,
+  } = stats;
 
   return (
     <main className="flex-1 px-10 py-14 w-full">

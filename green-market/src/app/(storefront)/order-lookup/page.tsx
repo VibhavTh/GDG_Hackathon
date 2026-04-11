@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -43,6 +43,14 @@ interface OrderResult {
 }
 
 export default function OrderLookupPage() {
+  return (
+    <Suspense fallback={null}>
+      <OrderLookupContent />
+    </Suspense>
+  );
+}
+
+function OrderLookupContent() {
   const searchParams = useSearchParams();
 
   const [orderNumber, setOrderNumber] = useState(searchParams.get("orderNumber") ?? "");
