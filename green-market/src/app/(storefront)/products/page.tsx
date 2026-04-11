@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { CatalogView } from "./catalog-view";
+import { generateEmbedding } from "@/lib/embeddings";
 
 type SortOption = "newest" | "price_asc" | "price_desc" | "name_asc";
 
@@ -13,33 +14,84 @@ export default async function ProductCatalogPage({ searchParams }: Props) {
 
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-  let query = supabase
-    .from("products")
-    .select("id, name, price, stock, category, image_url, unit, description, is_organic, available_from, available_until")
-    .is("deleted_at", null)
-    .eq("is_active", true)
-    // Hide products that are past their season
-    .or(`available_until.is.null,available_until.gte.${today}`)
-    .order("stock", { ascending: false });
+  let products: {
+    id: string;
+    name: string;
+    price: number;
+    stock: number;
+    category: string;
+    image_url: string | null;
+    unit: string | null;
+    description: string | null;
+    is_organic: boolean | null;
+    available_from: string | null;
+    available_until: string | null;
+  }[] = [];
 
-  if (category && category !== "all") query = query.eq("category", category);
-  if (q) query = query.ilike("name", `%${q}%`);
+  if (q) {
+    // Stage 1: substring match on name and description
+    const { data: substrResults } = await supabase
+      .from("products")
+      .select("id, name, price, stock, category, image_url, unit, description, is_organic, available_from, available_until")
+      .is("deleted_at", null)
+      .eq("is_active", true)
+      .or(`available_until.is.null,available_until.gte.${today}`)
+      .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
+      .order("stock", { ascending: false });
 
-  switch (sort) {
-    case "price_asc":
-      query = query.order("price", { ascending: true });
-      break;
-    case "price_desc":
-      query = query.order("price", { ascending: false });
-      break;
-    case "name_asc":
-      query = query.order("name", { ascending: true });
-      break;
-    default:
-      query = query.order("created_at", { ascending: false });
+    if (substrResults && substrResults.length > 0) {
+      // Substring hit -- fast path, respect category filter
+      products = substrResults.filter(
+        (p) => !category || category === "all" || p.category === category
+      );
+    } else {
+      // Stage 2: semantic fallback -- only fires when substring finds nothing
+      // Threshold 0.5 avoids loose associations (e.g. "red" -> "orange")
+      const queryEmbedding = await generateEmbedding(`farmer's market produce: ${q}`);
+      if (queryEmbedding) {
+        const { data: semanticResults } = await supabase.rpc("search_products", {
+          query_embedding: JSON.stringify(queryEmbedding),
+          match_threshold: 0.2,
+          match_count: 40,
+        });
+        products = (semanticResults ?? []).filter(
+          (p: { category: string }) => !category || category === "all" || p.category === category
+        );
+      }
+      // If embedding also fails, products stays [] -- correct, show no results
+    }
+  } else {
+    let query = supabase
+      .from("products")
+      .select("id, name, price, stock, category, image_url, unit, description, is_organic, available_from, available_until")
+      .is("deleted_at", null)
+      .eq("is_active", true)
+      // Hide products that are past their season
+      .or(`available_until.is.null,available_until.gte.${today}`);
+
+    if (category && category !== "all") query = query.eq("category", category);
+
+    // Primary sort: user-selected option
+    switch (sort) {
+      case "price_asc":
+        query = query.order("price", { ascending: true });
+        break;
+      case "price_desc":
+        query = query.order("price", { ascending: false });
+        break;
+      case "name_asc":
+        query = query.order("name", { ascending: true });
+        break;
+      default:
+        query = query.order("created_at", { ascending: false });
+    }
+
+    // Secondary sort: in-stock items first
+    query = query.order("stock", { ascending: false });
+
+    const { data } = await query;
+    products = data ?? [];
   }
-
-  const { data: products } = await query;
 
   // Get distinct categories that have active products (for sidebar checkboxes)
   const { data: categoryRows } = await supabase
