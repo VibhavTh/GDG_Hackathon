@@ -8,6 +8,7 @@ export const siteConfig = {
   storefrontNav: [
     { label: "Home", href: "/" },
     { label: "Market", href: "/products" },
+    { label: "Gallery", href: "/gallery" },
     { label: "About", href: "https://greenmarketfarms.org/about" },
     { label: "Contact", href: "/contact" },
   ],
