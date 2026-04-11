@@ -10,11 +10,6 @@ export async function login(formData: FormData) {
   const password = formData.get("password") as string;
   const next = (formData.get("next") as string) || "/dashboard";
 
-  const FARM_OWNER_EMAIL = process.env.FARM_OWNER_EMAIL;
-  if (FARM_OWNER_EMAIL && email.toLowerCase() !== FARM_OWNER_EMAIL.toLowerCase()) {
-    redirect(`/vendor/login?error=${encodeURIComponent("Access restricted. This login is for farm staff only.")}`);
-  }
-
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {

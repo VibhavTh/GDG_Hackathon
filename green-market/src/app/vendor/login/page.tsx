@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/icon";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { PasswordInput } from "@/components/ui/password-input";
 import { login } from "./actions";
+import { FarmerGoogleButton } from "./google-button";
 
 interface Props {
   searchParams: Promise<{ error?: string; next?: string }>;
@@ -92,6 +93,8 @@ async function VendorLoginContent({ searchParams }: Props) {
             <span className="text-xs text-on-surface-variant font-label">or</span>
             <div className="flex-1 h-px bg-outline-variant" />
           </div>
+
+          <FarmerGoogleButton next={next} />
 
           <p className="text-center text-xs text-on-surface-variant font-body">
             Looking to shop?{" "}
