@@ -83,7 +83,7 @@ export function HarvestCalendar({ events = [], seasonalProducts = [] }: HarvestC
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <h4 className="font-headline italic text-xl text-tertiary">
-          Harvest Schedule
+          Schedule
         </h4>
         <div className="flex items-center gap-1">
           <button

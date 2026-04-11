@@ -50,6 +50,23 @@ export async function deleteEvent(id: string) {
   revalidatePath("/");
 }
 
+export async function updateEvent(id: string, formData: FormData) {
+  const auth = await requireFarmOwner();
+  if (!auth) return;
+  const { service } = auth;
+
+  await service.from("events").update({
+    title: (formData.get("title") as string).trim(),
+    description: ((formData.get("description") as string) || "").trim() || null,
+    location: ((formData.get("location") as string) || "").trim() || null,
+    event_date: (formData.get("event_date") as string).trim(),
+    event_time: ((formData.get("event_time") as string) || "").trim() || null,
+  }).eq("id", id);
+
+  revalidatePath("/admin/events");
+  revalidatePath("/");
+}
+
 export async function toggleEventPublished(id: string, publish: boolean) {
   const service = createServiceClient();
   await service.from("events").update({ is_published: publish }).eq("id", id);

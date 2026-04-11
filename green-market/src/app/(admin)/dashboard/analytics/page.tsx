@@ -48,12 +48,12 @@ async function AnalyticsContent() {
     service
       .from("orders")
       .select("total_amount")
-      .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
+      .eq("status", "fulfilled")
       .gte("created_at", startOfThisWeek.toISOString()),
     service
       .from("orders")
       .select("total_amount")
-      .in("status", ["confirmed", "preparing", "ready", "fulfilled"])
+      .eq("status", "fulfilled")
       .gte("created_at", startOfLastWeek.toISOString())
       .lt("created_at", startOfThisWeek.toISOString()),
   ]);
@@ -99,7 +99,7 @@ async function AnalyticsContent() {
   const { data: allOrders } = await service
     .from("orders")
     .select("created_at")
-    .in("status", ["confirmed", "preparing", "ready", "fulfilled"]);
+    .eq("status", "fulfilled");
 
   const dayBuckets: number[] = Array(7).fill(0);
   for (const o of allOrders ?? []) {
