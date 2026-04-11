@@ -3,10 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
-async function requireFarmer() {
+async function requireAdmin() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,12 +17,12 @@ async function requireFarmer() {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "farmer") throw new Error("Not authorized");
+  if (profile?.role !== "admin") throw new Error("Not authorized");
   return { user, service };
 }
 
 export async function uploadGalleryPhoto(formData: FormData) {
-  const { user, service } = await requireFarmer();
+  const { user, service } = await requireAdmin();
 
   const imageUrl = formData.get("image_url") as string;
   const caption = (formData.get("caption") as string)?.trim() || null;
@@ -49,21 +46,16 @@ export async function uploadGalleryPhoto(formData: FormData) {
 }
 
 export async function deleteGalleryPhoto(photoId: string) {
-  const { user, service } = await requireFarmer();
+  const { service } = await requireAdmin();
 
-  // Fetch photo to verify ownership and get storage path
   const { data: photo, error: fetchError } = await service
     .from("gallery_photos")
-    .select("id, image_url, uploaded_by")
+    .select("id, image_url")
     .eq("id", photoId)
     .single();
 
   if (fetchError || !photo) {
     return { error: "Photo not found." };
-  }
-
-  if (photo.uploaded_by !== user.id) {
-    return { error: "You can only delete your own photos." };
   }
 
   // Extract storage path from the public URL

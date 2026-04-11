@@ -50,7 +50,6 @@ async function GalleryContent() {
       <GalleryGrid
         photos={photos ?? []}
         userRole={userRole}
-        userId={user?.id ?? null}
       />
     </section>
   );

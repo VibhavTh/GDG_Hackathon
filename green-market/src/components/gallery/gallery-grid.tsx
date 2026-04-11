@@ -16,7 +16,6 @@ interface GalleryPhoto {
 interface GalleryGridProps {
   photos: GalleryPhoto[];
   userRole: "vendor" | "customer" | "admin" | null;
-  userId: string | null;
 }
 
 // Repeating span pattern for bento variety
@@ -35,11 +34,11 @@ const SPAN_CLASSES = [
 const SPAN_VALUES = [7, 5, 5, 7, 4, 4, 4, 6, 6];
 const MIN_HEIGHTS = [420, 280, 280, 380, 260, 260, 260, 320, 320];
 
-export function GalleryGrid({ photos, userRole, userId }: GalleryGridProps) {
+export function GalleryGrid({ photos, userRole }: GalleryGridProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const isFarmer = userRole === "vendor";
+  const isAdmin = userRole === "admin";
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -79,7 +78,7 @@ export function GalleryGrid({ photos, userRole, userId }: GalleryGridProps) {
           No photos yet.
         </p>
         <p className="text-on-surface-variant font-body">
-          {isFarmer
+          {isAdmin
             ? "Share moments from the farm by uploading your first photo."
             : "Check back soon for photos from the farm."}
         </p>
@@ -95,7 +94,6 @@ export function GalleryGrid({ photos, userRole, userId }: GalleryGridProps) {
           const spanClass = SPAN_CLASSES[patternIndex];
           const spanVal = SPAN_VALUES[patternIndex];
           const minH = MIN_HEIGHTS[patternIndex];
-          const isOwner = userId && photo.uploaded_by === userId;
 
           return (
             <div
@@ -124,8 +122,8 @@ export function GalleryGrid({ photos, userRole, userId }: GalleryGridProps) {
                 </div>
               )}
 
-              {/* Delete button for farmer's own photos */}
-              {isFarmer && isOwner && (
+              {/* Delete button for admins */}
+              {isAdmin && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
