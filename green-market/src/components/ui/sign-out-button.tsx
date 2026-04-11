@@ -15,7 +15,7 @@ export function SignOutButton({ role, className = "" }: SignOutButtonProps) {
       <button
         type="submit"
         title="Sign out"
-        className={`flex items-center gap-1.5 px-3 py-2 text-on-surface-variant hover:text-error hover:bg-surface-container-low rounded-md transition-colors font-label font-medium text-sm ${className}`}
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-colors font-label font-medium text-sm ${className || "text-on-surface-variant hover:text-error hover:bg-surface-container-low"}`}
       >
         <Icon name="logout" size="sm" />
         <span className="hidden sm:inline">Sign Out</span>

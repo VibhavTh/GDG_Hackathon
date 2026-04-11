@@ -30,10 +30,19 @@ export default async function HomePage() {
     .eq("is_published", true)
     .gte("event_date", new Date().toISOString().slice(0, 10))
     .order("event_date", { ascending: true })
-    .limit(4);
+    .limit(20);
 
   const featured = featuredProducts ?? [];
   const events = upcomingEvents ?? [];
+
+  // Group additional dates for the same event title as the soonest event
+  const nextEvent = events[0] ?? null;
+  const additionalDates = nextEvent
+    ? events
+        .slice(1)
+        .filter((e) => e.title === nextEvent.title)
+        .map((e) => ({ date: e.event_date, time: e.event_time }))
+    : [];
 
   return (
     <>
@@ -44,17 +53,17 @@ export default async function HomePage() {
           <div className="max-w-lg">
             <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-8 animate-slide-up" style={{ animationDelay: "0ms" }}>
               <span className="w-6 h-px bg-secondary inline-block" />
-              Farm to Table. Blacksburg.
+              Giles Co, VA -- Blacksburg Farmers Market
             </span>
 
             <h1 className="font-headline italic text-tertiary leading-[1.05] tracking-tight mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
               <span className="block text-5xl md:text-6xl lg:text-7xl">Fresh</span>
               <span className="block text-5xl md:text-6xl lg:text-7xl text-primary">from our</span>
-              <span className="block text-5xl md:text-6xl lg:text-7xl">family farm.</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl">fields and flowers.</span>
             </h1>
 
             <p className="text-on-surface-variant font-body text-lg leading-relaxed max-w-[52ch] mb-10 animate-slide-up" style={{ animationDelay: "160ms" }}>
-              Seasonal produce grown on our Blacksburg farm and brought straight to your table. No middlemen. No mystery.
+              Fresh produce, flowers, and nursery plants from our farm in Giles County. Find us every week at the Blacksburg Farmers Market.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 animate-slide-up" style={{ animationDelay: "240ms" }}>
@@ -76,9 +85,9 @@ export default async function HomePage() {
             {/* Stats row */}
             <div className="mt-16 pt-10 border-t border-outline-variant/40 grid grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: "320ms" }}>
               {[
-                { value: "100%", label: "Family Run" },
-                { value: `${productCount ?? "100"}+`, label: "Listings" },
-                { value: "Seasonal", label: "Always Fresh" },
+                { value: "Giles Co", label: "Virginia" },
+                { value: `${productCount ?? "0"}+`, label: "Products" },
+                { value: "Local", label: "& Sustainable" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <p className="font-headline italic text-2xl text-secondary mb-1">{stat.value}</p>
@@ -91,44 +100,13 @@ export default async function HomePage() {
 
         {/* Right — full-bleed image with overlay card */}
         <div className="relative min-h-[60vw] md:min-h-0 overflow-hidden">
-          <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHfgOxwKYkHJuM69CO1KboNBFHv_XlIy9bFlLeMbvCmUhMHSpOW089IuqcsKzBLEgmoR9NJ9lpX4fG9tcRw8faRdIrIegsfgcQveZvSMR5LusPsWbhq9uVNb817C04rlv9e6UQQK4gHROMEwdp8gpu7hIL6O0JK7aMkxWYaRpz6SGJv3NNmK-59Dis8OuQ0OHrkVgrrpPEoa6REY3f7lv_0bJ0sefcdlhLU_mSN-7xY4K9sPgkuZ9Ph_7u06i2VzLSsmV60NvR_Y6x"
-            alt="Misty morning sun rising over a lush organic farm"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/farm.png"
+            alt="Rows of crops growing at a fruit and vegetable farm in Giles County, Virginia"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          {/* Subtle left fade into surface */}
-          <div className="absolute inset-0 bg-gradient-to-r from-surface/30 via-transparent to-transparent" />
-          {/* Bottom fade */}
-          <div className="absolute inset-0 bg-gradient-to-t from-tertiary/30 via-transparent to-transparent" />
 
-          {/* Floating harvest badge */}
-          <div className="absolute bottom-8 left-8 right-8 md:left-auto md:right-8 md:max-w-[260px] bg-surface/90 backdrop-blur-md rounded-2xl p-5 shadow-ambient border border-outline-variant/20">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center">
-                <Icon name="eco" fill className="text-on-primary-container text-sm" />
-              </div>
-              <div>
-                <p className="text-xs font-label font-bold text-tertiary uppercase tracking-wider">This Week&rsquo;s Pick</p>
-                <p className="text-[11px] text-on-surface-variant">Fresh from the field</p>
-              </div>
-            </div>
-            {featured[0] ? (
-              <Link href={`/products/${featured[0].id}`} className="group">
-                <p className="font-headline italic text-lg text-tertiary group-hover:text-primary transition-colors duration-150">
-                  {featured[0].name}
-                </p>
-                <p className="text-sm text-primary font-bold mt-1">
-                  ${(featured[0].price / 100).toFixed(2)}
-                  {featured[0].unit && <span className="text-on-surface-variant font-normal ml-1">/ {featured[0].unit}</span>}
-                </p>
-              </Link>
-            ) : (
-              <p className="font-headline italic text-lg text-tertiary">Season&rsquo;s Finest</p>
-            )}
-          </div>
         </div>
       </section>
 
@@ -141,6 +119,7 @@ export default async function HomePage() {
             eventTitle={events[0].title}
             eventDescription={events[0].description}
             eventLocation={events[0].location}
+            additionalDates={additionalDates}
           />
         </section>
       )}
@@ -167,8 +146,8 @@ export default async function HomePage() {
         {featured.length === 0 ? (
           <div className="py-24 text-center bg-surface-container-low rounded-2xl">
             <Icon name="eco" className="text-5xl text-on-surface-variant/40 mb-4" />
-            <p className="font-headline italic text-2xl text-tertiary mb-2">New listings coming soon.</p>
-            <p className="text-on-surface-variant font-body mb-6">Local vendors are adding listings — check back shortly.</p>
+            <p className="font-headline italic text-2xl text-tertiary mb-2">More coming soon.</p>
+            <p className="text-on-surface-variant font-body mb-6">We are adding fresh produce, flowers, and plants. Check back shortly.</p>
             <Link href="/products" className="text-primary font-bold text-sm hover:underline">Browse the catalog</Link>
           </div>
         ) : (
@@ -318,20 +297,20 @@ export default async function HomePage() {
               Our Mission
             </span>
             <h2 className="font-headline italic text-4xl md:text-5xl text-tertiary leading-tight mb-6">
-              Rooted in community.
+              Grown in Giles County.
             </h2>
             <div className="space-y-5 text-on-surface-variant font-body leading-relaxed">
               <p>
-                The Green Market Farm is a family run farm in Blacksburg, bringing fresh seasonal produce direct from our fields to your table.
+                We grow fresh produce, cut flowers, and nursery plants in Giles County, Virginia. Everything is grown locally and sustainably -- no shortcuts, no middlemen.
               </p>
               <p>
-                Every product comes from our own soil, tended by hand with patience and pride. What you see is what we grew this week.
+                You can find us each week at the Blacksburg Farmers Market, or order here for pickup directly from the farm.
               </p>
             </div>
             <div className="mt-10 pt-8 border-t border-outline-variant/30 flex gap-10">
               {[
-                { value: "No intermediaries", label: "Direct from our farm" },
-                { value: "Seasonal", label: "What's fresh now" },
+                { value: "Giles Co, VA", label: "Grown here" },
+                { value: "Sustainable", label: "Local & responsible" },
               ].map((item) => (
                 <div key={item.label}>
                   <p className="font-headline italic text-tertiary text-lg mb-0.5">{item.value}</p>
@@ -360,7 +339,7 @@ export default async function HomePage() {
             <span className="inline-block font-headline italic text-6xl text-primary/20 mb-4">01</span>
             <h3 className="font-headline italic text-2xl text-tertiary mb-3">Browse the shop</h3>
             <p className="text-on-surface-variant font-body leading-relaxed">
-              Explore what&rsquo;s in season from farms near you. Filter by category, search for something specific, or let the weekly picks guide you.
+              Browse our current harvest -- produce, flowers, and nursery plants grown right here in Giles County. Filter by category or search for what you need.
             </p>
             <Link href="/products" className="inline-flex items-center gap-2 mt-6 text-sm font-label font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all duration-150">
               Shop now <Icon name="arrow_forward" size="sm" />

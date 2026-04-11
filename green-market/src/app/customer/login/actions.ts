@@ -24,7 +24,7 @@ export async function magicLink(formData: FormData) {
   }
 
   redirect(
-    `/customer/login?success=${encodeURIComponent(`Check your inbox — we sent a sign-in link to ${email}`)}`
+    `/customer/login?success=${encodeURIComponent(`Check your inbox. We sent a sign-in link to ${email}`)}`
   );
 }
 

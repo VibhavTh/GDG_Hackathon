@@ -33,13 +33,13 @@ export function AddToCartButton({
     return (
       <button
         onClick={handleAdd}
-        className={`w-full py-2 border-b-2 font-label font-bold text-xs transition-all duration-300
+        className={`shrink-0 px-4 py-1.5 rounded-md font-label font-bold text-xs transition-all duration-200 active:scale-[0.97]
           ${added
-            ? "border-primary text-primary"
-            : "border-primary/20 text-primary hover:border-primary"
+            ? "bg-primary-fixed text-primary"
+            : "border border-primary text-primary hover:bg-primary hover:text-on-primary"
           } ${className}`}
       >
-        {added ? "✓ ADDED" : "ADD TO CART"}
+        {added ? "✓ Added" : "Add to Cart"}
       </button>
     );
   }

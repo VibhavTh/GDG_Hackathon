@@ -198,7 +198,7 @@ export default async function DashboardPage() {
             {site?.name ? `Welcome, ${site.name}.` : "Good morning."}
           </h2>
           <p className="text-on-surface-variant font-body mt-2">
-            Your listings are live and orders are coming in.
+            Manage your produce, flowers, and nursery listings.
           </p>
         </div>
         <div className="bg-surface-container-low px-4 py-2 rounded-lg flex items-center gap-2">

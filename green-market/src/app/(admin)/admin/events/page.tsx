@@ -1,7 +1,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
-import { createEvent, deleteEvent, toggleEventPublished } from "./actions";
+import { deleteEvent, toggleEventPublished } from "./actions";
 import { Icon } from "@/components/ui/icon";
-import { SubmitButton } from "@/components/ui/submit-button";
+import { EventForm } from "./event-form";
 
 export default async function AdminEventsPage() {
   const service = createServiceClient();
@@ -39,66 +39,7 @@ export default async function AdminEventsPage() {
       {/* Create event form */}
       <section className="mb-12 bg-surface-container-low rounded-2xl p-8">
         <h2 className="font-headline text-xl text-tertiary font-bold mb-6">Add New Event</h2>
-        <form action={createEvent} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                Event Title *
-              </label>
-              <input
-                name="title"
-                required
-                placeholder="e.g. Weekend Farmers Market"
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                Location
-              </label>
-              <input
-                name="location"
-                placeholder="e.g. Downtown Square, Blacksburg VA"
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                Event Date *
-              </label>
-              <input
-                name="event_date"
-                type="date"
-                required
-                style={{ accentColor: "#173809", colorScheme: "light" }}
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-                Time (optional)
-              </label>
-              <input
-                name="event_time"
-                type="time"
-                style={{ accentColor: "#173809", colorScheme: "light" }}
-                className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-2">
-              Description
-            </label>
-            <textarea
-              name="description"
-              rows={3}
-              placeholder="Tell customers what to expect..."
-              className="w-full bg-surface-container px-4 py-3 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all resize-none"
-            />
-          </div>
-          <SubmitButton label="Add Event" loadingLabel="Adding..." />
-        </form>
+        <EventForm />
       </section>
 
       {/* Upcoming events */}
@@ -123,7 +64,7 @@ export default async function AdminEventsPage() {
                   </div>
                   <p className="text-xs text-on-surface-variant mb-1">
                     {formatDate(event.event_date, event.event_time)}
-                    {event.location && ` — ${event.location}`}
+                    {event.location && ` - ${event.location}`}
                   </p>
                   {event.description && (
                     <p className="text-sm text-on-surface-variant mt-2">{event.description}</p>

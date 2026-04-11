@@ -73,7 +73,7 @@ export function ConfirmationContent({ order }: Props) {
         </h1>
         <p className="text-on-surface-variant font-body text-lg">
           {isPendingPayment
-            ? "We're confirming your payment — this usually takes just a moment."
+            ? "We're confirming your payment. This usually takes just a moment."
             : "Your order is on its way. We'll send you updates by email."}
         </p>
       </div>

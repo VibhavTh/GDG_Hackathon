@@ -18,15 +18,22 @@ export async function createEvent(formData: FormData) {
   if (!auth) return;
   const { user, service } = auth;
 
-  await service.from("events").insert({
-    title: (formData.get("title") as string).trim(),
-    description: ((formData.get("description") as string) || "").trim() || null,
-    event_date: formData.get("event_date") as string,
-    event_time: (formData.get("event_time") as string) || null,
-    location: ((formData.get("location") as string) || "").trim() || null,
+  const title = (formData.get("title") as string).trim();
+  const description = ((formData.get("description") as string) || "").trim() || null;
+  const location = ((formData.get("location") as string) || "").trim() || null;
+  const dateCount = parseInt((formData.get("date_count") as string) || "1", 10);
+
+  const rows = Array.from({ length: dateCount }, (_, i) => ({
+    title,
+    description,
+    location,
+    event_date: (formData.get(`date_${i}`) as string).trim(),
+    event_time: ((formData.get(`time_${i}`) as string) || "").trim() || null,
     created_by: user.id,
     is_published: true,
-  });
+  }));
+
+  await service.from("events").insert(rows);
 
   revalidatePath("/admin/events");
   revalidatePath("/");

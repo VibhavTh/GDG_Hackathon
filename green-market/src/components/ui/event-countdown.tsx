@@ -8,6 +8,7 @@ interface Props {
   eventTitle: string;
   eventDescription: string | null;
   eventLocation: string | null;
+  additionalDates?: { date: string; time: string | null }[];
 }
 
 function buildCalendarUrl(title: string, date: string, time: string | null, location: string | null, description: string | null) {
@@ -27,7 +28,7 @@ function buildCalendarUrl(title: string, date: string, time: string | null, loca
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescription, eventLocation }: Props) {
+export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescription, eventLocation, additionalDates = [] }: Props) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
   const [mounted, setMounted] = useState(false);
 
@@ -54,6 +55,16 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
 
   const calendarUrl = buildCalendarUrl(eventTitle, eventDate, eventTime, eventLocation, eventDescription);
 
+  const lastDate = additionalDates.length > 0 ? additionalDates[additionalDates.length - 1] : null;
+
+  function fmtDate(d: string) {
+    return new Date(`${d}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
+  const dateRangeLabel = lastDate
+    ? `${fmtDate(eventDate)} - ${fmtDate(lastDate.date)}, ${new Date(`${lastDate.date}T12:00:00`).getFullYear()}`
+    : new Date(`${eventDate}T12:00:00`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
   return (
     <section style={{ backgroundColor: "#F9EFE4" }} className="w-full py-9 md:py-12">
       <div className="w-full px-10 md:px-20">
@@ -67,6 +78,9 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
             <h2 className="font-headline italic text-3xl md:text-4xl text-tertiary leading-tight mb-2">
               {eventTitle}
             </h2>
+            <p className="text-on-surface-variant/80 text-xs font-label font-bold mb-2">
+              {dateRangeLabel}
+            </p>
             {eventDescription && (
               <p className="text-on-surface-variant font-body text-sm leading-relaxed max-w-sm">
                 {eventDescription}

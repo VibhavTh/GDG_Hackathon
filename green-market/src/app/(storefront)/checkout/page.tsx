@@ -253,7 +253,7 @@ export default function CheckoutPage() {
                     You&rsquo;ll be redirected to Stripe to complete payment
                   </p>
                   <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
-                    Your card details are entered on Stripe&rsquo;s secure page — never stored on our servers.
+                    Your card details are entered on Stripe&rsquo;s secure page and never stored on our servers.
                   </p>
                 </div>
               </div>
