@@ -40,23 +40,34 @@ async function HomePageContent() {
 
   return (
     <>
-      {/* ── HERO — Split screen, left text / right image ── */}
-      <section className="min-h-[100dvh] grid grid-cols-1 md:grid-cols-2">
-        {/* Left — content */}
-        <div className="flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-28 pb-16 md:pt-0 md:pb-0 bg-surface">
+      {/* ── HERO — Full-bleed image with text overlay ── */}
+      <section className="relative min-h-[100dvh] w-full overflow-hidden">
+        {/* Background image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/greenmarketfarm.png"
+          alt="Green Market Farms stand at the Blacksburg Farmers Market"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Dark gradient overlay for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/10" />
+
+        {/* Text content overlay */}
+        <div className="relative z-10 flex flex-col justify-center min-h-[100dvh] px-8 md:px-16 lg:px-24 pt-28 pb-16 md:pt-0 md:pb-0">
           <div className="max-w-lg">
-            <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-8 animate-slide-up" style={{ animationDelay: "0ms" }}>
-              <span className="w-6 h-px bg-secondary inline-block" />
+            <span className="inline-flex items-center gap-2 text-secondary-fixed font-label text-[11px] uppercase tracking-[0.25em] mb-8 animate-slide-up" style={{ animationDelay: "0ms" }}>
+              <span className="w-6 h-px bg-secondary-fixed inline-block" />
               Giles Co, VA -- Blacksburg Farmers Market
             </span>
 
-            <h1 className="font-headline italic text-tertiary leading-[1.05] tracking-tight mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
-              <span className="block text-5xl md:text-6xl lg:text-7xl">Fresh</span>
-              <span className="block text-5xl md:text-6xl lg:text-7xl text-primary">from our</span>
-              <span className="block text-5xl md:text-6xl lg:text-7xl">fields and flowers.</span>
+            <h1 className="font-headline italic leading-[1.05] tracking-tight mb-8 animate-slide-up" style={{ animationDelay: "80ms" }}>
+              <span className="block text-5xl md:text-6xl lg:text-7xl text-white">Fresh</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl text-primary-fixed">from our</span>
+              <span className="block text-5xl md:text-6xl lg:text-7xl text-white">fields and flowers.</span>
             </h1>
 
-            <p className="text-on-surface-variant font-body text-lg leading-relaxed max-w-[52ch] mb-10 animate-slide-up" style={{ animationDelay: "160ms" }}>
+            <p className="text-white/85 font-body text-lg leading-relaxed max-w-[52ch] mb-10 animate-slide-up" style={{ animationDelay: "160ms" }}>
               Fresh produce, flowers, and nursery plants from our farm in Giles County. Find us every week at the Blacksburg Farmers Market.
             </p>
 
@@ -70,37 +81,26 @@ async function HomePageContent() {
               </Link>
               <Link
                 href="#about"
-                className="inline-flex items-center gap-2 text-tertiary/70 font-label font-bold text-sm uppercase tracking-widest hover:text-tertiary transition-colors duration-150"
+                className="inline-flex items-center gap-2 text-white/80 font-label font-bold text-sm uppercase tracking-widest hover:text-white transition-colors duration-150"
               >
                 Our Story
               </Link>
             </div>
 
             {/* Stats row */}
-            <div className="mt-16 pt-10 border-t border-outline-variant/40 grid grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: "320ms" }}>
+            <div className="mt-16 pt-10 border-t border-white/30 grid grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: "320ms" }}>
               {[
                 { value: "Giles Co", label: "Virginia" },
                 { value: `${productCount ?? "0"}+`, label: "Products" },
                 { value: "Local", label: "& Sustainable" },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <p className="font-headline italic text-2xl text-secondary mb-1">{stat.value}</p>
-                  <p className="text-[11px] font-label uppercase tracking-widest text-on-surface-variant/60">{stat.label}</p>
+                  <p className="font-headline italic text-2xl text-secondary-fixed mb-1">{stat.value}</p>
+                  <p className="text-[11px] font-label uppercase tracking-widest text-white/60">{stat.label}</p>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Right — full-bleed image with overlay card */}
-        <div className="relative min-h-[60vw] md:min-h-0 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/farm.png"
-            alt="Rows of crops growing at a fruit and vegetable farm in Giles County, Virginia"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-
         </div>
       </section>
 
@@ -119,7 +119,7 @@ async function HomePageContent() {
       )}
 
       {/* ── FEATURED PRODUCTS — Asymmetric bento ── */}
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
+      <section className="py-24 mx-6 md:mx-12 lg:mx-20 content-lazy">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] items-end gap-4 mb-12">
           <div>
             <span className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-3 block">
@@ -271,7 +271,7 @@ async function HomePageContent() {
 
       {/* ── ABOUT — Left image / Right editorial text ── */}
       <section id="about" className="py-24 bg-surface-container-low content-lazy">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-0 rounded-3xl overflow-hidden">
+        <div className="mx-6 md:mx-12 lg:mx-20 grid grid-cols-1 md:grid-cols-2 gap-0 rounded-3xl overflow-hidden">
           {/* Image side */}
           <div className="relative min-h-[400px]">
             <Image
@@ -317,7 +317,7 @@ async function HomePageContent() {
       </section>
 
       {/* ── HOW IT WORKS — Horizontal asymmetric ── */}
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto content-lazy">
+      <section className="py-24 mx-6 md:mx-12 lg:mx-20 content-lazy">
         <div className="mb-14">
           <span className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-3 block">
             Simple by design
@@ -362,7 +362,7 @@ async function HomePageContent() {
 
       {/* ── NEWSLETTER — Full bleed, editorial ── */}
       <section className="content-lazy">
-        <div className="bg-primary mx-6 md:mx-12 mb-24 rounded-3xl overflow-hidden relative">
+        <div className="bg-primary mx-6 md:mx-12 lg:mx-20 mb-24 rounded-3xl overflow-hidden relative">
           {/* Background image, darkened */}
           <div className="absolute inset-0 opacity-10">
             <Image

@@ -253,14 +253,6 @@ export function CatalogView({ products, availableCategories, category, q, sort }
               />
             </form>
 
-            {/* Farm context pill */}
-            <div className="flex items-center gap-1.5 bg-primary-fixed rounded-full px-3.5 py-2 shrink-0">
-              <span className="material-symbols-outlined text-on-primary-fixed-variant text-[16px]">storefront</span>
-              <span className="text-xs font-semibold text-on-primary-fixed-variant leading-none">
-                Local Farmers&rsquo; Market
-              </span>
-            </div>
-
             <div className="ml-auto flex items-center gap-2 shrink-0">
               {/* Mobile filter toggle */}
               <button
