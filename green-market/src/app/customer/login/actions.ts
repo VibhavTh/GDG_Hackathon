@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function magicLink(formData: FormData) {
   const supabase = await createClient();
   const email = formData.get("email") as string;
-  const next = (formData.get("next") as string) || "/account/orders";
+  const next = (formData.get("next") as string) || "/account";
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
@@ -30,7 +30,7 @@ export async function magicLink(formData: FormData) {
 
 export async function googleSignIn(formData: FormData) {
   const supabase = await createClient();
-  const next = (formData.get("next") as string) || "/account/orders";
+  const next = (formData.get("next") as string) || "/account";
 
   // Use a clean redirectTo — Supabase preserves it through the OAuth flow.
   // We append role=customer so the callback knows not to send them to /dashboard.
