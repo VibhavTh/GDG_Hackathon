@@ -66,7 +66,7 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
     : new Date(`${eventDate}T12:00:00`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   return (
-    <section style={{ backgroundColor: "#F9EFE4" }} className="w-full py-9 md:py-12">
+    <section className="w-full py-9 md:py-12 bg-surface-container-low">
       <div className="w-full px-10 md:px-20">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
 

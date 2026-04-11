@@ -157,6 +157,16 @@ export function GalleryUploadModal({ open, onClose }: GalleryUploadModalProps) {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Hidden file input -- must stay mounted so the ref keeps the selected file */}
+          <input
+            id="gallery-file-input"
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+            className="sr-only"
+          />
+
           {/* Drop zone / preview */}
           {preview ? (
             <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-highest">
@@ -179,6 +189,7 @@ export function GalleryUploadModal({ open, onClose }: GalleryUploadModalProps) {
             </div>
           ) : (
             <label
+              htmlFor="gallery-file-input"
               className="flex flex-col items-center justify-center gap-3 py-12 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors"
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
@@ -193,13 +204,6 @@ export function GalleryUploadModal({ open, onClose }: GalleryUploadModalProps) {
               <p className="text-xs text-on-surface-variant/60 font-body">
                 JPEG, PNG, or WebP up to 5 MB
               </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleFileChange}
-                className="sr-only"
-              />
             </label>
           )}
 

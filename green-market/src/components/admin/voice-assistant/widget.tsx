@@ -60,7 +60,7 @@ export function VoiceAssistantWidget() {
             <div className="flex items-center gap-2.5">
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center"
-                style={{ background: "var(--color-primary)" }}
+                style={{ background: "var(--color-secondary)" }}
               >
                 <Icon name="mic" size="sm" className="text-white" style={{ fontSize: "14px" }} />
               </div>
@@ -226,7 +226,7 @@ export function VoiceAssistantWidget() {
               style={{
                 background: isRecording
                   ? "var(--color-secondary)"
-                  : "var(--color-primary)",
+                  : "var(--color-secondary)",
                 color: "white",
                 transform: isRecording ? "scale(1.1)" : undefined,
               }}
@@ -264,7 +264,7 @@ export function VoiceAssistantWidget() {
             ? "var(--color-surface-container-highest)"
             : isActive
             ? "var(--color-secondary)"
-            : "var(--color-primary)",
+            : "var(--color-secondary)",
           color: "white",
           boxShadow: "0 4px 24px rgba(23, 56, 9, 0.20)",
         }}

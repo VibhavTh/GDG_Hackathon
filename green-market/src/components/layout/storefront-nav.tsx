@@ -41,7 +41,7 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
   }, [itemCount, mounted]);
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-colors duration-300 ${scrolled ? "bg-transparent" : "bg-primary-container"}`}>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-surface/95 backdrop-blur-md" : "bg-[#113121]"}`}>
       <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
         {/* Logo */}
         <Link
@@ -54,14 +54,17 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
         {/* Desktop Nav Links */}
         <div className="hidden md:flex gap-8 items-center font-headline italic text-lg tracking-tight">
           {siteConfig.storefrontNav.map((link) => {
+            const isExternal = link.href.startsWith("http");
             const isActive = pathname === link.href;
             const activeColor = scrolled ? "text-on-surface" : "text-on-primary";
             const inactiveColor = scrolled ? "text-on-surface/60 hover:text-on-surface" : "text-on-primary/70 hover:text-on-primary";
             const underlineColor = scrolled ? "after:bg-on-surface" : "after:bg-on-primary";
+            const linkProps = isExternal ? { target: "_blank" as const, rel: "noopener noreferrer" } : {};
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                {...linkProps}
                 className={`
                   relative pb-0.5 transition-all duration-150
                   hover:-translate-y-px
@@ -148,23 +151,28 @@ export function StorefrontNav({ userRole }: StorefrontNavProps) {
       <div
         id="mobile-menu"
         aria-hidden={!mobileMenuOpen}
-        className="md:hidden bg-primary-container px-6 overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className="md:hidden bg-[#113121] px-6 overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
           maxHeight: mobileMenuOpen ? "400px" : "0px",
           opacity: mobileMenuOpen ? 1 : 0,
         }}
       >
         <div className="space-y-4 pt-2 pb-6">
-          {siteConfig.storefrontNav.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-3 font-headline italic text-lg text-on-primary/70 hover:text-on-primary transition-colors duration-150"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {siteConfig.storefrontNav.map((link) => {
+            const isExternal = link.href.startsWith("http");
+            const linkProps = isExternal ? { target: "_blank" as const, rel: "noopener noreferrer" } : {};
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                {...linkProps}
+                className="block py-3 font-headline italic text-lg text-on-primary/70 hover:text-on-primary transition-colors duration-150"
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           {(userRole === "admin" || userRole === "vendor") ? (
             <>
               <Link

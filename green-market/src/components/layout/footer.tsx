@@ -13,8 +13,8 @@ const footerLinks = [
 export function Footer({ variant = "storefront" }: FooterProps) {
   if (variant === "admin") {
     return (
-      <footer className="w-full py-12 px-8 mt-20 bg-surface-container text-center flex flex-col items-center justify-center space-y-6">
-        <p className="text-md font-headline text-tertiary italic">
+      <footer className="w-full py-12 px-8 mt-20 bg-[#113121] text-center flex flex-col items-center justify-center space-y-6">
+        <p className="text-md font-headline text-surface italic">
           The Green Market Farm
         </p>
         <div className="flex flex-wrap justify-center gap-8">
@@ -22,13 +22,13 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             <Link
               key={link.label}
               href={link.href}
-              className="font-body text-xs uppercase tracking-widest text-on-surface-variant/50 hover:text-primary underline-offset-4 transition-all"
+              className="font-body text-xs uppercase tracking-widest text-surface/50 hover:text-surface underline-offset-4 transition-all"
             >
               {link.label}
             </Link>
           ))}
         </div>
-        <p className="text-[10px] font-body uppercase tracking-widest text-on-surface-variant/40">
+        <p className="text-[10px] font-body uppercase tracking-widest text-surface/40">
           &copy; {new Date().getFullYear()} The Green Market Farm. Cultivated with care.
         </p>
       </footer>
@@ -36,13 +36,13 @@ export function Footer({ variant = "storefront" }: FooterProps) {
   }
 
   return (
-    <footer className="w-full py-12 px-8 mt-20 bg-surface-container">
+    <footer className="w-full py-16 px-8 mt-20 bg-[#113121]">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="text-center md:text-left">
-          <div className="font-headline text-xl font-bold text-tertiary mb-2">
+          <div className="font-headline text-xl font-bold text-surface mb-2">
             The Green Market Farm
           </div>
-          <p className="font-body text-xs uppercase tracking-widest text-tertiary/50">
+          <p className="font-body text-xs uppercase tracking-widest text-surface/40">
             &copy; {new Date().getFullYear()} The Green Market Farm. Grown with soul.
           </p>
         </div>
@@ -52,7 +52,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             <Link
               key={link.label}
               href={link.href}
-              className="text-tertiary/50 hover:text-primary-container underline decoration-secondary transition-colors"
+              className="text-surface/50 hover:text-surface transition-colors"
             >
               {link.label}
             </Link>
@@ -64,7 +64,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             href="https://instagram.com/thegreenmarketfarm"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-tertiary hover:bg-secondary-fixed transition-colors"
+            className="w-10 h-10 rounded-full bg-surface/10 flex items-center justify-center text-surface hover:bg-surface/20 transition-colors"
             aria-label="Instagram"
           >
             <svg
@@ -81,7 +81,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
             href="https://facebook.com/greenmarketfarm"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-tertiary hover:bg-secondary-fixed transition-colors"
+            className="w-10 h-10 rounded-full bg-surface/10 flex items-center justify-center text-surface hover:bg-surface/20 transition-colors"
             aria-label="Facebook"
           >
             <svg
