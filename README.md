@@ -217,6 +217,9 @@ placed ──▶ confirmed ──▶ preparing ──▶ ready ──▶ fulfill
 
 This is a shared repository. Please confirm before force-pushing, rewriting history, or deleting branches. See [../CLAUDE.md](../CLAUDE.md) and [../FEATURES.md](../FEATURES.md) for project conventions, the full feature roadmap, and the design system spec.
 
+## Live link
+
+Check the project out at https://greenmarketfarm.vercel.app/
 ## License
 
 License is TBD. Until a license is added, all rights are reserved by the project authors.
