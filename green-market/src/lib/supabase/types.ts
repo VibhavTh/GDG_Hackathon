@@ -480,6 +480,8 @@ export type Database = {
         | "failed"
         | "abandoned"
       product_category:
+        | "vegetables"
+        | "fruits"
         | "produce"
         | "baked_goods"
         | "dairy"
@@ -643,6 +645,8 @@ export const Constants = {
         "abandoned",
       ],
       product_category: [
+        "vegetables",
+        "fruits",
         "produce",
         "baked_goods",
         "dairy",

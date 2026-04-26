@@ -8,14 +8,15 @@ import { createClient } from "@/lib/supabase/client";
 import type { ProductRow } from "@/lib/supabase/types";
 
 const CATEGORIES = [
-  { value: "produce", label: "Produce" },
+  { value: "vegetables", label: "Vegetables" },
+  { value: "fruits", label: "Fruits" },
   { value: "baked_goods", label: "Baked Goods" },
   { value: "dairy", label: "Dairy" },
   { value: "eggs", label: "Eggs" },
   { value: "meat", label: "Meat" },
   { value: "honey_beeswax", label: "Honey & Beeswax" },
-  { value: "flowers", label: "Flowers" },
-  { value: "plants", label: "Plants" },
+  { value: "flowers", label: "Annual Flowers" },
+  { value: "plants", label: "Perennial Flowers" },
   { value: "handmade_crafts", label: "Handmade Crafts" },
   { value: "value_added", label: "Jams & Preserves" },
   { value: "mushrooms", label: "Mushrooms" },
@@ -55,7 +56,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(error ?? null);
-  const [selectedCategory, setSelectedCategory] = useState<string>(product?.category ?? "produce");
+  const [selectedCategory, setSelectedCategory] = useState<string>(product?.category ?? "vegetables");
   const [isOrganic, setIsOrganic] = useState<boolean>((product as (typeof product & { is_organic?: boolean }) | undefined)?.is_organic ?? false);
   const existingProduct = product as (typeof product & { available_from?: string | null; available_until?: string | null }) | undefined;
 
@@ -277,7 +278,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
         </div>
 
         {/* Organic — visible for food/agricultural categories */}
-        {["produce", "baked_goods", "dairy", "eggs", "meat", "honey_beeswax", "mushrooms", "value_added"].includes(selectedCategory) && (
+        {["vegetables", "fruits", "produce", "baked_goods", "dairy", "eggs", "meat", "honey_beeswax", "mushrooms", "value_added"].includes(selectedCategory) && (
           <div className="flex items-center gap-3">
             <button
               type="button"

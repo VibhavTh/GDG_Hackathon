@@ -9,7 +9,9 @@ import { NewsletterForm } from "@/components/ui/newsletter-form";
 import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  produce: "Fruits & Vegetables",
+  vegetables: "Vegetables",
+  fruits: "Fruits",
+  produce: "Produce",
   baked_goods: "Baked Goods",
   dairy: "Dairy",
   eggs: "Eggs",
@@ -330,7 +332,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                         <span className="bg-surface-container-lowest/90 text-on-surface text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold backdrop-blur-sm">
                           {CATEGORY_LABELS[product.category] ?? product.category}
                         </span>
-                        {["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(product.category) && product.is_organic && (
+                        {["vegetables","fruits","produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(product.category) && product.is_organic && (
                           <span className="bg-primary text-on-primary text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold">
                             Sustainably Grown
                           </span>

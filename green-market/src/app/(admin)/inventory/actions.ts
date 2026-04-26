@@ -47,7 +47,7 @@ export async function createProduct(formData: FormData) {
     unit: (formData.get("unit") as string | null)?.trim() || "each",
     image_url: (formData.get("image_url") as string).trim() || null,
     is_active: true,
-    is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
+    is_organic: ["vegetables","fruits","produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
     available_from,
     available_until,
   }).select("id").single();
@@ -99,7 +99,7 @@ export async function updateProduct(formData: FormData) {
       stock: isNaN(stock) ? 0 : stock,
       unit: (formData.get("unit") as string | null)?.trim() || "each",
       image_url: (formData.get("image_url") as string).trim() || null,
-      is_organic: ["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
+      is_organic: ["vegetables","fruits","produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(formData.get("category") as string) && formData.get("is_organic") === "true",
       available_from,
       available_until,
     })

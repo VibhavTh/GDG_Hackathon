@@ -19,7 +19,9 @@ const MONTH_NAMES_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"
 const MONTH_NAMES_FULL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const CATEGORY_LABELS: Record<string, string> = {
-  produce: "Fruits & Vegetables",
+  vegetables: "Vegetables",
+  fruits: "Fruits",
+  produce: "Produce",
   baked_goods: "Baked Goods",
   dairy: "Dairy",
   eggs: "Eggs",
@@ -41,7 +43,7 @@ const SEASONS: Record<string, { label: string; months: number[] }> = {
 };
 
 interface Props {
-  searchParams: Promise<{ period?: string; category?: string; month?: string; season?: string }>;
+  searchParams: Promise<{ period?: string; category?: string; month?: string; season?: string; product_id?: string }>;
 }
 
 export default function AnalyticsPage({ searchParams }: Props) {
@@ -62,7 +64,7 @@ async function AnalyticsContent({ searchParams }: Props) {
   if (!user) redirect("/vendor/login");
 
   const service = createServiceClient();
-  const { period = "week", category, month, season } = await searchParams;
+  const { period = "week", category, month, season, product_id } = await searchParams;
 
   // --- Date boundaries based on period/month/season filter ---
   const now = new Date();
@@ -143,6 +145,8 @@ async function AnalyticsContent({ searchParams }: Props) {
     .from("order_items")
     .select("quantity, unit_price, product_id, products(name, category)");
 
+  if (product_id) itemQuery = (itemQuery as typeof itemQuery).eq("product_id", product_id);
+
   const { data: itemRows } = await itemQuery;
 
   const productMap = new Map<string, { name: string; category: string; revenue: number; units: number }>();
@@ -221,9 +225,20 @@ async function AnalyticsContent({ searchParams }: Props) {
     .slice(0, 6);
   const maxCatRevenue = categoryRevList[0]?.[1] ?? 1;
 
-  // Available categories for filter dropdown
-  const { data: catRows } = await service.from("products").select("category").is("deleted_at", null);
-  const availableCategories = [...new Set((catRows ?? []).map((r) => r.category))];
+  // Available categories + products for filter dropdowns
+  const { data: allProducts } = await service
+    .from("products")
+    .select("id, name, category")
+    .is("deleted_at", null)
+    .eq("is_active", true)
+    .order("name", { ascending: true });
+
+  const availableCategories = [...new Set((allProducts ?? []).map((r) => r.category))];
+  const availableProducts = (allProducts ?? []).map((p) => ({ id: p.id, name: p.name, category: p.category }));
+
+  const selectedProductName = product_id
+    ? availableProducts.find((p) => p.id === product_id)?.name
+    : undefined;
 
   return (
     <main className="flex-1 px-6 md:px-10 py-12 max-w-5xl">
@@ -246,7 +261,9 @@ async function AnalyticsContent({ searchParams }: Props) {
         category={category}
         month={month}
         season={season}
+        productId={product_id}
         availableCategories={availableCategories}
+        availableProducts={availableProducts}
       />
 
       {/* Revenue comparison */}
@@ -345,7 +362,11 @@ async function AnalyticsContent({ searchParams }: Props) {
       {/* Top products */}
       <section className="mb-12">
         <h2 className="text-xs font-label font-bold uppercase tracking-widest text-on-surface-variant mb-6">
-          Top Products{category ? ` — ${CATEGORY_LABELS[category] ?? category}` : ""}
+          {selectedProductName
+          ? `Product: ${selectedProductName}`
+          : category
+          ? `Top Products — ${CATEGORY_LABELS[category] ?? category}`
+          : "Top Products"}
         </h2>
         {topProducts.length === 0 ? (
           <p className="text-sm text-on-surface-variant italic">No order data yet.</p>

@@ -10,7 +10,9 @@ import { restoreProduct } from "./actions";
 import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  produce: "Fruits & Vegetables",
+  vegetables: "Vegetables",
+  fruits: "Fruits",
+  produce: "Produce",
   baked_goods: "Baked Goods",
   dairy: "Dairy",
   eggs: "Eggs",

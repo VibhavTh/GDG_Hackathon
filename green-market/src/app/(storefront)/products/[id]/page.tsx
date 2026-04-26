@@ -10,14 +10,16 @@ import { Icon } from "@/components/ui/icon";
 import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
+  vegetables: "Vegetables",
+  fruits: "Fruits",
   produce: "Produce",
   baked_goods: "Baked Goods",
   dairy: "Dairy",
   eggs: "Eggs",
   meat: "Meat",
   honey_beeswax: "Honey & Beeswax",
-  flowers: "Flowers",
-  plants: "Plants",
+  flowers: "Annual Flowers",
+  plants: "Perennial Flowers",
   handmade_crafts: "Handmade Crafts",
   value_added: "Jams & Preserves",
   mushrooms: "Mushrooms",
