@@ -66,10 +66,10 @@ async function DashboardContent() {
             </p>
           </div>
           <Link
-            href="/settings"
+            href="https://greenmarketfarms.org/about"
             className="shrink-0 text-xs font-label font-bold uppercase tracking-wider text-primary hover:underline"
           >
-            Complete Profile
+            Visit Site
           </Link>
         </div>
       )}

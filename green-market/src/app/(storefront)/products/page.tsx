@@ -116,8 +116,8 @@ async function ProductCatalogContent({ searchParams }: Props) {
             The Season&rsquo;s<br className="hidden md:block" /> Bounty.
           </h1>
           <p className="max-w-xl text-lg text-on-surface-variant font-body leading-relaxed">
-            Hand-picked, organically grown, and delivered from our local farm to
-            your table. Experience the tactile beauty of slow-grown produce.
+            Hand-picked, sustainably grown, and ready for pickup from our local farm
+            at the Blacksburg Farmers Market. Experience the beauty of slow-grown produce.
           </p>
         </div>
       </header>

@@ -3,14 +3,14 @@
 import Link from "next/link";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  produce: "Produce",
+  produce: "Fruits & Vegetables",
   baked_goods: "Baked Goods",
   dairy: "Dairy",
   eggs: "Eggs",
   meat: "Meat",
   honey_beeswax: "Honey & Beeswax",
-  flowers: "Flowers",
-  plants: "Plants",
+  flowers: "Annual Flowers",
+  plants: "Perennial Flowers",
   handmade_crafts: "Handmade Crafts",
   value_added: "Jams & Preserves",
   mushrooms: "Mushrooms",

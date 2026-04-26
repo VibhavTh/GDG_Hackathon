@@ -28,7 +28,7 @@ export interface Order {
   specialInstructions: string | null;
   total: number;
   fulfillmentFee: number;
-  fulfillmentType: "delivery" | "pickup";
+  fulfillmentType: "preorder" | "pickup";
   stripePaymentIntentId: string | null;
   createdAt: string;
   updatedAt: string;

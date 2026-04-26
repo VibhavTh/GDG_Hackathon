@@ -14,13 +14,12 @@ interface CheckoutBody {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  fulfillmentType: "delivery" | "pickup";
+  fulfillmentType: "preorder" | "pickup";
   specialInstructions: string;
   items: CheckoutItem[];
   customerId?: string | null;
 }
 
-const FULFILLMENT_FEE = 4.0; // dollars
 
 export async function POST(request: NextRequest) {
   let body: CheckoutBody;
@@ -40,8 +39,8 @@ export async function POST(request: NextRequest) {
   if (!customerEmail?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
     return NextResponse.json({ error: "Valid email address is required" }, { status: 400 });
   }
-  if (!fulfillmentType || !["delivery", "pickup"].includes(fulfillmentType)) {
-    return NextResponse.json({ error: "Fulfillment type must be delivery or pickup" }, { status: 400 });
+  if (!fulfillmentType || !["preorder", "pickup"].includes(fulfillmentType)) {
+    return NextResponse.json({ error: "Fulfillment type must be preorder or pickup" }, { status: 400 });
   }
   if (!items?.length || items.length > 50) {
     return NextResponse.json({ error: "Cart must have between 1 and 50 items" }, { status: 400 });
@@ -106,8 +105,7 @@ export async function POST(request: NextRequest) {
 
   // Calculate totals from DB prices (dbPrice is already in cents)
   const subtotalCents = validatedItems.reduce((sum, item) => sum + item.dbPrice * item.quantity, 0);
-  const fulfillmentFeeCents = fulfillmentType === "delivery" ? Math.round(FULFILLMENT_FEE * 100) : 0;
-  const totalCents = subtotalCents + fulfillmentFeeCents;
+  const totalCents = subtotalCents;
 
   // Create order row
   const { data: order, error: orderError } = await supabase
@@ -167,9 +165,6 @@ export async function POST(request: NextRequest) {
         quantity: item.quantity,
         image: item.image || null,
       })),
-      ...(fulfillmentFeeCents > 0
-        ? [{ name: "Home Delivery Fee", amount: fulfillmentFeeCents, quantity: 1, image: null }]
-        : []),
     ];
 
     allLineItems.forEach((item, i) => {

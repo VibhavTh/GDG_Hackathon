@@ -296,7 +296,7 @@ export function ProductForm({ action, product, error }: ProductFormProps) {
             </button>
             <div>
               <p className={labelClass}>
-                Certified Organic
+                Sustainably Grown
                 {aiFilledFields.has("organic") && <span className="ml-1.5 text-base" title="AI suggested">✨</span>}
               </p>
               <p className="text-xs text-on-surface-variant mt-0.5">This produce is grown without synthetic pesticides or fertilizers</p>

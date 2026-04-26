@@ -8,7 +8,7 @@ const mobileNavItems = [
   { label: "Home", href: "/dashboard", icon: "dashboard" },
   { label: "Stock", href: "/inventory", icon: "potted_plant" },
   { label: "Orders", href: "/orders", icon: "inbox" },
-  { label: "Profile", href: "/settings", icon: "account_circle" },
+  { label: "Analytics", href: "/dashboard/analytics", icon: "bar_chart" },
 ];
 
 export function AdminMobileNav() {

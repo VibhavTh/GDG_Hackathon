@@ -9,8 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
 import { createClient } from "@/lib/supabase/client";
 
-const DELIVERY_FEE = 4.0;
-
 export default function CheckoutPage() {
   const router = useRouter();
   const cart = useCartStore();
@@ -29,7 +27,7 @@ export default function CheckoutPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">("delivery");
+  const [fulfillmentType, setFulfillmentType] = useState<"preorder" | "pickup">("pickup");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [customerId, setCustomerId] = useState<string | null>(null);
@@ -47,8 +45,7 @@ export default function CheckoutPage() {
   }, []);
 
   const subtotal = mounted ? cart.subtotal() : 0;
-  const fulfillmentFee = fulfillmentType === "delivery" ? DELIVERY_FEE : 0;
-  const total = subtotal + fulfillmentFee;
+  const total = subtotal;
   const itemCount = mounted ? cart.itemCount() : 0;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -165,20 +162,20 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label
                   className={`relative flex items-center p-4 cursor-pointer rounded-lg transition-all ${
-                    fulfillmentType === "delivery"
+                    fulfillmentType === "preorder"
                       ? "bg-primary-fixed"
                       : "bg-surface-container-highest"
                   }`}
-                  onClick={() => setFulfillmentType("delivery")}
+                  onClick={() => setFulfillmentType("preorder")}
                 >
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-full bg-primary-fixed-dim text-primary">
-                      <Icon name="local_shipping" />
+                      <Icon name="event_available" />
                     </div>
                     <div>
-                      <p className="font-bold text-on-surface">Home Delivery</p>
+                      <p className="font-bold text-on-surface">Preorder Pickup</p>
                       <p className="text-xs text-on-surface-variant">
-                        Delivered fresh to your door · $4.00
+                        Pick up Wednesday or Saturday at the market · Free
                       </p>
                     </div>
                   </div>
@@ -197,9 +194,9 @@ export default function CheckoutPage() {
                       <Icon name="storefront" />
                     </div>
                     <div>
-                      <p className="font-bold text-on-surface">Farm Pickup</p>
+                      <p className="font-bold text-on-surface">Market Pickup</p>
                       <p className="text-xs text-on-surface-variant">
-                        Collect at the South Gate stall · Free
+                        Collect at the Blacksburg Farmers Market stall · Free
                       </p>
                     </div>
                   </div>
@@ -365,11 +362,9 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-on-surface-variant">
                 <span className="font-label uppercase tracking-wider text-xs">
-                  Fulfillment Fee
+                  Pickup
                 </span>
-                <span className="font-body">
-                  {fulfillmentType === "delivery" ? "$4.00" : "Free"}
-                </span>
+                <span className="font-body text-primary font-semibold">Free</span>
               </div>
               <div className="flex justify-between items-end pt-4">
                 <span className="font-headline text-2xl text-tertiary">

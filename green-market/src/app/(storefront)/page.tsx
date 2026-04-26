@@ -353,9 +353,9 @@ async function HomePageContent() {
           {/* Step 3 */}
           <div className="bg-secondary-fixed/20 rounded-2xl p-8">
             <span className="inline-block font-headline italic text-6xl text-secondary/20 mb-4">03</span>
-            <h3 className="font-headline italic text-xl text-tertiary mb-3">Pick up or get delivery</h3>
+            <h3 className="font-headline italic text-xl text-tertiary mb-3">Pick up at the market</h3>
             <p className="text-on-surface-variant font-body text-sm leading-relaxed">
-              Choose farm pickup or home delivery at checkout. Pay securely, then track your order from preparation to your door.
+              Choose preorder pickup on Wednesday or Saturday at the Blacksburg Farmers Market. Pay securely online and collect your order fresh.
             </p>
           </div>
         </div>

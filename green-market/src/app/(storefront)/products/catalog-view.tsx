@@ -9,14 +9,14 @@ import { NewsletterForm } from "@/components/ui/newsletter-form";
 import { LOW_STOCK_THRESHOLD } from "@/config/site";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  produce: "Produce",
+  produce: "Fruits & Vegetables",
   baked_goods: "Baked Goods",
   dairy: "Dairy",
   eggs: "Eggs",
   meat: "Meat",
   honey_beeswax: "Honey & Beeswax",
-  flowers: "Flowers",
-  plants: "Plants",
+  flowers: "Annual Flowers",
+  plants: "Perennial Flowers",
   handmade_crafts: "Handmade Crafts",
   value_added: "Jams & Preserves",
   mushrooms: "Mushrooms",
@@ -107,7 +107,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<Set<number>>(new Set());
-  const [organicFilter, setOrganicFilter] = useState<"all" | "organic" | "non-organic">("all");
+  const [organicFilter, setOrganicFilter] = useState<"all" | "sustainable" | "conventional">("all");
 
   const hasUrlFilters = !!q || (!!category && category !== "all");
   const anyClientFilter = selectedCategories.size > 0 || selectedPriceRanges.size > 0 || organicFilter !== "all";
@@ -131,7 +131,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
   function clearAllFilters() {
     setSelectedCategories(new Set());
     setSelectedPriceRanges(new Set());
-    setOrganicFilter("all");
+    setOrganicFilter("all" as const);
   }
 
   const filtered = useMemo(() => {
@@ -150,7 +150,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
     }
     if (organicFilter !== "all") {
       list = list.filter((p) =>
-        organicFilter === "organic" ? p.is_organic === true : !p.is_organic
+        organicFilter === "sustainable" ? p.is_organic === true : !p.is_organic
       );
     }
     return list;
@@ -201,8 +201,8 @@ export function CatalogView({ products, availableCategories, category, q, sort }
         ))}
       </SidebarSection>
 
-      <SidebarSection title="Organic">
-        {(["all", "organic", "non-organic"] as const).map((val) => (
+      <SidebarSection title="Growing Practice">
+        {(["all", "sustainable", "conventional"] as const).map((val) => (
           <label key={val} className="flex items-center gap-2.5 cursor-pointer group" onClick={() => setOrganicFilter(val)}>
             <span
               className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-colors duration-150 ${
@@ -216,7 +216,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
               )}
             </span>
             <span className={`text-sm transition-colors duration-150 ${organicFilter === val ? "text-on-surface font-medium" : "text-on-surface-variant"}`}>
-              {val === "all" ? "All" : val === "organic" ? "Organic" : "Non-Organic"}
+              {val === "all" ? "All" : val === "sustainable" ? "Sustainably Grown" : "Conventional"}
             </span>
           </label>
         ))}
@@ -332,7 +332,7 @@ export function CatalogView({ products, availableCategories, category, q, sort }
                         </span>
                         {["produce","baked_goods","dairy","eggs","meat","honey_beeswax","mushrooms","value_added"].includes(product.category) && product.is_organic && (
                           <span className="bg-primary text-on-primary text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold">
-                            Organic
+                            Sustainably Grown
                           </span>
                         )}
                       </div>
