@@ -4,9 +4,9 @@ import { GalleryGrid } from "@/components/gallery/gallery-grid";
 import { GalleryHeader } from "./gallery-header";
 
 export const metadata = {
-  title: "Gallery | The Green Market Farm",
+  title: "Gallery | Green Market Farms",
   description:
-    "Photos from The Green Market Farm. Harvests, market days, and life on the farm.",
+    "Photos from Green Market Farms. Harvests, market days, and life on the farm.",
 };
 
 export default function GalleryPage() {

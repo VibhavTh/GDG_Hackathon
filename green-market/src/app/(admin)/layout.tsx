@@ -50,7 +50,7 @@ async function AdminLayoutContent({
 
   const site = await getSiteSettings();
 
-  const farmName = site?.name ?? "The Green Market Farm";
+  const farmName = site?.name ?? "Green Market Farms";
   const userInitial = (site?.name ?? user.email ?? "V")[0].toUpperCase();
 
   const { count: inboxUnread } = await service

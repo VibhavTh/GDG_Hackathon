@@ -16,9 +16,9 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "The Green Market Farm",
+  title: "Green Market Farms",
   description:
-    "The Green Market Farm. Fresh, seasonal produce grown on our Blacksburg farm and delivered straight to your table.",
+    "Green Market Farms. Fresh, seasonal produce grown on our Blacksburg farm and delivered straight to your table.",
 };
 
 export default function RootLayout({

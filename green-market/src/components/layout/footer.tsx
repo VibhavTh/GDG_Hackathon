@@ -16,7 +16,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
     return (
       <footer className="w-full py-12 px-8 mt-20 bg-[#113121] text-center flex flex-col items-center justify-center space-y-6">
         <p className="text-md font-headline text-surface italic">
-          The Green Market Farm
+          Green Market Farms
         </p>
         <div className="flex flex-wrap justify-center gap-8">
           {footerLinks.map((link) => (
@@ -30,7 +30,7 @@ export function Footer({ variant = "storefront" }: FooterProps) {
           ))}
         </div>
         <p className="text-[10px] font-body uppercase tracking-widest text-surface/40">
-          &copy; <CopyrightYear /> The Green Market Farm. Cultivated with care.
+          &copy; <CopyrightYear /> Green Market Farms. Cultivated with care.
         </p>
       </footer>
     );
@@ -41,10 +41,10 @@ export function Footer({ variant = "storefront" }: FooterProps) {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="text-center md:text-left">
           <div className="font-headline text-xl font-bold text-surface mb-2">
-            The Green Market Farm
+            Green Market Farms
           </div>
           <p className="font-body text-xs uppercase tracking-widest text-surface/40">
-            &copy; 2025 The Green Market Farm. Grown with soul.
+            &copy; 2025 Green Market Farms. Grown with soul.
           </p>
         </div>
 

@@ -48,7 +48,7 @@ export async function replyToMessage(formData: FormData) {
       toName: msg.from_name,
       originalSubject: msg.subject,
       replyBody,
-      farmName: site?.name ?? "The Green Market Farm",
+      farmName: site?.name ?? "Green Market Farms",
     });
   } catch (err) {
     console.error("[replyToMessage] email failed:", err);

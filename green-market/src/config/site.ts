@@ -2,9 +2,9 @@
 export const LOW_STOCK_THRESHOLD = 5;
 
 export const siteConfig = {
-  name: "The Green Market Farm",
+  name: "Green Market Farms",
   description:
-    "The Green Market Farm. Fresh, seasonal produce grown on our Blacksburg farm and delivered straight to your table.",
+    "Green Market Farms. Fresh, seasonal produce grown on our Blacksburg farm and delivered straight to your table.",
   storefrontNav: [
     { label: "Home", href: "/" },
     { label: "Market", href: "/products" },

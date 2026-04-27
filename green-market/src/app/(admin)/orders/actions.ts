@@ -47,7 +47,7 @@ export async function advanceOrderStatus(
       ]);
 
       if (order?.customer_phone) {
-        const farmName = site?.name ?? "The Green Market Farm";
+        const farmName = site?.name ?? "Green Market Farms";
         await sendSms({
           to: order.customer_phone,
           body: `Your order from ${farmName} is ready for pickup! See you soon.`,

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }, { apiVersion: "v1" });
 
-    const prompt = `You are a product listing assistant for The Green Market Farm, a small family-run farm that sells at the Blacksburg, Virginia farmers market.
+    const prompt = `You are a product listing assistant for Green Market Farms, a small family-run farm that sells at the Blacksburg, Virginia farmers market.
 
 A farmer has uploaded a photo of one of their products. Analyze the image and return a JSON object to help them create a storefront listing.
 

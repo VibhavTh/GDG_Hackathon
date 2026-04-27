@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
               .eq("id", 1)
               .single();
 
-            const siteName = site?.name ?? "The Green Market Farm";
+            const siteName = site?.name ?? "Green Market Farms";
             const notifyEmail = process.env.FARM_NOTIFY_EMAIL;
 
             const items = orderData.order_items.map((i) => ({

@@ -137,7 +137,7 @@ export function SiteSettingsForm({ site }: { site: SiteData | null }) {
             type="text"
             required
             defaultValue={site?.name ?? ""}
-            placeholder="The Green Market Farm"
+            placeholder="Green Market Farms"
             className={inputClass}
           />
         </div>

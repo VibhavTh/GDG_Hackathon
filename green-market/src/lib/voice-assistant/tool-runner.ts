@@ -152,7 +152,7 @@ export async function runAdvanceOrderStatus(args: AdvanceOrderStatusArgs): Promi
   if (nextStatus === "ready" && order.customer_phone) {
     try {
       const { data: site } = await service.from("site_settings").select("name").eq("id", 1).single();
-      const farmName = site?.name ?? "The Green Market Farm";
+      const farmName = site?.name ?? "Green Market Farms";
       await sendSms({
         to: order.customer_phone,
         body: `Your order from ${farmName} is ready for pickup!`,
