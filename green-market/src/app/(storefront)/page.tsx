@@ -45,7 +45,7 @@ async function HomePageContent() {
         {/* Background image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/greenmarketfarm.png"
+          src="/HomepageTop.png"
           alt="Green Market Farms stand at the Blacksburg Farmers Market"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ objectPosition: "center -20px" }}
