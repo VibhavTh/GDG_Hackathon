@@ -14,6 +14,9 @@ alter table public.orders add column if not exists customer_phone text;
 -- Order number (human-readable, generated from id prefix)
 alter table public.orders add column if not exists order_number text;
 
+-- Add end_time to events (companion to existing end_date)
+alter table public.events add column if not exists end_time text;
+
 
 -- ============================================================
 -- site_settings -- single row for farm identity

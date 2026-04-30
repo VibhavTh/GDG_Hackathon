@@ -45,7 +45,7 @@ async function HomePageContent() {
         {/* Background image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/greenmarketfarm.png"
+          src="/HomepageTop.png"
           alt="Green Market Farms stand at the Blacksburg Farmers Market"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ objectPosition: "center -20px" }}
@@ -81,7 +81,7 @@ async function HomePageContent() {
                 <Icon name="arrow_forward" size="sm" />
               </Link>
               <Link
-                href="#about"
+                href="/about"
                 className="inline-flex items-center gap-2 text-white/80 font-label font-bold text-sm uppercase tracking-widest hover:text-white transition-colors duration-150"
               >
                 Our Story
@@ -107,13 +107,15 @@ async function HomePageContent() {
 
       {/* ── UPCOMING EVENT COUNTDOWN ── */}
       {events.length > 0 && (
-        <section className="content-lazy">
+        <section className="-mt-4 md:-mt-6 content-lazy">
           <EventCountdown
             eventDate={events[0].event_date}
             eventTime={events[0].event_time}
             eventTitle={events[0].title}
             eventDescription={events[0].description}
             eventLocation={events[0].location}
+            endDate={events[0].end_date}
+            endTime={events[0].end_time}
             additionalDates={additionalDates}
           />
         </section>
@@ -301,6 +303,22 @@ async function HomePageContent() {
               <p>
                 You can find us each week at the Blacksburg Farmers Market, or order here for pickup directly from the farm.
               </p>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+              <Link
+                href="/about"
+                className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label font-bold text-xs uppercase tracking-widest hover:bg-primary/90 active:scale-[0.97] transition-all duration-150"
+              >
+                Learn more
+                <Icon name="arrow_forward" size="sm" />
+              </Link>
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 font-label font-bold text-xs text-primary uppercase tracking-widest hover:gap-3 transition-all duration-150"
+              >
+                Find us
+                <Icon name="arrow_forward" size="sm" />
+              </Link>
             </div>
             <div className="mt-10 pt-8 border-t border-outline-variant/30 flex gap-10">
               {[

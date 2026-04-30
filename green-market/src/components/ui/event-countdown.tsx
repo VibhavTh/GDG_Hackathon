@@ -8,6 +8,8 @@ interface Props {
   eventTitle: string;
   eventDescription: string | null;
   eventLocation: string | null;
+  endDate?: string | null;
+  endTime?: string | null;
   additionalDates?: { date: string; time: string | null }[];
 }
 
@@ -28,33 +30,76 @@ function buildCalendarUrl(title: string, date: string, time: string | null, loca
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescription, eventLocation, additionalDates = [] }: Props) {
+function startTimestamp(date: string, time: string | null) {
+  return new Date(time ? `${date}T${time}` : `${date}T08:00:00`).getTime();
+}
+
+function endTimestamp(date: string, time: string | null) {
+  return new Date(time ? `${date}T${time}` : `${date}T23:59:59`).getTime();
+}
+
+type Phase = "upcoming" | "live" | "ended";
+
+export function EventCountdown({
+  eventDate,
+  eventTime,
+  eventTitle,
+  eventDescription,
+  eventLocation,
+  endDate,
+  endTime,
+  additionalDates = [],
+}: Props) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+  const [phase, setPhase] = useState<Phase>("upcoming");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const target = new Date(eventTime ? `${eventDate}T${eventTime}` : `${eventDate}T08:00:00`).getTime();
+    const start = startTimestamp(eventDate, eventTime);
+    const hasEnd = !!endDate;
+    const end = hasEnd ? endTimestamp(endDate, endTime ?? null) : null;
 
     function tick() {
-      const diff = target - Date.now();
-      if (diff <= 0) {
+      const now = Date.now();
+      if (now < start) {
+        const diff = start - now;
+        setPhase("upcoming");
+        setTimeLeft({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        });
+        return;
+      }
+      if (end !== null && now <= end) {
+        const diff = end - now;
+        setPhase("live");
+        setTimeLeft({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        });
+        return;
+      }
+      if (end !== null && now > end) {
+        setPhase("ended");
         setTimeLeft({ days: 0, hours: 0, minutes: 0 });
         return;
       }
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeLeft({ days, hours, minutes });
+      // No end provided and start passed: treat as live with no countdown numbers.
+      setPhase("live");
+      setTimeLeft({ days: 0, hours: 0, minutes: 0 });
     }
 
     tick();
     const interval = setInterval(tick, 60000);
     return () => clearInterval(interval);
-  }, [eventDate, eventTime]);
+  }, [eventDate, eventTime, endDate, endTime]);
+
+  if (mounted && phase === "ended") return null;
 
   const calendarUrl = buildCalendarUrl(eventTitle, eventDate, eventTime, eventLocation, eventDescription);
-
   const lastDate = additionalDates.length > 0 ? additionalDates[additionalDates.length - 1] : null;
 
   function fmtDate(d: string) {
@@ -64,6 +109,11 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
   const dateRangeLabel = lastDate
     ? `${fmtDate(eventDate)} - ${fmtDate(lastDate.date)}, ${new Date(`${lastDate.date}T12:00:00`).getFullYear()}`
     : new Date(`${eventDate}T12:00:00`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  const isLive = phase === "live";
+  const eyebrowLabel = isLive ? "Happening Now" : "Upcoming Event";
+  const eyebrowColor = isLive ? "text-secondary" : "text-secondary";
+  const titleLead = isLive ? "Currently Live" : "Next Live";
 
   return (
     <section className="w-full py-4 md:py-6">
@@ -109,11 +159,17 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
 
           {/* Left: label + title + description */}
           <div className="flex-1 min-w-0 max-w-md">
-            <p className="font-label text-[9px] font-bold uppercase tracking-[0.25em] text-secondary mb-3">
-              Upcoming Event
+            <p className={`font-label text-[9px] font-bold uppercase tracking-[0.25em] mb-3 inline-flex items-center gap-2 ${eyebrowColor}`}>
+              {isLive && (
+                <span className="relative flex w-2 h-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-secondary opacity-60 animate-ping" />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-secondary" />
+                </span>
+              )}
+              {eyebrowLabel}
             </p>
             <h2 className="font-headline text-2xl md:text-3xl lg:text-4xl text-tertiary leading-[1.1] tracking-tight mb-3">
-              Next Live{" "}
+              {titleLead}{" "}
               <em className="italic">{eventTitle}</em>
             </h2>
             {eventDescription && (
@@ -129,7 +185,7 @@ export function EventCountdown({ eventDate, eventTime, eventTitle, eventDescript
               {[
                 { value: String(timeLeft.days).padStart(2, "0"), label: "DAYS" },
                 { value: String(timeLeft.hours).padStart(2, "0"), label: "HOURS" },
-                { value: String(timeLeft.minutes).padStart(2, "0"), label: "MINS" },
+                { value: String(timeLeft.minutes).padStart(2, "0"), label: isLive ? "TO END" : "MINS" },
               ].map(({ value, label }) => (
                 <div key={label} className="flex flex-col items-center">
                   <span className="font-headline text-4xl md:text-5xl lg:text-6xl text-tertiary leading-none tracking-tight">

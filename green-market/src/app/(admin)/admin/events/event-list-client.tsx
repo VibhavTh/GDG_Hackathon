@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { updateEvent, deleteEvent, toggleEventPublished } from "./actions";
 
@@ -11,7 +12,10 @@ type Event = {
   location: string | null;
   event_date: string;
   event_time: string | null;
+  end_date: string | null;
+  end_time: string | null;
   is_published: boolean;
+  album_id: string | null;
 };
 
 function formatDate(d: string, t?: string | null) {
@@ -83,6 +87,26 @@ function EventCard({ event, past = false }: { event: Event; past?: boolean }) {
                 className="w-full bg-surface-container-low px-3 py-2 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none"
               />
             </div>
+            <div>
+              <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-1">End Date (optional)</label>
+              <input
+                name="end_date"
+                type="date"
+                defaultValue={event.end_date ?? ""}
+                style={{ accentColor: "#173809", colorScheme: "light" }}
+                className="w-full bg-surface-container-low px-3 py-2 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-1">End Time (optional)</label>
+              <input
+                name="end_time"
+                type="time"
+                defaultValue={event.end_time ?? ""}
+                style={{ accentColor: "#173809", colorScheme: "light" }}
+                className="w-full bg-surface-container-low px-3 py-2 rounded-lg text-sm font-body text-on-surface border-0 focus:ring-2 focus:ring-primary/30 focus:outline-none"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-xs font-label font-bold uppercase tracking-wider text-on-surface-variant mb-1">Description</label>
@@ -123,6 +147,15 @@ function EventCard({ event, past = false }: { event: Event; past?: boolean }) {
           <p className="text-xs text-on-surface-variant">{formatDate(event.event_date, event.event_time)}</p>
         </div>
         <div className="flex gap-1">
+          {event.album_id && (
+            <Link
+              href={`/gallery/${event.album_id}`}
+              className="p-1.5 text-on-surface-variant hover:text-primary transition-colors"
+              title="View album"
+            >
+              <Icon name="photo_library" size="sm" />
+            </Link>
+          )}
           <button onClick={() => setEditing(true)} className="p-1.5 text-on-surface-variant hover:text-primary transition-colors" title="Edit">
             <Icon name="edit" size="sm" />
           </button>
@@ -156,6 +189,15 @@ function EventCard({ event, past = false }: { event: Event; past?: boolean }) {
         )}
       </div>
       <div className="flex gap-2 shrink-0">
+        {event.album_id && (
+          <Link
+            href={`/gallery/${event.album_id}`}
+            className="p-2 text-on-surface-variant hover:text-primary transition-colors"
+            title="View album"
+          >
+            <Icon name="photo_library" size="sm" />
+          </Link>
+        )}
         <button onClick={() => setEditing(true)} className="p-2 text-on-surface-variant hover:text-primary transition-colors" title="Edit">
           <Icon name="edit" size="sm" />
         </button>

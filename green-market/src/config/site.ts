@@ -9,7 +9,8 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "Market", href: "/products" },
     { label: "Gallery", href: "/gallery" },
-    { label: "About", href: "https://greenmarketfarms.org/about" },
+    { label: "Events", href: "/events" },
+    { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],
   adminNav: [

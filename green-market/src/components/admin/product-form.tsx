@@ -8,15 +8,15 @@ import { createClient } from "@/lib/supabase/client";
 import type { ProductRow } from "@/lib/supabase/types";
 
 const CATEGORIES = [
-  { value: "vegetables", label: "Vegetables" },
   { value: "fruits", label: "Fruits" },
+  { value: "vegetables", label: "Vegetables" },
+  { value: "flowers", label: "Annual Flowers" },
+  { value: "plants", label: "Perennial Flowers" },
   { value: "baked_goods", label: "Baked Goods" },
   { value: "dairy", label: "Dairy" },
   { value: "eggs", label: "Eggs" },
   { value: "meat", label: "Meat" },
   { value: "honey_beeswax", label: "Honey & Beeswax" },
-  { value: "flowers", label: "Annual Flowers" },
-  { value: "plants", label: "Perennial Flowers" },
   { value: "handmade_crafts", label: "Handmade Crafts" },
   { value: "value_added", label: "Jams & Preserves" },
   { value: "mushrooms", label: "Mushrooms" },
