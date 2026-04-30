@@ -3,7 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
-import { deleteGalleryPhoto } from "@/app/(storefront)/gallery/actions";
+import {
+  deleteGalleryPhoto,
+  setAlbumCover,
+} from "@/app/(storefront)/gallery/actions";
 
 interface GalleryPhoto {
   id: string;
@@ -16,6 +19,9 @@ interface GalleryPhoto {
 interface GalleryGridProps {
   photos: GalleryPhoto[];
   userRole: "vendor" | "customer" | "admin" | null;
+  currentUserId: string | null;
+  albumId?: string;
+  coverPhotoId?: string | null;
 }
 
 // Repeating span pattern for bento variety
@@ -34,11 +40,40 @@ const SPAN_CLASSES = [
 const SPAN_VALUES = [7, 5, 5, 7, 4, 4, 4, 6, 6];
 const MIN_HEIGHTS = [420, 280, 280, 380, 260, 260, 260, 320, 320];
 
-export function GalleryGrid({ photos, userRole }: GalleryGridProps) {
+export function GalleryGrid({
+  photos,
+  userRole,
+  currentUserId,
+  albumId,
+  coverPhotoId,
+}: GalleryGridProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [settingCover, setSettingCover] = useState<string | null>(null);
+  const [optimisticCoverId, setOptimisticCoverId] = useState<string | null>(
+    coverPhotoId ?? null
+  );
 
-  const isAdmin = userRole === "admin";
+  const isFarmer = userRole === "vendor" || userRole === "admin";
+  const activeCoverId = optimisticCoverId ?? coverPhotoId ?? null;
+
+  function canDelete(photo: GalleryPhoto): boolean {
+    if (isFarmer) return true;
+    return !!currentUserId && photo.uploaded_by === currentUserId;
+  }
+
+  async function handleSetCover(photoId: string) {
+    if (!albumId) return;
+    const previous = optimisticCoverId;
+    setOptimisticCoverId(photoId);
+    setSettingCover(photoId);
+    const result = await setAlbumCover(albumId, photoId);
+    if (result.error) {
+      setOptimisticCoverId(previous);
+      alert(result.error);
+    }
+    setSettingCover(null);
+  }
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -53,6 +88,28 @@ export function GalleryGrid({ photos, userRole }: GalleryGridProps) {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  async function handleDownload(photo: GalleryPhoto) {
+    try {
+      const response = await fetch(photo.image_url, { mode: "cors" });
+      const blob = await response.blob();
+      const ext = (photo.image_url.split(".").pop() || "jpg").split("?")[0];
+      const safeCaption =
+        photo.caption?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "photo";
+      const filename = `green-market-${safeCaption}-${photo.id.slice(0, 8)}.${ext}`;
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    } catch {
+      // Fallback: open the image in a new tab so the user can long-press / right-click to save.
+      window.open(photo.image_url, "_blank", "noopener,noreferrer");
+    }
+  }
 
   async function handleDelete(photoId: string) {
     if (!confirm("Remove this photo from the gallery?")) return;
@@ -78,9 +135,9 @@ export function GalleryGrid({ photos, userRole }: GalleryGridProps) {
           No photos yet.
         </p>
         <p className="text-on-surface-variant font-body">
-          {isAdmin
+          {isFarmer
             ? "Share moments from the farm by uploading your first photo."
-            : "Check back soon for photos from the farm."}
+            : "Be the first to add a photo to this album."}
         </p>
       </div>
     );
@@ -122,24 +179,70 @@ export function GalleryGrid({ photos, userRole }: GalleryGridProps) {
                 </div>
               )}
 
-              {/* Delete button for admins */}
-              {isAdmin && (
+              {/* Action buttons */}
+              <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(photo.id);
+                    handleDownload(photo);
                   }}
-                  disabled={deleting === photo.id}
-                  className="absolute top-3 right-3 bg-tertiary/60 text-on-tertiary rounded-full p-2 opacity-0 group-hover:opacity-100 hover:bg-error transition-all duration-200 disabled:opacity-50"
-                  aria-label="Delete photo"
+                  className="bg-tertiary/60 text-on-tertiary rounded-full p-2 hover:bg-secondary transition-colors"
+                  aria-label="Download photo"
+                  title="Download"
                 >
-                  <Icon
-                    name={deleting === photo.id ? "progress_activity" : "delete"}
-                    size="sm"
-                    className={deleting === photo.id ? "animate-spin" : ""}
-                  />
+                  <Icon name="download" size="sm" />
                 </button>
-              )}
+                {isFarmer && albumId && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSetCover(photo.id);
+                    }}
+                    disabled={settingCover === photo.id}
+                    className="bg-tertiary/60 text-on-tertiary rounded-full p-2 hover:bg-primary transition-colors disabled:opacity-50"
+                    aria-label={
+                      activeCoverId === photo.id
+                        ? "Current cover photo"
+                        : "Set as cover"
+                    }
+                    title={
+                      activeCoverId === photo.id
+                        ? "Current cover"
+                        : "Set as cover"
+                    }
+                  >
+                    <Icon
+                      name={
+                        settingCover === photo.id ? "progress_activity" : "star"
+                      }
+                      fill={activeCoverId === photo.id}
+                      size="sm"
+                      className={
+                        settingCover === photo.id ? "animate-spin" : ""
+                      }
+                    />
+                  </button>
+                )}
+                {canDelete(photo) && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(photo.id);
+                    }}
+                    disabled={deleting === photo.id}
+                    className="bg-tertiary/60 text-on-tertiary rounded-full p-2 hover:bg-error transition-colors disabled:opacity-50"
+                    aria-label="Delete photo"
+                  >
+                    <Icon
+                      name={
+                        deleting === photo.id ? "progress_activity" : "delete"
+                      }
+                      size="sm"
+                      className={deleting === photo.id ? "animate-spin" : ""}
+                    />
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}
@@ -153,13 +256,27 @@ export function GalleryGrid({ photos, userRole }: GalleryGridProps) {
         >
           <div className="absolute inset-0 bg-tertiary/95 backdrop-blur-md" />
 
-          {/* Close button */}
-          <button
-            className="absolute top-6 right-6 text-on-tertiary/70 hover:text-on-tertiary transition-colors z-10"
-            onClick={() => setSelectedPhoto(null)}
-          >
-            <Icon name="close" className="text-3xl" />
-          </button>
+          {/* Top-right controls */}
+          <div className="absolute top-6 right-6 flex items-center gap-3 z-10">
+            <button
+              className="text-on-tertiary/70 hover:text-on-tertiary transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload(selectedPhoto);
+              }}
+              aria-label="Download photo"
+              title="Download"
+            >
+              <Icon name="download" className="text-3xl" />
+            </button>
+            <button
+              className="text-on-tertiary/70 hover:text-on-tertiary transition-colors"
+              onClick={() => setSelectedPhoto(null)}
+              aria-label="Close"
+            >
+              <Icon name="close" className="text-3xl" />
+            </button>
+          </div>
 
           {/* Image */}
           <div

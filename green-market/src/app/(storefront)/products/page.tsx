@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { getProductCategories } from "@/lib/queries/products";
 import { CatalogView } from "./catalog-view";
 import { generateEmbedding } from "@/lib/embeddings";
 
@@ -103,8 +102,6 @@ async function ProductCatalogContent({ searchParams }: Props) {
     products = data ?? [];
   }
 
-  const availableCategories = await getProductCategories();
-
   return (
     <>
       <header className="pt-16 pb-12 px-6">
@@ -124,7 +121,6 @@ async function ProductCatalogContent({ searchParams }: Props) {
 
       <CatalogView
         products={(products ?? []) as Parameters<typeof CatalogView>[0]["products"]}
-        availableCategories={availableCategories}
         category={category}
         q={q}
         sort={sort}

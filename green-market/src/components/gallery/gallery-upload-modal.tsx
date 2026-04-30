@@ -12,9 +12,14 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 interface GalleryUploadModalProps {
   open: boolean;
   onClose: () => void;
+  albumId: string;
 }
 
-export function GalleryUploadModal({ open, onClose }: GalleryUploadModalProps) {
+export function GalleryUploadModal({
+  open,
+  onClose,
+  albumId,
+}: GalleryUploadModalProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -95,11 +100,11 @@ export function GalleryUploadModal({ open, onClose }: GalleryUploadModalProps) {
       // Upload to Supabase Storage (client-side, same pattern as product-form)
       const supabase = createClient();
       const ext = file.name.split(".").pop();
-      const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const objectPath = `${albumId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("gallery-images")
-        .upload(filename, file, { upsert: false, contentType: file.type });
+        .upload(objectPath, file, { upsert: false, contentType: file.type });
 
       if (uploadError) throw uploadError;
 
@@ -111,6 +116,7 @@ export function GalleryUploadModal({ open, onClose }: GalleryUploadModalProps) {
       const formData = new FormData();
       formData.set("image_url", publicUrl);
       formData.set("caption", caption);
+      formData.set("album_id", albumId);
 
       const result = await uploadGalleryPhoto(formData);
 

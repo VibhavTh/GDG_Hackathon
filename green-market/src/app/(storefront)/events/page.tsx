@@ -3,34 +3,42 @@ import Image from "next/image";
 import { Icon } from "@/components/ui/icon";
 import { EventCountdown } from "@/components/ui/event-countdown";
 import { getUpcomingEvents } from "@/lib/queries/products";
+import {
+  getLocationStatuses,
+  statusLabel,
+  statusTone,
+} from "@/lib/queries/location-statuses";
 
 const seasonalLocations = [
   {
+    slug: "greenhouse_farm_stand",
     name: "Greenhouse and Farm Stand",
     image: "/events/greenhousefarmstand_gmf.jpg",
     address: ["6643 Virginia Avenue", "Pembroke, Virginia 24136"],
-    status: "Closed for the winter",
-    statusTone: "closed" as const,
-    note: "Tentatively opening for the season in April.",
-    hours: null,
+    fallbackStatus: "Closed for the winter",
+    fallbackTone: "closed" as const,
+    fallbackNote: "Tentatively opening for the season in April.",
+    hours: null as string[] | null,
   },
   {
+    slug: "blacksburg_farmers_market",
     name: "The Blacksburg Farmer's Market",
     image: "/events/blacksburgfarmersmarket_gmf.jpg",
     address: ["108 W Roanoke St", "Blacksburg, VA 24060"],
-    status: "Open",
-    statusTone: "open" as const,
-    note: null,
-    hours: ["Saturday 10am to 2pm"],
+    fallbackStatus: "Open",
+    fallbackTone: "open" as const,
+    fallbackNote: null,
+    hours: ["Saturday 10am to 2pm"] as string[] | null,
   },
   {
+    slug: "annie_kays_fruit_stand",
     name: "Fruit Stand at Annie Kay's",
     image: "/events/anniekays_gmf.jpg",
     address: ["1531 S Main St", "Blacksburg, VA 24060"],
-    status: "Closed for the season",
-    statusTone: "closed" as const,
-    note: "Tentatively opening on Saturdays starting in April.",
-    hours: null,
+    fallbackStatus: "Closed for the season",
+    fallbackTone: "closed" as const,
+    fallbackNote: "Tentatively opening on Saturdays starting in April.",
+    hours: null as string[] | null,
   },
 ];
 
@@ -51,7 +59,19 @@ export default function EventsPage() {
 }
 
 async function EventsContent() {
-  const events = await getUpcomingEvents();
+  const [events, statuses] = await Promise.all([
+    getUpcomingEvents(),
+    getLocationStatuses(),
+  ]);
+  const resolvedSeasonalLocations = seasonalLocations.map((loc) => {
+    const override = statuses[loc.slug];
+    return {
+      ...loc,
+      status: override ? statusLabel(override.status) : loc.fallbackStatus,
+      statusTone: override ? statusTone(override.status) : loc.fallbackTone,
+      note: override ? override.note : loc.fallbackNote,
+    };
+  });
   const nextEvent = events[0] ?? null;
   const additionalDates = nextEvent
     ? events
@@ -100,7 +120,7 @@ async function EventsContent() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {seasonalLocations.map((loc) => {
+          {resolvedSeasonalLocations.map((loc) => {
             const statusClass =
               loc.statusTone === "open"
                 ? "bg-primary text-on-primary"

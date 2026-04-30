@@ -26,10 +26,31 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const PRICE_RANGES = [
-  { label: "Under $5", min: 0, max: 5 },
-  { label: "$5 – $15", min: 5, max: 15 },
-  { label: "$15 – $30", min: 15, max: 30 },
-  { label: "$30 – $100", min: 30, max: 100 },
+  { label: "$0 – $5", min: 0, max: 5 },
+  { label: "$5 – $10", min: 5, max: 10 },
+  { label: "$10 – $15", min: 10, max: 15 },
+  { label: "$15+", min: 15, max: Infinity },
+];
+
+const OTHER_CATEGORY_VALUE = "__other__";
+const OTHER_CATEGORY_MEMBERS = [
+  "baked_goods",
+  "dairy",
+  "eggs",
+  "meat",
+  "honey_beeswax",
+  "value_added",
+  "mushrooms",
+  "handmade_crafts",
+  "other",
+];
+
+const CATEGORY_FILTERS: { value: string; label: string }[] = [
+  { value: "fruits", label: "Fruits" },
+  { value: "vegetables", label: "Vegetables" },
+  { value: "flowers", label: "Annual Flowers" },
+  { value: "plants", label: "Perennial Flowers" },
+  { value: OTHER_CATEGORY_VALUE, label: "Other" },
 ];
 
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -50,7 +71,6 @@ type Product = {
 
 interface Props {
   products: Product[];
-  availableCategories: string[];
   category?: string;
   q?: string;
   sort: string;
@@ -105,7 +125,7 @@ function FilterCheckbox({
   );
 }
 
-export function CatalogView({ products, availableCategories, category, q, sort }: Props) {
+export function CatalogView({ products, category, q, sort }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<Set<number>>(new Set());
@@ -139,7 +159,11 @@ export function CatalogView({ products, availableCategories, category, q, sort }
   const filtered = useMemo(() => {
     let list = products;
     if (selectedCategories.size > 0) {
-      list = list.filter((p) => selectedCategories.has(p.category));
+      list = list.filter((p) => {
+        if (selectedCategories.has(p.category)) return true;
+        if (selectedCategories.has(OTHER_CATEGORY_VALUE) && OTHER_CATEGORY_MEMBERS.includes(p.category)) return true;
+        return false;
+      });
     }
     if (selectedPriceRanges.size > 0) {
       list = list.filter((p) => {
@@ -178,18 +202,14 @@ export function CatalogView({ products, availableCategories, category, q, sort }
       </div>
 
       <SidebarSection title="Categories">
-        {availableCategories.length === 0 ? (
-          <p className="text-xs text-on-surface-variant italic">No categories yet.</p>
-        ) : (
-          availableCategories.map((cat) => (
-            <FilterCheckbox
-              key={cat}
-              label={CATEGORY_LABELS[cat] ?? cat}
-              checked={selectedCategories.has(cat)}
-              onChange={(v) => toggleCategory(cat, v)}
-            />
-          ))
-        )}
+        {CATEGORY_FILTERS.map((c) => (
+          <FilterCheckbox
+            key={c.value}
+            label={c.label}
+            checked={selectedCategories.has(c.value)}
+            onChange={(v) => toggleCategory(c.value, v)}
+          />
+        ))}
       </SidebarSection>
 
       <SidebarSection title="Price Range">

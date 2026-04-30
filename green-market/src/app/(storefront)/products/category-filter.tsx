@@ -2,21 +2,13 @@
 
 import Link from "next/link";
 
+const ALLOWED_CATEGORIES = ["flowers", "plants", "fruits", "vegetables"] as const;
+
 const CATEGORY_LABELS: Record<string, string> = {
-  vegetables: "Vegetables",
-  fruits: "Fruits",
-  produce: "Produce",
-  baked_goods: "Baked Goods",
-  dairy: "Dairy",
-  eggs: "Eggs",
-  meat: "Meat",
-  honey_beeswax: "Honey & Beeswax",
   flowers: "Annual Flowers",
   plants: "Perennial Flowers",
-  handmade_crafts: "Handmade Crafts",
-  value_added: "Jams & Preserves",
-  mushrooms: "Mushrooms",
-  other: "Other",
+  fruits: "Fruits",
+  vegetables: "Vegetables",
 };
 
 interface CategoryFilterProps {
@@ -36,7 +28,8 @@ function buildHref(params: { category?: string; q?: string; sort?: string }) {
 }
 
 export function CategoryFilter({ categories, active, query, sort }: CategoryFilterProps) {
-  if (categories.length === 0) return null;
+  const visible = ALLOWED_CATEGORIES.filter((c) => categories.includes(c));
+  if (visible.length === 0) return null;
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -50,7 +43,7 @@ export function CategoryFilter({ categories, active, query, sort }: CategoryFilt
       >
         All
       </Link>
-      {categories.map((cat) => (
+      {visible.map((cat) => (
         <Link
           key={cat}
           href={buildHref({ category: cat, q: query, sort })}

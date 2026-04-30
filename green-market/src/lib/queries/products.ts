@@ -38,11 +38,12 @@ export async function getUpcomingEvents() {
   cacheTag("events");
 
   const service = createServiceClient();
+  const today = new Date().toISOString().slice(0, 10);
   const { data } = await service
     .from("events")
-    .select("id, title, description, event_date, event_time, location")
+    .select("id, title, description, event_date, event_time, end_date, end_time, location")
     .eq("is_published", true)
-    .gte("event_date", new Date().toISOString().slice(0, 10))
+    .or(`event_date.gte.${today},end_date.gte.${today}`)
     .order("event_date", { ascending: true })
     .limit(4);
   return data ?? [];

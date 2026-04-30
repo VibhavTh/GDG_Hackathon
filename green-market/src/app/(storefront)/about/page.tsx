@@ -3,25 +3,46 @@ import Image from "next/image";
 const team = [
   {
     name: "Ron Holdren",
-    role: "The Fearless Leader",
+    role: "Head Farmer & Founder",
     photo: "/about/team/ronald_gmf.jpg",
-    blurb: "Founded the farm with his wife Lisa in 1991. Still in the greenhouses every day.",
+    blurb: "Founded Green Market Farms with his wife Lisa in 1991. Still in the greenhouses every day.",
   },
-  { name: "Thomas", role: "The Master Farmer", photo: "/about/team/thomas_gmf.jpg" },
-  { name: "Connor", role: "The Pretty Face", photo: null },
-  { name: "Caroline", role: "The Healer", photo: null },
-  { name: "Eleanor", role: "The Moral Compass", photo: null },
+  {
+    name: "Thomas",
+    role: "Master Farmer",
+    photo: "/about/team/thomas_gmf.jpg",
+    blurb: "Tends the fields in Pembroke and Newport, coaxing the best out of every season.",
+  },
+  {
+    name: "Connor",
+    role: "The Pretty Face",
+    photo: null,
+    blurb: "Front of stand and farmers market regular, putting a friendly face on every basket of produce.",
+  },
+  {
+    name: "Caroline",
+    role: "The Healer",
+    photo: null,
+    blurb: "Resident herbalist and plant whisperer, nursing every seedling and customer back to health.",
+  },
+  {
+    name: "Eleanor",
+    role: "The Moral Compass",
+    photo: null,
+    blurb: "Keeps the family and the farm pointed true north through every harvest and every Saturday market.",
+  },
   {
     name: "Greta",
     role: "The Prodigal Daughter Yet to Return",
     photo: "/about/team/greta_gmf.jpg",
+    blurb: "Off chasing her own adventures, but the greenhouse always has a row reserved for her return.",
   },
 ];
 
 const whatWeDo = [
   {
     title: "Blacksburg Farmer's Market",
-    image: "/about/farmers-market.jpg",
+    image: "/about/farmers-market.webp",
     body: "Find us every Saturday at the Blacksburg Farmer's Market, and at all Wednesday markets during season.",
   },
   {
@@ -41,12 +62,12 @@ const whatWeDo = [
   },
   {
     title: "Specialty Crops",
-    image: "/about/specialty-crops.jpg",
+    image: "/about/specialty-crops.webp",
     body: "If you are a restaurant or business looking for a large quantity of something specific, we are willing to work with you and grow what you need. 4 to 6 months advance notice required.",
   },
   {
     title: "Ayers Orchard",
-    image: "/about/ayers-orchard.jpg",
+    image: "/about/ayers-orchard.webp",
     body: "Green Market Farms works closely with Ayers Orchard in Cana, SC, to bring their delicious apples, peaches, tomatoes, and cherries to the Southwest VA locale.",
   },
 ];
@@ -126,58 +147,51 @@ export default function AboutPage() {
       {/* ── TEAM ── */}
       <section className="py-24 md:py-32 mx-6 md:mx-12 lg:mx-20">
         <div className="mb-16 md:mb-20 max-w-4xl">
-          <span className="inline-flex items-center gap-2 text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-4">
-            <span className="w-5 h-px bg-secondary inline-block" />
-            Our People
+          <span className="text-secondary font-label text-[11px] uppercase tracking-[0.25em] mb-6 inline-block">
+            The Farmhands
           </span>
-          <h2 className="font-headline italic text-4xl md:text-5xl lg:text-6xl text-tertiary leading-[1.05]">
-            Meet the Green Market Farmers.
+          <h2 className="font-headline text-5xl md:text-6xl lg:text-7xl text-tertiary leading-[1.05]">
+            Meet the <span className="italic">Team</span>
           </h2>
-          <p className="font-body text-on-surface-variant mt-6 max-w-prose leading-relaxed">
-            The folks behind every basket of cherries, every flat of petunias, and every Saturday morning at the market.
+          <p className="font-body text-on-surface-variant mt-6 max-w-xl leading-relaxed">
+            The hands and hearts behind every harvest. A family of growers, market regulars, and greenhouse keepers dedicated to feeding the New River Valley.
           </p>
         </div>
 
-        <div className="space-y-8 md:space-y-12">
-          {team.map((member, i) => {
-            const reverse = i % 2 === 1;
-            return (
-              <article
-                key={member.name}
-                className={`bg-surface-container-low rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-[2fr_3fr] ${reverse ? "md:[&>*:first-child]:order-2" : ""}`}
-              >
-                <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[420px] bg-surface-container-highest">
-                  {member.photo ? (
-                    <Image
-                      src={member.photo}
-                      alt={member.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 40vw"
-                      className="object-contain"
-                    />
-                  ) : null}
-                </div>
-                <div className="p-10 md:p-14 lg:p-16 flex flex-col justify-center">
-                  {i === 0 && (
-                    <span className="font-label text-[11px] uppercase tracking-[0.25em] text-secondary mb-5">
-                      Founder
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {team.map((member) => (
+            <article
+              key={member.name}
+              className="bg-surface-container-low rounded-2xl p-6 md:p-7 flex flex-col"
+            >
+              <div className="relative aspect-[4/5] bg-surface-container-highest rounded-xl overflow-hidden mb-7">
+                {member.photo ? (
+                  <Image
+                    src={member.photo}
+                    alt={member.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="font-headline italic text-6xl text-on-surface-variant/40">
+                      {member.name.charAt(0)}
                     </span>
-                  )}
-                  <h3 className="font-headline italic text-5xl md:text-6xl text-tertiary leading-[1.05] mb-3">
-                    {member.name}
-                  </h3>
-                  <p className="font-headline italic text-xl md:text-2xl text-secondary mb-6">
-                    {member.role}
-                  </p>
-                  {member.blurb && (
-                    <p className="font-body text-on-surface-variant leading-relaxed max-w-md">
-                      {member.blurb}
-                    </p>
-                  )}
-                </div>
-              </article>
-            );
-          })}
+                  </div>
+                )}
+              </div>
+              <h3 className="font-headline text-3xl md:text-[2rem] text-tertiary leading-tight mb-2">
+                {member.name}
+              </h3>
+              <p className="font-label text-[11px] uppercase tracking-[0.25em] text-secondary mb-5">
+                {member.role}
+              </p>
+              <p className="font-body text-on-surface-variant leading-relaxed text-sm">
+                {member.blurb}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
     </>

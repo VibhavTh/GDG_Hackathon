@@ -9,13 +9,13 @@ export default function StorefrontLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Suspense fallback={<nav className="fixed top-0 left-0 right-0 h-20 bg-surface z-50" />}>
         <AuthAwareNav />
       </Suspense>
       <main className="pt-20 flex-1">{children}</main>
       <Footer variant="storefront" />
-    </>
+    </div>
   );
 }
 
